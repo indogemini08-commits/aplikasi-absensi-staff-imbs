@@ -26,7 +26,15 @@ export default function AdminKeterlambatanPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
   const [activeTab, setActiveTab] = useState<TabMode>('pending');
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +54,18 @@ export default function AdminKeterlambatanPage() {
   const fetchLateRecords = async (tab: TabMode) => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      let dataUrl = '/api/attendance/late-reason?filter=pending';
+      if (tab === 'submitted') {
+        dataUrl = '/api/attendance/late-reason';
+      } else if (tab === 'all_late') {
+        dataUrl = '/api/attendance/all?status=terlambat';
+      }
+
+      const [userRes, res] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch(dataUrl),
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
@@ -57,18 +76,14 @@ export default function AdminKeterlambatanPage() {
         return;
       }
       setUser(userData.user);
+      try {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      } catch {}
 
-      if (tab === 'pending') {
-        const res = await fetch('/api/attendance/late-reason?filter=pending');
-        const data = await res.json();
-        setRecords(data.reasons || []);
-      } else if (tab === 'submitted') {
-        const res = await fetch('/api/attendance/late-reason');
-        const data = await res.json();
+      const data = res.ok ? await res.json() : {};
+      if (tab === 'pending' || tab === 'submitted') {
         setRecords(data.reasons || []);
       } else {
-        const res = await fetch('/api/attendance/all?status=terlambat');
-        const data = await res.json();
         setRecords(data.records || []);
       }
       setLoading(false);

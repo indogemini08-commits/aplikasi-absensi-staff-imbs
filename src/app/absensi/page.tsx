@@ -28,7 +28,17 @@ export default function AbsensiPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [statusData, setStatusData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -60,31 +70,41 @@ export default function AbsensiPage() {
 
   const fetchInitialData = async () => {
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, statusRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/attendance/status')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
       setUser(userData.user);
-
-      const statusRes = await fetch('/api/attendance/status');
-      const statusJson = await statusRes.json();
-      setStatusData(statusJson);
-
-      if (statusJson.allowedLocations && statusJson.allowedLocations.length > 0) {
-        setSelectedLocation(statusJson.allowedLocations[0]);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
       }
 
-      // Check if late reason is pending
-      if (statusJson.pendingLateReason && statusJson.attendance?.id) {
-        setCurrentAttendanceId(statusJson.attendance.id);
-        setShowLateModal(true);
-      }
+      if (statusRes.ok) {
+        const statusJson = await statusRes.json();
+        setStatusData(statusJson);
 
-      setLoading(false);
-      // Trigger GPS detection
-      requestGpsLocation(statusJson.allowedLocations?.[0]);
+        if (statusJson.allowedLocations && statusJson.allowedLocations.length > 0) {
+          setSelectedLocation(statusJson.allowedLocations[0]);
+        }
+
+        // Check if late reason is pending
+        if (statusJson.pendingLateReason && statusJson.attendance?.id) {
+          setCurrentAttendanceId(statusJson.attendance.id);
+          setShowLateModal(true);
+        }
+
+        setLoading(false);
+        // Trigger GPS detection
+        requestGpsLocation(statusJson.allowedLocations?.[0]);
+      } else {
+        setLoading(false);
+      }
     } catch (err) {
       console.error(err);
       setLoading(false);

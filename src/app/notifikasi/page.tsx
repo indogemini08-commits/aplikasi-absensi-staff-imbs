@@ -12,7 +12,17 @@ import { useToast } from '@/components/ToastContext';
 export default function NotifikasiPage() {
   const router = useRouter();
   const toast = useToast();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -23,18 +33,26 @@ export default function NotifikasiPage() {
 
   const fetchNotifications = async () => {
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, dataRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/notifications')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      const res = await fetch('/api/notifications');
-      const data = await res.json();
-      setNotifications(data.notifications || []);
-      setUnreadCount(data.unreadCount || 0);
+      if (dataRes.ok) {
+        const data = await dataRes.json();
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

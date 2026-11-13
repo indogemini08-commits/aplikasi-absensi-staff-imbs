@@ -65,7 +65,7 @@ export function verifySessionToken(token: string): (UserSession & { exp: number 
   }
 }
 
-// In-memory user session cache for high performance (TTL: 30 seconds)
+// In-memory user session cache for high performance (TTL: 60 seconds)
 const userSessionCache = new Map<string, { session: UserSession; expiresAt: number }>();
 
 export function invalidateUserSession(userId?: string) {
@@ -94,38 +94,59 @@ export async function getCurrentUser(): Promise<UserSession | null> {
       return cached.session;
     }
 
-    const db = getDb();
-    const userRow = (await db.prepare(`
-      SELECT u.id as user_id, u.username, u.role, u.is_active,
-             e.id as employee_id, e.nip, e.name, e.department_id, e.position,
-             d.name as department_name
-      FROM users u
-      LEFT JOIN employees e ON u.id = e.user_id
-      LEFT JOIN departments d ON e.department_id = d.id
-      WHERE u.id = ? AND u.is_active = 1
-    `).get(session.userId)) as any;
+    try {
+      const db = getDb();
+      const userRow = (await db.prepare(`
+        SELECT u.id as user_id, u.username, u.role, u.is_active,
+               e.id as employee_id, e.nip, e.name, e.department_id, e.position,
+               d.name as department_name
+        FROM users u
+        LEFT JOIN employees e ON u.id = e.user_id
+        LEFT JOIN departments d ON e.department_id = d.id
+        WHERE u.id = ? AND u.is_active = 1
+      `).get(session.userId)) as any;
 
-    if (!userRow) return null;
+      if (!userRow) {
+        // User was deleted or deactivated
+        userSessionCache.delete(session.userId);
+        return null;
+      }
 
-    const userSession: UserSession = {
-      userId: userRow.user_id,
-      username: userRow.username,
-      role: userRow.role,
-      employeeId: userRow.employee_id,
-      name: userRow.name || userRow.username,
-      nip: userRow.nip,
-      departmentId: userRow.department_id,
-      departmentName: userRow.department_name,
-      position: userRow.position,
-    };
+      const userSession: UserSession = {
+        userId: userRow.user_id,
+        username: userRow.username,
+        role: userRow.role,
+        employeeId: userRow.employee_id,
+        name: userRow.name || userRow.username,
+        nip: userRow.nip,
+        departmentId: userRow.department_id,
+        departmentName: userRow.department_name,
+        position: userRow.position,
+      };
 
-    // Cache for 30 seconds
-    userSessionCache.set(session.userId, {
-      session: userSession,
-      expiresAt: Date.now() + 30_000,
-    });
+      // Cache for 60 seconds
+      userSessionCache.set(session.userId, {
+        session: userSession,
+        expiresAt: Date.now() + 60_000,
+      });
 
-    return userSession;
+      return userSession;
+    } catch (dbErr) {
+      console.warn('DB session verification warning, using cryptographically verified token payload:', dbErr);
+      // Fallback to verified HMAC session token to avoid false logouts during DB latency or cold start
+      const fallbackSession: UserSession = {
+        userId: session.userId,
+        username: session.username,
+        role: session.role,
+        employeeId: session.employeeId,
+        name: session.name || session.username,
+        nip: session.nip,
+        departmentId: session.departmentId,
+        departmentName: session.departmentName,
+        position: session.position,
+      };
+      return fallbackSession;
+    }
   } catch (err) {
     console.error('Failed to get current user:', err);
     return null;

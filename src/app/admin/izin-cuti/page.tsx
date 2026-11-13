@@ -24,7 +24,17 @@ export default function AdminIzinCutiPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('pending');
@@ -43,24 +53,32 @@ export default function AdminIzinCutiPage() {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      let url = '/api/leave';
+      if (statusFilter) url += `?status=${statusFilter}`;
+
+      const [userRes, dataRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch(url)
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      let url = '/api/leave';
-      if (statusFilter) url += `?status=${statusFilter}`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-      setRequests(data.requests || []);
+      if (dataRes.ok) {
+        const data = await dataRes.json();
+        setRequests(data.requests || []);
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

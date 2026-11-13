@@ -33,6 +33,16 @@ export default function Sidebar({ userRole }: SidebarProps) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
 
+  const effectiveRole = userRole || (() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        if (cached) return JSON.parse(cached).role;
+      } catch {}
+    }
+    return 'admin';
+  })();
+
   const menuGroups = [
     {
       group: 'Pemantauan',
@@ -72,6 +82,10 @@ export default function Sidebar({ userRole }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('imbs_user_session');
+        sessionStorage.clear();
+      }
       await fetch('/api/auth/logout', { method: 'POST' });
       router.push('/login');
       router.refresh();

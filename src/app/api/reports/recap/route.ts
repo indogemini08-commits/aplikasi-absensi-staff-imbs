@@ -151,7 +151,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Sort order: by numeric portion of NIP (IMBS-001 ... IMBS-022)
-    empQuery += ` ORDER BY CAST(SUBSTR(e.nip, 6) AS INTEGER) ASC, e.name ASC`;
+    empQuery += ` ORDER BY e.nip ASC, e.name ASC`;
     const activeEmployees = await db.prepare(empQuery).all(...empParams) as any[];
 
     // Index attendance records by employee_id

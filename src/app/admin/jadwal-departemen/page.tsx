@@ -55,7 +55,15 @@ export default function JadwalDepartemenPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
   const [departments, setDepartments] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,7 +99,12 @@ export default function JadwalDepartemenPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, deptRes, empRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/departments'),
+        fetch('/api/employees'),
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
@@ -102,13 +115,14 @@ export default function JadwalDepartemenPage() {
         return;
       }
       setUser(userData.user);
+      try {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      } catch {}
 
-      const deptRes = await fetch('/api/departments');
-      const deptData = await deptRes.json();
+      const deptData = deptRes.ok ? await deptRes.json() : { departments: [] };
       setDepartments(deptData.departments || []);
 
-      const empRes = await fetch('/api/employees');
-      const empData = await empRes.json();
+      const empData = empRes.ok ? await empRes.json() : { employees: [] };
       setEmployees(empData.employees || []);
 
       setSelectedIds([]);

@@ -13,7 +13,15 @@ export default function AdminSaldoCutiPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
   const [balances, setBalances] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -31,7 +39,11 @@ export default function AdminSaldoCutiPage() {
   const fetchBalances = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, res] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/leave/balances'),
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
@@ -42,9 +54,11 @@ export default function AdminSaldoCutiPage() {
         return;
       }
       setUser(userData.user);
+      try {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      } catch {}
 
-      const res = await fetch('/api/leave/balances');
-      const data = await res.json();
+      const data = res.ok ? await res.json() : { balances: [] };
       setBalances(data.balances || []);
       setLoading(false);
     } catch (e) {

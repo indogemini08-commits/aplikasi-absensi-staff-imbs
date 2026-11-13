@@ -14,7 +14,17 @@ export default function AdminKalenderPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [holidays, setHolidays] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,21 +43,29 @@ export default function AdminKalenderPage() {
   const fetchHolidays = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, dataRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/holidays')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      const res = await fetch('/api/holidays');
-      const data = await res.json();
-      setHolidays(data.holidays || []);
+      if (dataRes.ok) {
+        const data = await dataRes.json();
+        setHolidays(data.holidays || []);
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

@@ -26,7 +26,17 @@ export default function IzinPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [requests, setRequests] = useState<any[]>([]);
   const [leaveTypes, setLeaveTypes] = useState<any[]>([]);
   const [balance, setBalance] = useState<any>(null);
@@ -49,15 +59,20 @@ export default function IzinPage() {
 
   const fetchLeaveData = async () => {
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, res] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/leave')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
       setUser(userData.user);
-
-      const res = await fetch('/api/leave');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
       const data = await res.json();
       setRequests(data.requests || []);
       setLeaveTypes(data.leaveTypes || []);

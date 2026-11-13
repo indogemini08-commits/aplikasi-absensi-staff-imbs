@@ -9,7 +9,17 @@ import { formatIndonesianDate } from '@/lib/date';
 
 export default function KalenderPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [holidays, setHolidays] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,17 +31,25 @@ export default function KalenderPage() {
 
   const fetchData = async () => {
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, holRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/holidays')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      const holRes = await fetch('/api/holidays');
-      const holData = await holRes.json();
-      setHolidays(holData.holidays || []);
+      if (holRes.ok) {
+        const holData = await holRes.json();
+        setHolidays(holData.holidays || []);
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

@@ -25,7 +25,17 @@ export default function RiwayatPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [records, setRecords] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -47,18 +57,26 @@ export default function RiwayatPage() {
   const fetchHistory = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, dataRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch(`/api/attendance/history?month=${selectedMonth}`)
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      const res = await fetch(`/api/attendance/history?month=${selectedMonth}`);
-      const data = await res.json();
-      setRecords(data.records || []);
-      setSummary(data.summary || null);
+      if (dataRes.ok) {
+        const data = await dataRes.json();
+        setRecords(data.records || []);
+        setSummary(data.summary || null);
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

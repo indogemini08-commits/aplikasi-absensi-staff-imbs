@@ -34,7 +34,15 @@ export default function PegawaiPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
   const [employees, setEmployees] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
   const [shifts, setShifts] = useState<any[]>([]);

@@ -25,7 +25,17 @@ import { useToast } from '@/components/ToastContext';
 export default function ProfilPage() {
   const router = useRouter();
   const toast = useToast();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,6 +51,9 @@ export default function ProfilPage() {
       }
       const data = await res.json();
       setUser(data.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(data.user));
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);
@@ -50,6 +63,10 @@ export default function ProfilPage() {
 
   const handleLogout = async () => {
     try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('imbs_user_session');
+        sessionStorage.clear();
+      }
       await fetch('/api/auth/logout', { method: 'POST' });
       toast.info('Anda telah keluar dari aplikasi.');
       router.push('/login');

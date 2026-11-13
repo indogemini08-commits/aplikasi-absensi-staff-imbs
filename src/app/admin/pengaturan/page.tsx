@@ -23,7 +23,17 @@ export default function PengaturanPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -60,19 +70,25 @@ export default function PengaturanPage() {
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, res] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/settings')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      const res = await fetch('/api/settings');
       const data = await res.json();
       if (data.settings) {
         const s = data.settings;

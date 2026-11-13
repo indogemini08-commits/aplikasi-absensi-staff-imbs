@@ -25,7 +25,17 @@ function PapanJadwalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [boardData, setBoardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,31 +53,39 @@ function PapanJadwalContent() {
   const fetchBoardData = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      let url = `/api/schedules/board?date=${selectedDate}`;
+      if (selectedDept) url += `&departmentId=${selectedDept}`;
+      if (selectedStatus) url += `&status=${encodeURIComponent(selectedStatus)}`;
+
+      const [userRes, empRes, boardRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/employees'),
+        fetch(url)
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      // Fetch departments
-      const empRes = await fetch('/api/employees');
-      const empData = await empRes.json();
-      setDepartments(empData.departments || []);
+      if (empRes.ok) {
+        const empData = await empRes.json();
+        setDepartments(empData.departments || []);
+      }
 
-      // Fetch schedule board
-      let url = `/api/schedules/board?date=${selectedDate}`;
-      if (selectedDept) url += `&departmentId=${selectedDept}`;
-      if (selectedStatus) url += `&status=${encodeURIComponent(selectedStatus)}`;
-
-      const boardRes = await fetch(url);
-      const boardJson = await boardRes.json();
-      setBoardData(boardJson);
+      if (boardRes.ok) {
+        const boardJson = await boardRes.json();
+        setBoardData(boardJson);
+      }
 
       setLoading(false);
     } catch (e) {

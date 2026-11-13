@@ -50,7 +50,15 @@ export default function LokasiPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
   const [locations, setLocations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -81,7 +89,11 @@ export default function LokasiPage() {
   const fetchLocations = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, res] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/locations'),
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
@@ -92,9 +104,11 @@ export default function LokasiPage() {
         return;
       }
       setUser(userData.user);
+      try {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      } catch {}
 
-      const res = await fetch('/api/locations');
-      const data = await res.json();
+      const data = res.ok ? await res.json() : { locations: [] };
       setLocations(data.locations || []);
       setLoading(false);
     } catch (e) {

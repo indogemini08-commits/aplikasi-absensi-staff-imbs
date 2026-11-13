@@ -32,7 +32,17 @@ function LaporanContent() {
   const searchParams = useSearchParams();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [reportData, setReportData] = useState<any>(null);
   const [departments, setDepartments] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
@@ -62,32 +72,40 @@ function LaporanContent() {
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      let url = `/api/reports/recap?startDate=${startDate}&endDate=${endDate}`;
+      if (departmentId) url += `&departmentId=${departmentId}`;
+      if (employeeId) url += `&employeeId=${employeeId}`;
+
+      const [userRes, empRes, reportRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/employees'),
+        fetch(url)
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      // Fetch filter options
-      const empRes = await fetch('/api/employees');
-      const empData = await empRes.json();
-      setDepartments(empData.departments || []);
-      setEmployees(empData.employees || []);
+      if (empRes.ok) {
+        const empData = await empRes.json();
+        setDepartments(empData.departments || []);
+        setEmployees(empData.employees || []);
+      }
 
-      // Fetch recap data
-      let url = `/api/reports/recap?startDate=${startDate}&endDate=${endDate}`;
-      if (departmentId) url += `&departmentId=${departmentId}`;
-      if (employeeId) url += `&employeeId=${employeeId}`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-      setReportData(data);
+      if (reportRes.ok) {
+        const data = await reportRes.json();
+        setReportData(data);
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

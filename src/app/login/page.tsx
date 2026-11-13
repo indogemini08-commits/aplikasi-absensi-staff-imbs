@@ -37,6 +37,9 @@ export default function LoginPage() {
       }
 
       toast.success(`Selamat datang, ${data.user.name}!`);
+      try {
+        localStorage.setItem('imbs_user_session', JSON.stringify(data.user));
+      } catch {}
       router.push(data.redirectUrl || '/dashboard');
       router.refresh();
     } catch (err: any) {

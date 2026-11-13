@@ -23,7 +23,15 @@ import { formatIndonesianDate } from '@/lib/date';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
   const [boardData, setBoardData] = useState<any>(null);
   const [pendingLeaves, setPendingLeaves] = useState<any[]>([]);
   const [pendingLates, setPendingLates] = useState<any[]>([]);

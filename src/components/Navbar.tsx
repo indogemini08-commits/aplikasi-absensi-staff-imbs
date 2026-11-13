@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/router';
+import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Bell, Clock, Building2, User, LogOut, ChevronRight } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
@@ -22,6 +22,34 @@ export default function Navbar({ user }: NavbarProps) {
   const [wibTime, setWibTime] = useState('');
   const [wibDate, setWibDate] = useState('');
   const [appLogo, setAppLogo] = useState<string>('');
+
+  // Persistent user state: prioritize prop, fallback to localStorage cache
+  const [currentUser, setCurrentUser] = useState<any>(() => {
+    if (user) return user;
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    if (user) {
+      setCurrentUser(user);
+      try {
+        localStorage.setItem('imbs_user_session', JSON.stringify(user));
+      } catch {}
+    } else if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        if (cached) {
+          setCurrentUser(JSON.parse(cached));
+        }
+      } catch {}
+    }
+  }, [user]);
 
   useEffect(() => {
     // Live ticking WIB clock
@@ -54,6 +82,10 @@ export default function Navbar({ user }: NavbarProps) {
 
   const handleLogout = async () => {
     try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('imbs_user_session');
+        sessionStorage.clear();
+      }
       await fetch('/api/auth/logout', { method: 'POST' });
       router.push('/login');
       router.refresh();
@@ -118,29 +150,29 @@ export default function Navbar({ user }: NavbarProps) {
             title="Pusat Notifikasi"
           >
             <Bell className="w-5 h-5" />
-            {user?.unreadNotifications && user.unreadNotifications > 0 ? (
+            {currentUser?.unreadNotifications && currentUser.unreadNotifications > 0 ? (
               <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
-                {user.unreadNotifications > 9 ? '9+' : user.unreadNotifications}
+                {currentUser.unreadNotifications > 9 ? '9+' : currentUser.unreadNotifications}
               </span>
             ) : null}
           </button>
 
           {/* User profile dropdown / quick card */}
-          {user ? (
+          {currentUser ? (
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-700">
               <div
-                onClick={() => router.push(user.role === 'staff' ? '/profil' : '/admin')}
+                onClick={() => router.push(currentUser.role === 'staff' ? '/profil' : '/admin')}
                 className="cursor-pointer flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 <div className="w-8 h-8 rounded-full bg-indigo-600/10 dark:bg-indigo-400/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
-                  {user.name ? user.name.charAt(0) : 'U'}
+                  {currentUser.name ? currentUser.name.charAt(0) : 'U'}
                 </div>
                 <div className="hidden lg:block text-left text-xs">
                   <div className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[120px]">
-                    {user.name}
+                    {currentUser.name}
                   </div>
                   <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-medium">
-                    {user.role}
+                    {currentUser.role}
                   </div>
                 </div>
               </div>
@@ -152,6 +184,15 @@ export default function Navbar({ user }: NavbarProps) {
               >
                 <LogOut className="w-4 h-4" />
               </button>
+            </div>
+          ) : pathname !== '/login' && pathname !== '/' ? (
+            /* Subtle loading placeholder during protected page transitions (never flash 'Masuk') */
+            <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-700">
+              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse" />
+              <div className="hidden lg:block space-y-1">
+                <div className="w-16 h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                <div className="w-10 h-2 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+              </div>
             </div>
           ) : (
             <button

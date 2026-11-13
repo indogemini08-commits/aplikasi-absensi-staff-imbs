@@ -14,7 +14,17 @@ export default function KoreksiPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [corrections, setCorrections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,17 +43,25 @@ export default function KoreksiPage() {
 
   const fetchData = async () => {
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, dataRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/corrections')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      const res = await fetch('/api/corrections');
-      const data = await res.json();
-      setCorrections(data.corrections || []);
+      if (dataRes.ok) {
+        const data = await dataRes.json();
+        setCorrections(data.corrections || []);
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

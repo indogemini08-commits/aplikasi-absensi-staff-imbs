@@ -23,7 +23,17 @@ import { formatIndonesianDate } from '@/lib/date';
 
 export default function StaffDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [statusData, setStatusData] = useState<any>(null);
   const [historySummary, setHistorySummary] = useState<any>(null);
   const [recentRecords, setRecentRecords] = useState<any[]>([]);
@@ -35,24 +45,32 @@ export default function StaffDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, statusRes, histRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/attendance/status'),
+        fetch('/api/attendance/history')
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      }
 
-      // Fetch attendance status
-      const statusRes = await fetch('/api/attendance/status');
-      const statusJson = await statusRes.json();
-      setStatusData(statusJson);
+      if (statusRes.ok) {
+        const statusJson = await statusRes.json();
+        setStatusData(statusJson);
+      }
 
-      // Fetch history summary
-      const histRes = await fetch('/api/attendance/history');
-      const histJson = await histRes.json();
-      setHistorySummary(histJson.summary);
-      setRecentRecords(histJson.records?.slice(0, 5) || []);
+      if (histRes.ok) {
+        const histJson = await histRes.json();
+        setHistorySummary(histJson.summary);
+        setRecentRecords(histJson.records?.slice(0, 5) || []);
+      }
 
       setLoading(false);
     } catch (err) {

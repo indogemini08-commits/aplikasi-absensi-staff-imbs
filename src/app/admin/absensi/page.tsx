@@ -24,7 +24,15 @@ export default function AdminAbsensiMasterPage() {
   const router = useRouter();
   const toast = useToast();
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('imbs_user_session');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +56,14 @@ export default function AdminAbsensiMasterPage() {
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      let url = '/api/attendance/all';
+      if (selectedDate) url += `?date=${selectedDate}`;
+
+      const [userRes, res] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch(url),
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
@@ -59,12 +74,11 @@ export default function AdminAbsensiMasterPage() {
         return;
       }
       setUser(userData.user);
+      try {
+        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+      } catch {}
 
-      let url = '/api/attendance/all';
-      if (selectedDate) url += `?date=${selectedDate}`;
-
-      const res = await fetch(url);
-      const data = await res.json();
+      const data = res.ok ? await res.json() : { records: [] };
       setRecords(data.records || []);
       setLoading(false);
     } catch (e) {
