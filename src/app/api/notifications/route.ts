@@ -10,11 +10,11 @@ export async function GET(req: NextRequest) {
     }
 
     const db = getDb();
-    const notifications = db.prepare(`
+    const notifications = await db.prepare(`
       SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50
     `).all(user.userId);
 
-    const unreadCount = db.prepare(`
+    const unreadCount = await db.prepare(`
       SELECT count(*) as count FROM notifications WHERE user_id = ? AND is_read = 0
     `).get(user.userId) as { count: number };
 
@@ -39,9 +39,9 @@ export async function PUT(req: NextRequest) {
     const db = getDb();
 
     if (markAll) {
-      db.prepare(`UPDATE notifications SET is_read = 1 WHERE user_id = ?`).run(user.userId);
+      await db.prepare(`UPDATE notifications SET is_read = 1 WHERE user_id = ?`).run(user.userId);
     } else if (id) {
-      db.prepare(`UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?`).run(id, user.userId);
+      await db.prepare(`UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?`).run(id, user.userId);
     }
 
     return NextResponse.json({ success: true });

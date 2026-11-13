@@ -45,20 +45,20 @@ export async function GET(req: NextRequest) {
     }
 
     query += ` ORDER BY e.name ASC`;
-    const rawEmployees = db.prepare(query).all(...params) as any[];
+    const rawEmployees = await db.prepare(query).all(...params) as any[];
     const employees = rawEmployees.map((emp) => ({
       ...emp,
       dept_work_days: typeof emp.dept_work_days === 'string' ? JSON.parse(emp.dept_work_days) : (emp.dept_work_days || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']),
       dept_daily_schedules: typeof emp.dept_daily_schedules === 'string' ? JSON.parse(emp.dept_daily_schedules) : emp.dept_daily_schedules,
     }));
 
-    const rawDepartments = db.prepare(`SELECT * FROM departments ORDER BY name ASC`).all() as any[];
+    const rawDepartments = await db.prepare(`SELECT * FROM departments ORDER BY name ASC`).all() as any[];
     const departments = rawDepartments.map((d) => ({
       ...d,
       work_days: typeof d.work_days === 'string' ? JSON.parse(d.work_days) : (d.work_days || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']),
       daily_schedules: typeof d.daily_schedules === 'string' ? JSON.parse(d.daily_schedules) : d.daily_schedules,
     }));
-    const shifts = db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all();
+    const shifts = await db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all();
 
     return NextResponse.json({ employees, departments, shifts });
   } catch (err: any) {
@@ -89,8 +89,8 @@ export async function POST(req: NextRequest) {
       let successCount = 0;
       const errors: string[] = [];
       const defaultPasswordHash = hashPassword('password123');
-      const defaultDept = db.prepare(`SELECT id FROM departments LIMIT 1`).get() as any;
-      const defaultShift = db.prepare(`SELECT id FROM shift_templates WHERE is_default = 1 LIMIT 1`).get() as any;
+      const defaultDept = await db.prepare(`SELECT id FROM departments LIMIT 1`).get() as any;
+      const defaultShift = await db.prepare(`SELECT id FROM shift_templates WHERE is_default = 1 LIMIT 1`).get() as any;
 
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
@@ -100,13 +100,13 @@ export async function POST(req: NextRequest) {
             continue;
           }
 
-          const existingUser = db.prepare(`SELECT id FROM users WHERE username = ? OR email = ?`).get(row.username, row.email || `${row.username}@imbs.sch.id`);
+          const existingUser = await db.prepare(`SELECT id FROM users WHERE username = ? OR email = ?`).get(row.username, row.email || `${row.username}@imbs.sch.id`);
           if (existingUser) {
             errors.push(`Baris ${i + 1} (${row.name}): Username/email sudah digunakan`);
             continue;
           }
 
-          const existingNip = db.prepare(`SELECT id FROM employees WHERE nip = ?`).get(row.nip);
+          const existingNip = await db.prepare(`SELECT id FROM employees WHERE nip = ?`).get(row.nip);
           if (existingNip) {
             errors.push(`Baris ${i + 1} (${row.name}): NIP sudah terdaftar`);
             continue;
@@ -115,12 +115,12 @@ export async function POST(req: NextRequest) {
           const userId = `usr-imp-${Date.now()}-${i}`;
           const empId = `emp-imp-${Date.now()}-${i}`;
 
-          db.prepare(`
+          await db.prepare(`
             INSERT INTO users (id, username, email, password_hash, role, is_active, created_at, updated_at)
             VALUES (?, ?, ?, ?, 'staff', 1, ?, ?)
           `).run(userId, row.username.trim().toLowerCase(), row.email || `${row.username}@imbs.sch.id`, defaultPasswordHash, now, now);
 
-          db.prepare(`
+          await db.prepare(`
             INSERT INTO employees (id, user_id, nip, name, gender, phone, department_id, position, join_date, status, is_active, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'permanent', 1, ?, ?)
           `).run(
@@ -138,13 +138,13 @@ export async function POST(req: NextRequest) {
           );
 
           // Add leave balance & schedule
-          db.prepare(`
+          await db.prepare(`
             INSERT INTO leave_balances (id, employee_id, year, allocated_days, used_days, pending_days, remaining_days, updated_at)
             VALUES (?, ?, ?, 12, 0, 0, 12, ?)
           `).run(`bal-${empId}`, empId, new Date().getFullYear(), now);
 
           if (defaultShift) {
-            db.prepare(`
+            await db.prepare(`
               INSERT INTO employee_schedules (id, employee_id, shift_id, effective_date, created_at)
               VALUES (?, ?, ?, ?, ?)
             `).run(`sch-${empId}`, empId, defaultShift.id, now.substring(0, 10), now);
@@ -197,12 +197,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Check unique username & NIP
-    const existingUser = db.prepare(`SELECT id FROM users WHERE username = ? OR email = ?`).get(username.trim().toLowerCase(), email || `${username}@imbs.sch.id`);
+    const existingUser = await db.prepare(`SELECT id FROM users WHERE username = ? OR email = ?`).get(username.trim().toLowerCase(), email || `${username}@imbs.sch.id`);
     if (existingUser) {
       return NextResponse.json({ error: 'Username atau email sudah digunakan.' }, { status: 400 });
     }
 
-    const existingNip = db.prepare(`SELECT id FROM employees WHERE nip = ?`).get(nip.trim());
+    const existingNip = await db.prepare(`SELECT id FROM employees WHERE nip = ?`).get(nip.trim());
     if (existingNip) {
       return NextResponse.json({ error: 'NIP sudah terdaftar di sistem.' }, { status: 400 });
     }
@@ -211,9 +211,9 @@ export async function POST(req: NextRequest) {
     const empId = `emp-${Date.now()}`;
     const passwordHash = hashPassword(password || 'password123');
 
-    db.exec('BEGIN TRANSACTION;');
+    await db.exec('BEGIN TRANSACTION;');
     try {
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO users (id, username, email, password_hash, role, is_active, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, 1, ?, ?)
       `).run(
@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
         now
       );
 
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO employees (id, user_id, nip, name, gender, phone, department_id, position, join_date, status, is_active, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'permanent', 1, ?, ?)
       `).run(
@@ -244,22 +244,22 @@ export async function POST(req: NextRequest) {
       );
 
       // Initialize leave balance
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO leave_balances (id, employee_id, year, allocated_days, used_days, pending_days, remaining_days, updated_at)
         VALUES (?, ?, ?, 12, 0, 0, 12, ?)
       `).run(`bal-${empId}`, empId, new Date().getFullYear(), now);
 
       // Assign default shift if provided
       if (shiftId) {
-        db.prepare(`
+        await db.prepare(`
           INSERT INTO employee_schedules (id, employee_id, shift_id, effective_date, created_at)
           VALUES (?, ?, ?, ?, ?)
         `).run(`sch-${empId}`, empId, shiftId, joinDate || now.substring(0, 10), now);
       }
 
-      db.exec('COMMIT;');
+      await db.exec('COMMIT;');
     } catch (txErr) {
-      db.exec('ROLLBACK;');
+      await db.exec('ROLLBACK;');
       throw txErr;
     }
 
@@ -309,7 +309,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const db = getDb();
-    const emp = db.prepare(`SELECT * FROM employees WHERE id = ?`).get(id) as any;
+    const emp = await db.prepare(`SELECT * FROM employees WHERE id = ?`).get(id) as any;
     if (!emp) {
       return NextResponse.json({ error: 'Data pegawai tidak ditemukan' }, { status: 404 });
     }
@@ -317,9 +317,9 @@ export async function PUT(req: NextRequest) {
     const now = new Date().toISOString();
     const activeVal = isActive !== undefined ? (isActive ? 1 : 0) : emp.is_active;
 
-    db.exec('BEGIN TRANSACTION;');
+    await db.exec('BEGIN TRANSACTION;');
     try {
-      db.prepare(`
+      await db.prepare(`
         UPDATE employees SET
           name = COALESCE(?, name),
           nip = COALESCE(?, nip),
@@ -333,17 +333,17 @@ export async function PUT(req: NextRequest) {
       `).run(name, nip, gender, phone, departmentId, position, activeVal, now, id);
 
       // Sync active state to user account
-      db.prepare(`UPDATE users SET is_active = ?, updated_at = ? WHERE id = ?`).run(activeVal, now, emp.user_id);
+      await db.prepare(`UPDATE users SET is_active = ?, updated_at = ? WHERE id = ?`).run(activeVal, now, emp.user_id);
 
       // Reset password if requested
       if (resetPassword) {
         const hash = hashPassword(resetPassword);
-        db.prepare(`UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?`).run(hash, now, emp.user_id);
+        await db.prepare(`UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?`).run(hash, now, emp.user_id);
       }
 
-      db.exec('COMMIT;');
+      await db.exec('COMMIT;');
     } catch (txErr) {
-      db.exec('ROLLBACK;');
+      await db.exec('ROLLBACK;');
       throw txErr;
     }
 

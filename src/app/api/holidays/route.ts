@@ -6,7 +6,7 @@ import { recordAuditLog } from '@/lib/audit';
 export async function GET(req: NextRequest) {
   try {
     const db = getDb();
-    const holidays = db.prepare(`SELECT * FROM holidays ORDER BY date ASC`).all();
+    const holidays = await db.prepare(`SELECT * FROM holidays ORDER BY date ASC`).all();
     return NextResponse.json({ holidays });
   } catch (err: any) {
     console.error('Holidays GET error:', err);
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const db = getDb();
     const id = `hol-${Date.now()}`;
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO holidays (id, name, date, type, description)
       VALUES (?, ?, ?, ?, ?)
     `).run(id, name, date, type || 'institutional', description || null);
@@ -67,7 +67,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const db = getDb();
-    db.prepare(`DELETE FROM holidays WHERE id = ?`).run(id);
+    await db.prepare(`DELETE FROM holidays WHERE id = ?`).run(id);
 
     return NextResponse.json({ success: true, message: 'Hari libur berhasil dihapus' });
   } catch (err: any) {

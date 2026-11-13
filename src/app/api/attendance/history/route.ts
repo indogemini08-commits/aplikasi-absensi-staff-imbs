@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       params.push(monthParam);
     }
 
-    const records = db.prepare(`
+    const records = await db.prepare(`
       SELECT a.*,
              l1.name as in_location_name,
              l2.name as out_location_name,
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
       leaveQuery += ` AND (strftime('%Y-%m', lr.start_date) = ? OR strftime('%Y-%m', lr.end_date) = ?)`;
       leaveParams.push(monthParam, monthParam);
     }
-    const approvedLeaves = db.prepare(leaveQuery).all(...leaveParams) as any[];
+    const approvedLeaves = await db.prepare(leaveQuery).all(...leaveParams) as any[];
 
     let totalCuti = 0;
     let totalSakit = 0;

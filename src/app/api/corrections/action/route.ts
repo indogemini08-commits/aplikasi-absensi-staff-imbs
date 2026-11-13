@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getDb();
-    const corr = db.prepare(`
+    const corr = await db.prepare(`
       SELECT ac.*, e.user_id as emp_user_id, e.name as emp_name
       FROM attendance_corrections ac
       JOIN employees e ON ac.employee_id = e.id
@@ -35,19 +35,19 @@ export async function POST(req: NextRequest) {
 
     const now = new Date().toISOString();
 
-    db.exec('BEGIN TRANSACTION;');
+    await db.exec('BEGIN TRANSACTION;');
     try {
       if (action === 'approve') {
         // Update or insert attendance record
         let att = null;
         if (corr.attendance_id) {
-          att = db.prepare(`SELECT * FROM attendance_records WHERE id = ?`).get(corr.attendance_id) as any;
+          att = await db.prepare(`SELECT * FROM attendance_records WHERE id = ?`).get(corr.attendance_id) as any;
         } else {
-          att = db.prepare(`SELECT * FROM attendance_records WHERE employee_id = ? AND date = ?`).get(corr.employee_id, corr.date) as any;
+          att = await db.prepare(`SELECT * FROM attendance_records WHERE employee_id = ? AND date = ?`).get(corr.employee_id, corr.date) as any;
         }
 
         if (att) {
-          db.prepare(`
+          await db.prepare(`
             UPDATE attendance_records SET
               clock_in_time = COALESCE(?, clock_in_time),
               clock_out_time = COALESCE(?, clock_out_time),
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
           `).run(corr.corrected_clock_in, corr.corrected_clock_out, now, att.id);
         } else {
           const newAttId = `att-corr-${Date.now()}`;
-          db.prepare(`
+          await db.prepare(`
             INSERT INTO attendance_records (
               id, employee_id, date, clock_in_time, clock_out_time,
               clock_in_status, is_verified, created_at, updated_at
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        db.prepare(`
+        await db.prepare(`
           UPDATE attendance_corrections SET
             status = 'approved',
             reviewed_by = ?,
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
           WHERE id = ?
         `).run(user.userId, now, notes || 'Disetujui oleh HRD', id);
       } else {
-        db.prepare(`
+        await db.prepare(`
           UPDATE attendance_corrections SET
             status = 'rejected',
             reviewed_by = ?,
@@ -93,9 +93,9 @@ export async function POST(req: NextRequest) {
         `).run(user.userId, now, notes || 'Ditolak oleh HRD', id);
       }
 
-      db.exec('COMMIT;');
+      await db.exec('COMMIT;');
     } catch (txErr) {
-      db.exec('ROLLBACK;');
+      await db.exec('ROLLBACK;');
       throw txErr;
     }
 

@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getDb();
-    const leaveReq = db.prepare(`
+    const leaveReq = await db.prepare(`
       SELECT lr.*, lt.name as leave_type_name, lt.deducts_leave_balance, e.user_id as emp_user_id, e.name as emp_name
       FROM leave_requests lr
       JOIN leave_types lt ON lr.leave_type_id = lt.id
@@ -37,10 +37,10 @@ export async function POST(req: NextRequest) {
     const now = new Date().toISOString();
     const currentYear = new Date().getFullYear();
 
-    db.exec('BEGIN TRANSACTION;');
+    await db.exec('BEGIN TRANSACTION;');
     try {
       if (action === 'approve') {
-        db.prepare(`
+        await db.prepare(`
           UPDATE leave_requests SET
             status = 'approved',
             approved_by = ?,
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
         // Deduct from balance if applicable
         if (leaveReq.deducts_leave_balance === 1) {
-          const balance = db.prepare(`
+          const balance = await db.prepare(`
             SELECT * FROM leave_balances WHERE employee_id = ? AND year = ?
           `).get(leaveReq.employee_id, currentYear) as any;
 
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
             const newPending = Math.max(0, balance.pending_days - leaveReq.total_days);
             const newUsed = balance.used_days + leaveReq.total_days;
             const newRemaining = balance.allocated_days - newUsed - newPending;
-            db.prepare(`
+            await db.prepare(`
               UPDATE leave_balances SET
                 used_days = ?,
                 pending_days = ?,
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
         }
       } else {
         // Reject
-        db.prepare(`
+        await db.prepare(`
           UPDATE leave_requests SET
             status = 'rejected',
             approved_by = ?,
@@ -82,14 +82,14 @@ export async function POST(req: NextRequest) {
 
         // Restore pending balance if applicable
         if (leaveReq.deducts_leave_balance === 1) {
-          const balance = db.prepare(`
+          const balance = await db.prepare(`
             SELECT * FROM leave_balances WHERE employee_id = ? AND year = ?
           `).get(leaveReq.employee_id, currentYear) as any;
 
           if (balance) {
             const newPending = Math.max(0, balance.pending_days - leaveReq.total_days);
             const newRemaining = balance.allocated_days - balance.used_days - newPending;
-            db.prepare(`
+            await db.prepare(`
               UPDATE leave_balances SET
                 pending_days = ?,
                 remaining_days = ?,
@@ -100,9 +100,9 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      db.exec('COMMIT;');
+      await db.exec('COMMIT;');
     } catch (txErr) {
-      db.exec('ROLLBACK;');
+      await db.exec('ROLLBACK;');
       throw txErr;
     }
 

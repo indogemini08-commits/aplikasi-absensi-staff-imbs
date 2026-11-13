@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const nowISO = new Date().toISOString();
 
     // 1. Check existing record
-    const record = db.prepare(`
+    const record = await db.prepare(`
       SELECT * FROM attendance_records
       WHERE employee_id = ? AND date = ?
     `).get(user.employeeId, today) as any;
@@ -57,11 +57,11 @@ export async function POST(req: NextRequest) {
     // 2. Target work location
     let targetLocation = null;
     if (locationId) {
-      targetLocation = db.prepare(`SELECT * FROM work_locations WHERE id = ? AND is_active = 1`).get(locationId) as any;
+      targetLocation = await db.prepare(`SELECT * FROM work_locations WHERE id = ? AND is_active = 1`).get(locationId) as any;
     }
 
     if (!targetLocation) {
-      const allowedLocations = db.prepare(`SELECT * FROM work_locations WHERE is_active = 1`).all() as any[];
+      const allowedLocations = await db.prepare(`SELECT * FROM work_locations WHERE is_active = 1`).all() as any[];
       if (allowedLocations.length === 0) {
         return NextResponse.json({ error: 'Tidak ada lokasi kerja aktif yang terdaftar.' }, { status: 400 });
       }
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Check today's department schedule end time
-    const empDept = db.prepare(`
+    const empDept = await db.prepare(`
       SELECT e.id, d.end_time, d.daily_schedules
       FROM employees e
       JOIN departments d ON e.department_id = d.id
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
     const clockOutStatus = isEarly ? 'pulang_cepat' : 'normal';
 
     // 5. Update attendance record
-    db.prepare(`
+    await db.prepare(`
       UPDATE attendance_records SET
         clock_out_time = ?,
         clock_out_latitude = ?,

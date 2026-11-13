@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const currentDayName = getIndonesianDayName(today);
 
     // 1. Get employee department schedule (auto-inherited)
-    const empDept = db.prepare(`
+    const empDept = await db.prepare(`
       SELECT e.id, e.name, e.department_id,
              d.name as department_name, d.code as department_code,
              d.start_time, d.end_time, d.grace_period_minutes,
@@ -56,10 +56,10 @@ export async function GET(req: NextRequest) {
     const todayBreakEnd = todayConfig?.isActive ? todayConfig.breakEnd : empDept?.break_end;
 
     // 2. Check if today is a holiday
-    const holiday = db.prepare(`SELECT * FROM holidays WHERE date = ?`).get(today) as any;
+    const holiday = await db.prepare(`SELECT * FROM holidays WHERE date = ?`).get(today) as any;
 
     // 3. Check approved leave for today
-    const leaveToday = db.prepare(`
+    const leaveToday = await db.prepare(`
       SELECT lr.*, lt.name as leave_type_name
       FROM leave_requests lr
       JOIN leave_types lt ON lr.leave_type_id = lt.id
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
     `).get(user.employeeId, today) as any;
 
     // 4. Get today's attendance record
-    const attendance = db.prepare(`
+    const attendance = await db.prepare(`
       SELECT a.*, l1.name as in_location_name, l2.name as out_location_name
       FROM attendance_records a
       LEFT JOIN work_locations l1 ON a.clock_in_location_id = l1.id
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
     let lateReason = null;
     let pendingLateReason = false;
     if (attendance && attendance.clock_in_status === 'terlambat') {
-      lateReason = db.prepare(`
+      lateReason = await db.prepare(`
         SELECT * FROM late_reasons WHERE attendance_id = ?
       `).get(attendance.id) as any;
       if (!lateReason) {
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 6. Get allowed work locations for this employee
-    let allowedLocations = db.prepare(`
+    let allowedLocations = await db.prepare(`
       SELECT wl.*
       FROM employee_allowed_locations eal
       JOIN work_locations wl ON eal.location_id = wl.id
@@ -97,13 +97,13 @@ export async function GET(req: NextRequest) {
 
     // If no specific restrictions, give all active work locations
     if (allowedLocations.length === 0) {
-      allowedLocations = db.prepare(`
+      allowedLocations = await db.prepare(`
         SELECT * FROM work_locations WHERE is_active = 1
       `).all() as any[];
     }
 
     // 7. Get app settings (grace period, selfie requirement, max gps accuracy)
-    const settingsRows = db.prepare(`SELECT key, value FROM app_settings`).all() as { key: string; value: string }[];
+    const settingsRows = await db.prepare(`SELECT key, value FROM app_settings`).all() as { key: string; value: string }[];
     const settings = settingsRows.reduce((acc, curr) => {
       acc[curr.key] = curr.value;
       return acc;

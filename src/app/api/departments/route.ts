@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     }
 
     const db = getDb();
-    const departments = db.prepare(`
+    const departments = await db.prepare(`
       SELECT d.*,
              (SELECT count(*) FROM employees e WHERE e.department_id = d.id AND e.is_active = 1) as employee_count
       FROM departments d
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     const trimmedName = name.trim();
 
     // Check duplicate code or name
-    const existing = db.prepare(`SELECT id FROM departments WHERE UPPER(code) = ? OR LOWER(name) = ?`).get(trimmedCode, trimmedName.toLowerCase());
+    const existing = await db.prepare(`SELECT id FROM departments WHERE UPPER(code) = ? OR LOWER(name) = ?`).get(trimmedCode, trimmedName.toLowerCase());
     if (existing) {
       return NextResponse.json(
         { error: `Departemen dengan kode ${trimmedCode} atau nama "${trimmedName}" sudah ada.` },
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
     const newId = `dept-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const grace = gracePeriodMinutes !== undefined && gracePeriodMinutes !== null ? parseInt(gracePeriodMinutes, 10) : 10;
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO departments (
         id, name, code, description, manager_name,
         start_time, end_time, grace_period_minutes,
@@ -201,7 +201,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const db = getDb();
-    const current = db.prepare(`SELECT * FROM departments WHERE id = ?`).get(id) as any;
+    const current = await db.prepare(`SELECT * FROM departments WHERE id = ?`).get(id) as any;
     if (!current) {
       return NextResponse.json({ error: 'Departemen tidak ditemukan' }, { status: 404 });
     }
@@ -222,7 +222,7 @@ export async function PUT(req: NextRequest) {
 
     const grace = gracePeriodMinutes !== undefined && gracePeriodMinutes !== null ? parseInt(gracePeriodMinutes, 10) : (current.grace_period_minutes ?? 10);
 
-    db.prepare(`
+    await db.prepare(`
       UPDATE departments SET
         name = COALESCE(?, name),
         code = COALESCE(?, code),
@@ -308,7 +308,7 @@ export async function DELETE(req: NextRequest) {
 
     // Check if any target department contains active employees
     const placeholders = idsToDelete.map(() => '?').join(',');
-    const activeStaff = db.prepare(`
+    const activeStaff = await db.prepare(`
       SELECT d.name as department_name, count(e.id) as staff_count
       FROM departments d
       JOIN employees e ON e.department_id = d.id
@@ -327,9 +327,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Perform deletion
-    const deletedDepts = db.prepare(`SELECT id, name, code FROM departments WHERE id IN (${placeholders})`).all(...idsToDelete) as any[];
+    const deletedDepts = await db.prepare(`SELECT id, name, code FROM departments WHERE id IN (${placeholders})`).all(...idsToDelete) as any[];
 
-    db.prepare(`DELETE FROM departments WHERE id IN (${placeholders})`).run(...idsToDelete);
+    await db.prepare(`DELETE FROM departments WHERE id IN (${placeholders})`).run(...idsToDelete);
 
     recordAuditLog({
       userId: user.userId,

@@ -43,3 +43,6 @@ yarn-error.log*
 data/*.db-wal
 data/*.db-shm
 data/*.db-journal
+
+.vercel
+.env*

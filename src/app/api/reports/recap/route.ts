@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     const db = getDb();
 
     // 1. Fetch real institution settings from database
-    const settingsRows = db.prepare('SELECT key, value FROM app_settings').all() as { key: string; value: string }[];
+    const settingsRows = await db.prepare('SELECT key, value FROM app_settings').all() as { key: string; value: string }[];
     const settings: Record<string, string> = {};
     for (const s of settingsRows) {
       settings[s.key] = s.value;
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
     }
 
     query += ` ORDER BY a.date DESC, e.name ASC`;
-    const records = db.prepare(query).all(...params) as any[];
+    const records = await db.prepare(query).all(...params) as any[];
 
     // Calculate aggregated overall statistics
     let totalHadir = 0;
@@ -147,7 +147,7 @@ export async function GET(req: NextRequest) {
 
     // Sort order: by numeric portion of NIP (IMBS-001 ... IMBS-022)
     empQuery += ` ORDER BY CAST(SUBSTR(e.nip, 6) AS INTEGER) ASC, e.name ASC`;
-    const activeEmployees = db.prepare(empQuery).all(...empParams) as any[];
+    const activeEmployees = await db.prepare(empQuery).all(...empParams) as any[];
 
     // Index attendance records by employee_id
     const empRecordsMap = new Map<string, any[]>();
@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Query approved leave requests in date range for all employees
-    const allApprovedLeaves = db.prepare(`
+    const allApprovedLeaves = await db.prepare(`
       SELECT employee_id, start_date, end_date, total_days
       FROM leave_requests
       WHERE status = 'approved'

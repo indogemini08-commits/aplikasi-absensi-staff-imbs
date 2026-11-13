@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     const db = getDb();
-    const locations = db.prepare(`SELECT * FROM work_locations ORDER BY created_at ASC`).all();
+    const locations = await db.prepare(`SELECT * FROM work_locations ORDER BY created_at ASC`).all();
     return NextResponse.json({ locations });
   } catch (err: any) {
     console.error('Locations GET error:', err);
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const now = new Date().toISOString();
     const radius = radiusMeters ? parseInt(radiusMeters, 10) : 100;
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO work_locations (id, name, address, latitude, longitude, radius_meters, is_active, created_at)
       VALUES (?, ?, ?, ?, ?, ?, 1, ?)
     `).run(id, name, address || '', latitude, longitude, radius, now);
@@ -73,7 +73,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const db = getDb();
-    const current = db.prepare(`SELECT * FROM work_locations WHERE id = ?`).get(id) as any;
+    const current = await db.prepare(`SELECT * FROM work_locations WHERE id = ?`).get(id) as any;
     if (!current) {
       return NextResponse.json({ error: 'Lokasi tidak ditemukan' }, { status: 404 });
     }
@@ -81,7 +81,7 @@ export async function PUT(req: NextRequest) {
     const radius = radiusMeters !== undefined ? parseInt(radiusMeters, 10) : current.radius_meters;
     const active = isActive !== undefined ? (isActive ? 1 : 0) : current.is_active;
 
-    db.prepare(`
+    await db.prepare(`
       UPDATE work_locations SET
         name = COALESCE(?, name),
         address = COALESCE(?, address),
@@ -147,13 +147,13 @@ export async function DELETE(req: NextRequest) {
     }
 
     const db = getDb();
-    const current = db.prepare(`SELECT * FROM work_locations WHERE id = ?`).get(idToDelete) as any;
+    const current = await db.prepare(`SELECT * FROM work_locations WHERE id = ?`).get(idToDelete) as any;
     if (!current) {
       return NextResponse.json({ error: 'Lokasi kerja tidak ditemukan' }, { status: 404 });
     }
 
     // Safety check: ensure at least 1 work location remains
-    const totalCount = db.prepare(`SELECT count(*) as count FROM work_locations WHERE is_active = 1`).get() as any;
+    const totalCount = await db.prepare(`SELECT count(*) as count FROM work_locations WHERE is_active = 1`).get() as any;
     if (totalCount.count <= 1) {
       return NextResponse.json(
         { error: 'Sistem harus memiliki sekurang-kurangnya satu lokasi kerja aktif untuk acuan geofencing absensi.' },
@@ -161,21 +161,21 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    db.exec('BEGIN TRANSACTION;');
+    await db.exec('BEGIN TRANSACTION;');
     try {
       // 1. Clear foreign key references in attendance_records
-      db.prepare(`UPDATE attendance_records SET clock_in_location_id = NULL WHERE clock_in_location_id = ?`).run(idToDelete);
-      db.prepare(`UPDATE attendance_records SET clock_out_location_id = NULL WHERE clock_out_location_id = ?`).run(idToDelete);
+      await db.prepare(`UPDATE attendance_records SET clock_in_location_id = NULL WHERE clock_in_location_id = ?`).run(idToDelete);
+      await db.prepare(`UPDATE attendance_records SET clock_out_location_id = NULL WHERE clock_out_location_id = ?`).run(idToDelete);
 
       // 2. Remove from employee_allowed_locations
-      db.prepare(`DELETE FROM employee_allowed_locations WHERE location_id = ?`).run(idToDelete);
+      await db.prepare(`DELETE FROM employee_allowed_locations WHERE location_id = ?`).run(idToDelete);
 
       // 3. Delete from work_locations
-      db.prepare(`DELETE FROM work_locations WHERE id = ?`).run(idToDelete);
+      await db.prepare(`DELETE FROM work_locations WHERE id = ?`).run(idToDelete);
 
-      db.exec('COMMIT;');
+      await db.exec('COMMIT;');
     } catch (txErr) {
-      db.exec('ROLLBACK;');
+      await db.exec('ROLLBACK;');
       throw txErr;
     }
 

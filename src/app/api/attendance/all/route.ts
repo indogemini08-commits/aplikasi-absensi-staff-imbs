@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
 
     query += ` ORDER BY a.date DESC, a.clock_in_time DESC`;
 
-    const records = db.prepare(query).all(...params);
+    const records = await db.prepare(query).all(...params);
 
     return NextResponse.json({ records });
   } catch (err: any) {
@@ -97,14 +97,14 @@ export async function PUT(req: NextRequest) {
     }
 
     const db = getDb();
-    const current = db.prepare(`SELECT * FROM attendance_records WHERE id = ?`).get(id) as any;
+    const current = await db.prepare(`SELECT * FROM attendance_records WHERE id = ?`).get(id) as any;
     if (!current) {
       return NextResponse.json({ error: 'Data absensi tidak ditemukan' }, { status: 404 });
     }
 
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await db.prepare(`
       UPDATE attendance_records SET
         clock_in_time = ?,
         clock_out_time = ?,

@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     }
 
     query += ` ORDER BY e.name ASC`;
-    const balances = db.prepare(query).all(...params);
+    const balances = await db.prepare(query).all(...params);
 
     return NextResponse.json({ balances, year });
   } catch (err: any) {
@@ -53,7 +53,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const db = getDb();
-    const current = db.prepare(`SELECT * FROM leave_balances WHERE id = ?`).get(id) as any;
+    const current = await db.prepare(`SELECT * FROM leave_balances WHERE id = ?`).get(id) as any;
     if (!current) {
       return NextResponse.json({ error: 'Data saldo cuti tidak ditemukan' }, { status: 404 });
     }
@@ -61,7 +61,7 @@ export async function PUT(req: NextRequest) {
     const newRemaining = allocatedDays - current.used_days - current.pending_days;
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await db.prepare(`
       UPDATE leave_balances SET
         allocated_days = ?,
         remaining_days = ?,

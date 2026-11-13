@@ -1,6 +1,6 @@
 import { getDb } from './db';
 
-export function createNotification({
+export async function createNotification({
   userId,
   title,
   message,
@@ -18,7 +18,7 @@ export function createNotification({
     const id = `notif-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO notifications (id, user_id, title, message, type, reference_id, is_read, created_at)
       VALUES (?, ?, ?, ?, ?, ?, 0, ?)
     `).run(id, userId, title, message, type, referenceId || null, now);
@@ -30,7 +30,7 @@ export function createNotification({
 /**
  * Sends notification to all admin users.
  */
-export function notifyAdmins({
+export async function notifyAdmins({
   title,
   message,
   type = 'system',
@@ -43,9 +43,9 @@ export function notifyAdmins({
 }) {
   try {
     const db = getDb();
-    const admins = db.prepare(`SELECT id FROM users WHERE role IN ('admin', 'superadmin') AND is_active = 1`).all() as { id: string }[];
+    const admins = (await db.prepare(`SELECT id FROM users WHERE role IN ('admin', 'superadmin') AND is_active = 1`).all()) as { id: string }[];
     for (const a of admins) {
-      createNotification({
+      await createNotification({
         userId: a.id,
         title,
         message,
@@ -57,4 +57,3 @@ export function notifyAdmins({
     console.error('Failed to notify admins:', err);
   }
 }
-

@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
   const db = getDb();
   // Get unread notification count
-  const unreadNotif = db.prepare(`
+  const unreadNotif = await db.prepare(`
     SELECT count(*) as count FROM notifications WHERE user_id = ? AND is_read = 0
   `).get(user.userId) as { count: number };
 

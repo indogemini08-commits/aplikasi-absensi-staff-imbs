@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     const dayName = getIndonesianDayName(dateParam);
 
     // Check holiday for that date
-    const holiday = db.prepare(`SELECT * FROM holidays WHERE date = ?`).get(dateParam) as any;
+    const holiday = await db.prepare(`SELECT * FROM holidays WHERE date = ?`).get(dateParam) as any;
 
     // Fetch all active employees with department schedule
     let empQuery = `
@@ -45,13 +45,13 @@ export async function GET(req: NextRequest) {
     }
 
     empQuery += ` ORDER BY d.name ASC, e.name ASC`;
-    const employees = db.prepare(empQuery).all(...empParams) as any[];
+    const employees = await db.prepare(empQuery).all(...empParams) as any[];
 
     // Default shift for fallback
-    const defaultShift = db.prepare(`SELECT * FROM shift_templates WHERE is_default = 1 LIMIT 1`).get() as any;
+    const defaultShift = await db.prepare(`SELECT * FROM shift_templates WHERE is_default = 1 LIMIT 1`).get() as any;
 
     // Fetch all attendances for that date
-    const attendances = db.prepare(`
+    const attendances = await db.prepare(`
       SELECT a.*, l.name as location_name
       FROM attendance_records a
       LEFT JOIN work_locations l ON a.clock_in_location_id = l.id
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch all approved leaves covering that date
-    const leaves = db.prepare(`
+    const leaves = await db.prepare(`
       SELECT lr.*, lt.code, lt.name as leave_name
       FROM leave_requests lr
       JOIN leave_types lt ON lr.leave_type_id = lt.id

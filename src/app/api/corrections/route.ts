@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
     }
 
     query += ` ORDER BY ac.created_at DESC`;
-    const corrections = db.prepare(query).all(...params);
+    const corrections = await db.prepare(query).all(...params);
 
     return NextResponse.json({ corrections });
   } catch (err: any) {
@@ -62,14 +62,14 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getDb();
-    const existingAtt = db.prepare(`
+    const existingAtt = await db.prepare(`
       SELECT id FROM attendance_records WHERE employee_id = ? AND date = ?
     `).get(user.employeeId, date) as any;
 
     const id = `corr-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO attendance_corrections (
         id, employee_id, attendance_id, date, correction_type,
         corrected_clock_in, corrected_clock_out, reason, proof_attachment, status, created_at

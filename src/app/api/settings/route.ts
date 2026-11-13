@@ -6,7 +6,7 @@ import { recordAuditLog } from '@/lib/audit';
 export async function GET(req: NextRequest) {
   try {
     const db = getDb();
-    const rows = db.prepare(`SELECT key, value, description FROM app_settings`).all() as any[];
+    const rows = await db.prepare(`SELECT key, value, description FROM app_settings`).all() as any[];
     const settings = rows.reduce((acc, curr) => {
       acc[curr.key] = curr.value;
       return acc;
@@ -33,13 +33,13 @@ export async function PUT(req: NextRequest) {
     }
 
     const db = getDb();
-    const updateStmt = db.prepare(`
+    const updateStmt = await db.prepare(`
       INSERT INTO app_settings (key, value) VALUES (?, ?)
       ON CONFLICT(key) DO UPDATE SET value = excluded.value
     `);
 
     for (const [key, value] of Object.entries(settings)) {
-      updateStmt.run(key, String(value));
+      await updateStmt.run(key, String(value));
     }
 
     recordAuditLog({

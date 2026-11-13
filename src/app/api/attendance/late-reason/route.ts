@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getDb();
-    const attendance = db.prepare(`
+    const attendance = await db.prepare(`
       SELECT * FROM attendance_records WHERE id = ? AND employee_id = ?
     `).get(attendanceId, user.employeeId) as any;
 
@@ -33,16 +33,16 @@ export async function POST(req: NextRequest) {
     }
 
     const now = new Date().toISOString();
-    const existingReason = db.prepare(`SELECT id FROM late_reasons WHERE attendance_id = ?`).get(attendanceId) as any;
+    const existingReason = await db.prepare(`SELECT id FROM late_reasons WHERE attendance_id = ?`).get(attendanceId) as any;
 
     if (existingReason) {
-      db.prepare(`
+      await db.prepare(`
         UPDATE late_reasons SET reason = ?, submitted_at = ?, status = 'pending'
         WHERE id = ?
       `).run(reason.trim(), now, existingReason.id);
     } else {
       const id = `lr-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO late_reasons (id, attendance_id, employee_id, reason, submitted_at, status)
         VALUES (?, ?, ?, ?, ?, 'pending')
       `).run(id, attendanceId, user.employeeId, reason.trim(), now);
@@ -94,7 +94,7 @@ export async function PUT(req: NextRequest) {
     const db = getDb();
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await db.prepare(`
       UPDATE late_reasons SET
         status = ?,
         reviewed_by = ?,

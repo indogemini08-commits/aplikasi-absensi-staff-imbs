@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const nowISO = new Date().toISOString();
 
     // 2. Prevent duplicate clock in
-    const existing = db.prepare(`
+    const existing = await db.prepare(`
       SELECT id, clock_in_time FROM attendance_records
       WHERE employee_id = ? AND date = ?
     `).get(user.employeeId, today) as any;
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Settings & GPS Accuracy check
-    const settingsRows = db.prepare(`SELECT key, value FROM app_settings`).all() as { key: string; value: string }[];
+    const settingsRows = await db.prepare(`SELECT key, value FROM app_settings`).all() as { key: string; value: string }[];
     const settings = settingsRows.reduce((acc, curr) => {
       acc[curr.key] = curr.value;
       return acc;
@@ -71,12 +71,12 @@ export async function POST(req: NextRequest) {
     // 4. Fetch work location
     let targetLocation = null;
     if (locationId) {
-      targetLocation = db.prepare(`SELECT * FROM work_locations WHERE id = ? AND is_active = 1`).get(locationId) as any;
+      targetLocation = await db.prepare(`SELECT * FROM work_locations WHERE id = ? AND is_active = 1`).get(locationId) as any;
     }
 
     if (!targetLocation) {
       // Find nearest active location among employee's allowed locations
-      const allowedLocations = db.prepare(`
+      const allowedLocations = await db.prepare(`
         SELECT wl.* FROM work_locations wl
         WHERE wl.is_active = 1
       `).all() as any[];
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 6. Check Department Schedule for today and calculate lateness
-    const empDept = db.prepare(`
+    const empDept = await db.prepare(`
       SELECT e.id, e.name, e.department_id,
              d.name as department_name, d.start_time, d.end_time, d.grace_period_minutes,
              d.work_days, d.daily_schedules
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
     const attendanceId = existing ? existing.id : `att-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
 
     if (existing) {
-      db.prepare(`
+      await db.prepare(`
         UPDATE attendance_records SET
           clock_in_time = ?,
           clock_in_latitude = ?,
@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
         attendanceId
       );
     } else {
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO attendance_records (
           id, employee_id, date, clock_in_time, clock_in_latitude, clock_in_longitude,
           clock_in_accuracy, clock_in_distance_meters, clock_in_location_id, clock_in_photo,

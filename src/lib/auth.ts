@@ -78,7 +78,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
     if (!session) return null;
 
     const db = getDb();
-    const userRow = db.prepare(`
+    const userRow = (await db.prepare(`
       SELECT u.id as user_id, u.username, u.role, u.is_active,
              e.id as employee_id, e.nip, e.name, e.department_id, e.position,
              d.name as department_name
@@ -86,7 +86,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
       LEFT JOIN employees e ON u.id = e.user_id
       LEFT JOIN departments d ON e.department_id = d.id
       WHERE u.id = ? AND u.is_active = 1
-    `).get(session.userId) as any;
+    `).get(session.userId)) as any;
 
     if (!userRow) return null;
 

@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getDb();
-    const user = db.prepare(`
+    const user = await db.prepare(`
       SELECT u.id, u.username, u.email, u.password_hash, u.role, u.is_active,
              e.id as employee_id, e.nip, e.name, e.department_id, e.position,
              d.name as department_name

@@ -1,6 +1,6 @@
 import { getDb } from './db';
 
-export function recordAuditLog({
+export async function recordAuditLog({
   userId,
   userName,
   action,
@@ -23,7 +23,7 @@ export function recordAuditLog({
     const now = new Date().toISOString();
     const detailsStr = typeof details === 'object' ? JSON.stringify(details) : (details || '');
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO audit_logs (id, user_id, user_name, action, entity_type, entity_id, details, ip_address, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(id, userId || null, userName, action, entityType, entityId || null, detailsStr, ipAddress, now);
@@ -31,4 +31,3 @@ export function recordAuditLog({
     console.error('Failed to record audit log:', err);
   }
 }
-

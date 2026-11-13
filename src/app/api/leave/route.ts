@@ -51,15 +51,15 @@ export async function GET(req: NextRequest) {
 
     query += ` ORDER BY lr.created_at DESC`;
 
-    const requests = db.prepare(query).all(...params) as any[];
+    const requests = await db.prepare(query).all(...params) as any[];
 
     // Fetch leave types
-    const leaveTypes = db.prepare(`SELECT * FROM leave_types ORDER BY name ASC`).all();
+    const leaveTypes = await db.prepare(`SELECT * FROM leave_types ORDER BY name ASC`).all();
 
     // Fetch employee's balance
     let balance = null;
     if (user.employeeId) {
-      balance = db.prepare(`
+      balance = await db.prepare(`
         SELECT * FROM leave_balances WHERE employee_id = ? AND year = ?
       `).get(user.employeeId, new Date().getFullYear()) as any;
     }
@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
     const db = getDb();
 
     // 1. Check leave type
-    const leaveType = db.prepare(`SELECT * FROM leave_types WHERE id = ?`).get(leaveTypeId) as any;
+    const leaveType = await db.prepare(`SELECT * FROM leave_types WHERE id = ?`).get(leaveTypeId) as any;
     if (!leaveType) {
       return NextResponse.json({ error: 'Jenis izin/cuti tidak ditemukan.' }, { status: 404 });
     }
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Collision check with existing active leaves
-    const collision = db.prepare(`
+    const collision = await db.prepare(`
       SELECT id, start_date, end_date FROM leave_requests
       WHERE employee_id = ? AND status IN ('pending', 'approved')
         AND (
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
     let balance = null;
     const currentYear = new Date().getFullYear();
     if (leaveType.deducts_leave_balance === 1) {
-      balance = db.prepare(`
+      balance = await db.prepare(`
         SELECT * FROM leave_balances WHERE employee_id = ? AND year = ?
       `).get(user.employeeId, currentYear) as any;
 
@@ -166,9 +166,9 @@ export async function POST(req: NextRequest) {
     const requestId = `leave-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const now = new Date().toISOString();
 
-    db.exec('BEGIN TRANSACTION;');
+    await db.exec('BEGIN TRANSACTION;');
     try {
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO leave_requests (
           id, employee_id, leave_type_id, start_date, end_date, total_days,
           reason, attachment_url, emergency_contact, status, created_at
@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
       if (leaveType.deducts_leave_balance === 1 && balance) {
         const newPending = balance.pending_days + totalDays;
         const newRemaining = balance.allocated_days - balance.used_days - newPending;
-        db.prepare(`
+        await db.prepare(`
           UPDATE leave_balances SET
             pending_days = ?,
             remaining_days = ?,
@@ -201,9 +201,9 @@ export async function POST(req: NextRequest) {
         `).run(newPending, newRemaining, now, balance.id);
       }
 
-      db.exec('COMMIT;');
+      await db.exec('COMMIT;');
     } catch (txErr) {
-      db.exec('ROLLBACK;');
+      await db.exec('ROLLBACK;');
       throw txErr;
     }
 

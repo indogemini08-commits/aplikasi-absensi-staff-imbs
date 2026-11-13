@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
     }
 
     const db = getDb();
-    const shifts = db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all();
-    const schedules = db.prepare(`
+    const shifts = await db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all();
+    const schedules = await db.prepare(`
       SELECT es.*, e.name as employee_name, e.nip, d.name as department_name, st.name as shift_name
       FROM employee_schedules es
       JOIN employees e ON es.employee_id = e.id
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       }
 
       const id = `shift-${Date.now()}`;
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO shift_templates (id, name, start_time, end_time, grace_period_minutes, break_start, break_end, work_days, is_default)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
       `).run(
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       }
 
       const id = `sch-${Date.now()}`;
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO employee_schedules (id, employee_id, shift_id, effective_date, end_date, notes, created_at)
         VALUES (?, ?, ?, ?, NULL, ?, ?)
       `).run(id, employeeId, shiftId, effectiveDate, notes || null, now);
