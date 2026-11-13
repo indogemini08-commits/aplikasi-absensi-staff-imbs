@@ -48,19 +48,21 @@ export default function AdminDashboardPage() {
       }
       setUser(userData.user);
 
-      // Fetch today's schedule board
-      const boardRes = await fetch('/api/schedules/board');
-      const boardJson = await boardRes.json();
+      // Fetch dashboard metrics in parallel
+      const [boardRes, leaveRes, auditRes] = await Promise.all([
+        fetch('/api/schedules/board'),
+        fetch('/api/leave?status=pending'),
+        fetch('/api/audit-logs'),
+      ]);
+
+      const [boardJson, leaveJson, auditJson] = await Promise.all([
+        boardRes.ok ? boardRes.json() : Promise.resolve({ stats: {}, items: [] }),
+        leaveRes.ok ? leaveRes.json() : Promise.resolve({ requests: [] }),
+        auditRes.ok ? auditRes.json() : Promise.resolve({ logs: [] }),
+      ]);
+
       setBoardData(boardJson);
-
-      // Fetch pending leaves
-      const leaveRes = await fetch('/api/leave?status=pending');
-      const leaveJson = await leaveRes.json();
       setPendingLeaves(leaveJson.requests || []);
-
-      // Fetch recent audit logs
-      const auditRes = await fetch('/api/audit-logs');
-      const auditJson = await auditRes.json();
       setAuditLogs(auditJson.logs?.slice(0, 5) || []);
 
       setLoading(false);

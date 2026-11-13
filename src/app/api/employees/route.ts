@@ -44,21 +44,26 @@ export async function GET(req: NextRequest) {
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    query += ` ORDER BY CAST(SUBSTR(e.nip, 6) AS INTEGER) ASC, e.name ASC`;
-    const rawEmployees = await db.prepare(query).all(...params) as any[];
+    query += ` ORDER BY e.nip ASC, e.name ASC`;
+
+    // Fetch employees, departments, and shifts concurrently in parallel
+    const [rawEmployees, rawDepartments, shifts] = await Promise.all([
+      db.prepare(query).all(...params) as Promise<any[]>,
+      db.prepare(`SELECT * FROM departments ORDER BY name ASC`).all() as Promise<any[]>,
+      db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all() as Promise<any[]>,
+    ]);
+
     const employees = rawEmployees.map((emp) => ({
       ...emp,
       dept_work_days: typeof emp.dept_work_days === 'string' ? JSON.parse(emp.dept_work_days) : (emp.dept_work_days || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']),
       dept_daily_schedules: typeof emp.dept_daily_schedules === 'string' ? JSON.parse(emp.dept_daily_schedules) : emp.dept_daily_schedules,
     }));
 
-    const rawDepartments = await db.prepare(`SELECT * FROM departments ORDER BY name ASC`).all() as any[];
     const departments = rawDepartments.map((d) => ({
       ...d,
       work_days: typeof d.work_days === 'string' ? JSON.parse(d.work_days) : (d.work_days || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']),
       daily_schedules: typeof d.daily_schedules === 'string' ? JSON.parse(d.daily_schedules) : d.daily_schedules,
     }));
-    const shifts = await db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all();
 
     return NextResponse.json({ employees, departments, shifts });
   } catch (err: any) {
@@ -398,54 +403,62 @@ export async function DELETE(req: NextRequest) {
     }
 
     const db = getDb();
-    let deletedCount = 0;
-    const deletedNames: string[] = [];
 
-    for (const empId of idsToDelete) {
-      const emp = await db.prepare(`SELECT * FROM employees WHERE id = ?`).get(empId) as any;
-      if (!emp) continue;
+    // 1. Fetch info of employees being deleted in a single query
+    const placeholders = idsToDelete.map(() => '?').join(',');
+    const emps = await db.prepare(`SELECT id, name, user_id FROM employees WHERE id IN (${placeholders})`).all(...idsToDelete) as any[];
 
-      deletedNames.push(emp.name);
-
-      // 1. Delete dependent attendance data
-      const attRecords = await db.prepare(`SELECT id FROM attendance_records WHERE employee_id = ?`).all(empId) as any[];
-      for (const att of attRecords) {
-        await db.prepare(`DELETE FROM late_reasons WHERE attendance_id = ?`).run(att.id);
-      }
-      await db.prepare(`DELETE FROM attendance_records WHERE employee_id = ?`).run(empId);
-      await db.prepare(`DELETE FROM attendance_corrections WHERE employee_id = ?`).run(empId);
-
-      // 2. Delete leave data
-      await db.prepare(`DELETE FROM leave_requests WHERE employee_id = ?`).run(empId);
-      await db.prepare(`DELETE FROM leave_balances WHERE employee_id = ?`).run(empId);
-
-      // 3. Delete schedules & locations
-      await db.prepare(`DELETE FROM employee_allowed_locations WHERE employee_id = ?`).run(empId);
-      await db.prepare(`DELETE FROM employee_schedules WHERE employee_id = ?`).run(empId);
-
-      // 4. Delete user account notifications and user
-      if (emp.user_id) {
-        await db.prepare(`DELETE FROM notifications WHERE user_id = ?`).run(emp.user_id);
-      }
-
-      // 5. Delete employee record
-      await db.prepare(`DELETE FROM employees WHERE id = ?`).run(empId);
-
-      // 6. Delete user account
-      if (emp.user_id) {
-        await db.prepare(`DELETE FROM users WHERE id = ?`).run(emp.user_id);
-      }
-
-      deletedCount++;
+    if (emps.length === 0) {
+      return NextResponse.json({
+        success: true,
+        message: 'Tidak ada data pegawai yang cocok untuk dihapus.',
+        deletedCount: 0,
+      });
     }
+
+    const foundEmpIds = emps.map((e) => e.id);
+    const foundUserIds = emps.map((e) => e.user_id).filter(Boolean);
+    const deletedNames = emps.map((e) => e.name);
+    const empInList = foundEmpIds.map(() => '?').join(',');
+
+    // 2. Batch delete dependent attendance data (3 fast queries)
+    await db.prepare(`
+      DELETE FROM late_reasons 
+      WHERE attendance_id IN (
+        SELECT id FROM attendance_records WHERE employee_id IN (${empInList})
+      )
+    `).run(...foundEmpIds);
+
+    await db.prepare(`DELETE FROM attendance_records WHERE employee_id IN (${empInList})`).run(...foundEmpIds);
+    await db.prepare(`DELETE FROM attendance_corrections WHERE employee_id IN (${empInList})`).run(...foundEmpIds);
+
+    // 3. Batch delete leave requests & balances (2 fast queries)
+    await db.prepare(`DELETE FROM leave_requests WHERE employee_id IN (${empInList})`).run(...foundEmpIds);
+    await db.prepare(`DELETE FROM leave_balances WHERE employee_id IN (${empInList})`).run(...foundEmpIds);
+
+    // 4. Batch delete allowed locations & schedules (2 fast queries)
+    await db.prepare(`DELETE FROM employee_allowed_locations WHERE employee_id IN (${empInList})`).run(...foundEmpIds);
+    await db.prepare(`DELETE FROM employee_schedules WHERE employee_id IN (${empInList})`).run(...foundEmpIds);
+
+    // 5. Batch delete notifications & users (2 fast queries)
+    if (foundUserIds.length > 0) {
+      const userInList = foundUserIds.map(() => '?').join(',');
+      await db.prepare(`DELETE FROM notifications WHERE user_id IN (${userInList})`).run(...foundUserIds);
+      await db.prepare(`DELETE FROM users WHERE id IN (${userInList})`).run(...foundUserIds);
+    }
+
+    // 6. Batch delete employees (1 fast query)
+    await db.prepare(`DELETE FROM employees WHERE id IN (${empInList})`).run(...foundEmpIds);
+
+    const deletedCount = foundEmpIds.length;
 
     recordAuditLog({
       userId: user.userId,
       userName: user.name || user.username,
       action: 'DELETE_EMPLOYEES',
       entityType: 'employee',
-      entityId: idsToDelete.join(','),
-      details: { count: deletedCount, names: deletedNames, ids: idsToDelete },
+      entityId: foundEmpIds.join(','),
+      details: { count: deletedCount, names: deletedNames, ids: foundEmpIds },
       ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
     });
 

@@ -69,16 +69,35 @@ function getSqlite() {
   return sqliteInstance;
 }
 
+// Resilient query timeout wrapper (4000ms max)
+async function withTimeout<T>(promise: Promise<T>, ms: number = 4000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Database operation timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 export async function query<T = any>(sqlText: string, params: any[] = []): Promise<T[]> {
   const client = getNeon();
   const flatParams = params.flat();
   if (client) {
-    const converted = convertSqlToPostgres(sqlText);
-    if (!converted) return [];
-    return (await client.query(converted, flatParams)) as T[];
+    try {
+      const converted = convertSqlToPostgres(sqlText);
+      if (!converted) return [];
+      return (await withTimeout(client.query(converted, flatParams), 4000)) as T[];
+    } catch (err: any) {
+      console.warn('Neon query error/timeout, falling back to local SQLite:', err?.message || err);
+    }
   }
-  const sqlite = getSqlite();
-  return sqlite.prepare(sqlText).all(...flatParams) as T[];
+  try {
+    const sqlite = getSqlite();
+    return sqlite.prepare(sqlText).all(...flatParams) as T[];
+  } catch (err: any) {
+    console.error('SQLite query error:', err?.message || err);
+    return [];
+  }
 }
 
 export async function queryOne<T = any>(sqlText: string, params: any[] = []): Promise<T | null> {
@@ -89,14 +108,32 @@ export async function queryOne<T = any>(sqlText: string, params: any[] = []): Pr
 export async function execute(sqlText: string, params: any[] = []): Promise<any> {
   const client = getNeon();
   const flatParams = params.flat();
+  let neonSuccess = false;
+
   if (client) {
-    const converted = convertSqlToPostgres(sqlText);
-    if (!converted) return { changes: 0 };
-    await client.query(converted, flatParams);
+    try {
+      const converted = convertSqlToPostgres(sqlText);
+      if (converted) {
+        await withTimeout(client.query(converted, flatParams), 5000);
+        neonSuccess = true;
+      }
+    } catch (err: any) {
+      console.warn('Neon execute error/timeout, falling back to local SQLite:', err?.message || err);
+    }
+  }
+
+  // Dual-write or fallback execution in local SQLite
+  try {
+    const sqlite = getSqlite();
+    const result = sqlite.prepare(sqlText).run(...flatParams);
+    return result;
+  } catch (err: any) {
+    if (!neonSuccess) {
+      console.error('All database executions failed:', err?.message || err);
+      throw err;
+    }
     return { changes: 1 };
   }
-  const sqlite = getSqlite();
-  return sqlite.prepare(sqlText).run(...flatParams);
 }
 
 export function getDb(): any {
@@ -111,10 +148,17 @@ export function getDb(): any {
     exec: async (sqlText: string) => {
       const client = getNeon();
       if (client) {
-        const converted = convertSqlToPostgres(sqlText);
-        if (converted) await client.query(converted);
-      } else {
+        try {
+          const converted = convertSqlToPostgres(sqlText);
+          if (converted) await withTimeout(client.query(converted), 5000);
+        } catch (err: any) {
+          console.warn('Neon exec error/timeout:', err?.message || err);
+        }
+      }
+      try {
         getSqlite().exec(sqlText);
+      } catch (err: any) {
+        console.error('SQLite exec error:', err?.message || err);
       }
     },
   };

@@ -65,6 +65,17 @@ export function verifySessionToken(token: string): (UserSession & { exp: number 
   }
 }
 
+// In-memory user session cache for high performance (TTL: 30 seconds)
+const userSessionCache = new Map<string, { session: UserSession; expiresAt: number }>();
+
+export function invalidateUserSession(userId?: string) {
+  if (userId) {
+    userSessionCache.delete(userId);
+  } else {
+    userSessionCache.clear();
+  }
+}
+
 /**
  * Retrieves the currently logged-in user from the session cookie and database.
  */
@@ -76,6 +87,12 @@ export async function getCurrentUser(): Promise<UserSession | null> {
 
     const session = verifySessionToken(token);
     if (!session) return null;
+
+    // Check fast in-memory cache first
+    const cached = userSessionCache.get(session.userId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.session;
+    }
 
     const db = getDb();
     const userRow = (await db.prepare(`
@@ -90,7 +107,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
 
     if (!userRow) return null;
 
-    return {
+    const userSession: UserSession = {
       userId: userRow.user_id,
       username: userRow.username,
       role: userRow.role,
@@ -101,6 +118,14 @@ export async function getCurrentUser(): Promise<UserSession | null> {
       departmentName: userRow.department_name,
       position: userRow.position,
     };
+
+    // Cache for 30 seconds
+    userSessionCache.set(session.userId, {
+      session: userSession,
+      expiresAt: Date.now() + 30_000,
+    });
+
+    return userSession;
   } catch (err) {
     console.error('Failed to get current user:', err);
     return null;

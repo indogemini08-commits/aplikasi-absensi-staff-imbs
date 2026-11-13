@@ -75,7 +75,11 @@ export default function PegawaiPage() {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const userRes = await fetch('/api/auth/me');
+      const [userRes, empRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/employees'),
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
@@ -87,8 +91,7 @@ export default function PegawaiPage() {
       }
       setUser(userData.user);
 
-      const res = await fetch('/api/employees');
-      const data = await res.json();
+      const data = empRes.ok ? await empRes.json() : { employees: [], departments: [], shifts: [] };
       setEmployees(data.employees || []);
       setDepartments(data.departments || []);
       setShifts(data.shifts || []);

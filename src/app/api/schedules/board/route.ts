@@ -20,10 +20,7 @@ export async function GET(req: NextRequest) {
     const currentWIBTime = getWIBTimeString();
     const dayName = getIndonesianDayName(dateParam);
 
-    // Check holiday for that date
-    const holiday = await db.prepare(`SELECT * FROM holidays WHERE date = ?`).get(dateParam) as any;
-
-    // Fetch all active employees with department schedule
+    // Build employees query
     let empQuery = `
       SELECT e.id as employee_id, e.nip, e.name, e.gender, e.position,
              d.id as department_id, d.name as department_name, d.code as department_code,
@@ -44,32 +41,31 @@ export async function GET(req: NextRequest) {
       empParams.push(`%${search}%`, `%${search}%`);
     }
 
-    empQuery += ` ORDER BY CAST(SUBSTR(e.nip, 6) AS INTEGER) ASC, e.name ASC`;
-    const employees = await db.prepare(empQuery).all(...empParams) as any[];
+    empQuery += ` ORDER BY e.nip ASC, e.name ASC`;
 
-    // Default shift for fallback
-    const defaultShift = await db.prepare(`SELECT * FROM shift_templates WHERE is_default = 1 LIMIT 1`).get() as any;
-
-    // Fetch all attendances for that date
-    const attendances = await db.prepare(`
-      SELECT a.*, l.name as location_name
-      FROM attendance_records a
-      LEFT JOIN work_locations l ON a.clock_in_location_id = l.id
-      WHERE a.date = ?
-    `).all(dateParam) as any[];
+    // Execute all independent queries concurrently in parallel
+    const [holiday, employees, defaultShift, attendances, leaves] = await Promise.all([
+      db.prepare(`SELECT * FROM holidays WHERE date = ?`).get(dateParam) as Promise<any>,
+      db.prepare(empQuery).all(...empParams) as Promise<any[]>,
+      db.prepare(`SELECT * FROM shift_templates WHERE is_default = 1 LIMIT 1`).get() as Promise<any>,
+      db.prepare(`
+        SELECT a.*, l.name as location_name
+        FROM attendance_records a
+        LEFT JOIN work_locations l ON a.clock_in_location_id = l.id
+        WHERE a.date = ?
+      `).all(dateParam) as Promise<any[]>,
+      db.prepare(`
+        SELECT lr.*, lt.code, lt.name as leave_name
+        FROM leave_requests lr
+        JOIN leave_types lt ON lr.leave_type_id = lt.id
+        WHERE lr.status = 'approved' AND ? BETWEEN lr.start_date AND lr.end_date
+      `).all(dateParam) as Promise<any[]>,
+    ]);
 
     const attMap = new Map();
     for (const a of attendances) {
       attMap.set(a.employee_id, a);
     }
-
-    // Fetch all approved leaves covering that date
-    const leaves = await db.prepare(`
-      SELECT lr.*, lt.code, lt.name as leave_name
-      FROM leave_requests lr
-      JOIN leave_types lt ON lr.leave_type_id = lt.id
-      WHERE lr.status = 'approved' AND ? BETWEEN lr.start_date AND lr.end_date
-    `).all(dateParam) as any[];
 
     const leaveMap = new Map();
     for (const l of leaves) {

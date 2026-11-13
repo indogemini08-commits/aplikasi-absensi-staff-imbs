@@ -32,14 +32,22 @@ export default function Navbar({ user }: NavbarProps) {
     updateTime();
     const interval = setInterval(updateTime, 1000);
 
-    fetch('/api/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.settings?.logo_app) {
-          setAppLogo(data.settings.logo_app);
-        }
-      })
-      .catch(() => {});
+    const cachedLogo = typeof window !== 'undefined' ? sessionStorage.getItem('imbs_app_logo') : null;
+    if (cachedLogo) {
+      setAppLogo(cachedLogo);
+    } else {
+      fetch('/api/settings')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.settings?.logo_app) {
+            setAppLogo(data.settings.logo_app);
+            try {
+              sessionStorage.setItem('imbs_app_logo', data.settings.logo_app);
+            } catch {}
+          }
+        })
+        .catch(() => {});
+    }
 
     return () => clearInterval(interval);
   }, []);
