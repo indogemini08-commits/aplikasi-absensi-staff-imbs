@@ -22,8 +22,21 @@ export default function AdminSaldoCutiPage() {
     }
     return null;
   });
-  const [balances, setBalances] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [balances, setBalances] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_saldo_cuti');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_saldo_cuti');
+    }
+    return true;
+  });
   const [search, setSearch] = useState('');
 
   // Edit modal
@@ -37,7 +50,6 @@ export default function AdminSaldoCutiPage() {
   }, []);
 
   const fetchBalances = async () => {
-    setLoading(true);
     try {
       const [userRes, res] = await Promise.all([
         fetch('/api/auth/me'),
@@ -49,7 +61,7 @@ export default function AdminSaldoCutiPage() {
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
@@ -59,7 +71,13 @@ export default function AdminSaldoCutiPage() {
       } catch {}
 
       const data = res.ok ? await res.json() : { balances: [] };
-      setBalances(data.balances || []);
+      const balanceList = data.balances || [];
+      setBalances(balanceList);
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('imbs_saldo_cuti', JSON.stringify(balanceList));
+        } catch {}
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

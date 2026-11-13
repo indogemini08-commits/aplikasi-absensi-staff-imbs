@@ -32,11 +32,40 @@ export default function AdminDashboardPage() {
     }
     return null;
   });
-  const [boardData, setBoardData] = useState<any>(null);
-  const [pendingLeaves, setPendingLeaves] = useState<any[]>([]);
+  const [boardData, setBoardData] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_admin_board');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [pendingLeaves, setPendingLeaves] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_admin_leaves');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
   const [pendingLates, setPendingLates] = useState<any[]>([]);
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [auditLogs, setAuditLogs] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_admin_logs');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_admin_board');
+    }
+    return true;
+  });
 
   useEffect(() => {
     fetchAdminDashboard();
@@ -44,24 +73,29 @@ export default function AdminDashboardPage() {
 
   const fetchAdminDashboard = async () => {
     try {
-      const userRes = await fetch('/api/auth/me');
+      // Fetch user session and all dashboard metrics simultaneously in parallel
+      const [userRes, boardRes, leaveRes, auditRes] = await Promise.all([
+        fetch('/api/auth/me'),
+        fetch('/api/schedules/board'),
+        fetch('/api/leave?status=pending'),
+        fetch('/api/audit-logs'),
+      ]);
+
       if (!userRes.ok) {
         router.push('/login');
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
-
-      // Fetch dashboard metrics in parallel
-      const [boardRes, leaveRes, auditRes] = await Promise.all([
-        fetch('/api/schedules/board'),
-        fetch('/api/leave?status=pending'),
-        fetch('/api/audit-logs'),
-      ]);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+        } catch {}
+      }
 
       const [boardJson, leaveJson, auditJson] = await Promise.all([
         boardRes.ok ? boardRes.json() : Promise.resolve({ stats: {}, items: [] }),
@@ -72,6 +106,14 @@ export default function AdminDashboardPage() {
       setBoardData(boardJson);
       setPendingLeaves(leaveJson.requests || []);
       setAuditLogs(auditJson.logs?.slice(0, 5) || []);
+
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('imbs_admin_board', JSON.stringify(boardJson));
+          sessionStorage.setItem('imbs_admin_leaves', JSON.stringify(leaveJson.requests || []));
+          sessionStorage.setItem('imbs_admin_logs', JSON.stringify(auditJson.logs?.slice(0, 5) || []));
+        } catch {}
+      }
 
       setLoading(false);
     } catch (e) {

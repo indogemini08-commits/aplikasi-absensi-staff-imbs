@@ -34,10 +34,39 @@ export default function StaffDashboard() {
     }
     return null;
   });
-  const [statusData, setStatusData] = useState<any>(null);
-  const [historySummary, setHistorySummary] = useState<any>(null);
-  const [recentRecords, setRecentRecords] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [statusData, setStatusData] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_staff_status');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [historySummary, setHistorySummary] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_staff_history_summary');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [recentRecords, setRecentRecords] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_staff_recent_records');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_staff_status');
+    }
+    return true;
+  });
 
   useEffect(() => {
     fetchDashboardData();
@@ -64,12 +93,24 @@ export default function StaffDashboard() {
       if (statusRes.ok) {
         const statusJson = await statusRes.json();
         setStatusData(statusJson);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_staff_status', JSON.stringify(statusJson));
+          } catch {}
+        }
       }
 
       if (histRes.ok) {
         const histJson = await histRes.json();
         setHistorySummary(histJson.summary);
-        setRecentRecords(histJson.records?.slice(0, 5) || []);
+        const recs = histJson.records?.slice(0, 5) || [];
+        setRecentRecords(recs);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_staff_history_summary', JSON.stringify(histJson.summary));
+            sessionStorage.setItem('imbs_staff_recent_records', JSON.stringify(recs));
+          } catch {}
+        }
       }
 
       setLoading(false);

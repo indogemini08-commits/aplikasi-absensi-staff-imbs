@@ -55,16 +55,22 @@ function getNeon() {
   return neonClient;
 }
 
-// Lazy SQLite client (local fallback if no DATABASE_URL)
+// Lazy SQLite client (local fallback if no DATABASE_URL or during local dev)
 let sqliteInstance: any = null;
 function getSqlite() {
   if (!sqliteInstance) {
-    const { DatabaseSync } = require('node:sqlite');
-    const dbDir = path.join(process.cwd(), 'data');
-    if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
-    const dbPath = path.join(dbDir, 'absensi.db');
-    sqliteInstance = new DatabaseSync(dbPath);
-    sqliteInstance.exec('PRAGMA foreign_keys = ON;');
+    try {
+      const { DatabaseSync } = require('node:sqlite');
+      const isVercel = !!process.env.VERCEL;
+      const dbDir = isVercel ? '/tmp' : path.join(process.cwd(), 'data');
+      if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+      const dbPath = path.join(dbDir, 'absensi.db');
+      sqliteInstance = new DatabaseSync(dbPath);
+      sqliteInstance.exec('PRAGMA foreign_keys = ON;');
+    } catch (e) {
+      console.warn('SQLite init warning (normal in serverless if Neon is connected):', e);
+      return null;
+    }
   }
   return sqliteInstance;
 }
@@ -93,6 +99,7 @@ export async function query<T = any>(sqlText: string, params: any[] = []): Promi
   }
   try {
     const sqlite = getSqlite();
+    if (!sqlite) return [];
     return sqlite.prepare(sqlText).all(...flatParams) as T[];
   } catch (err: any) {
     console.error('SQLite query error:', err?.message || err);
@@ -122,11 +129,19 @@ export async function execute(sqlText: string, params: any[] = []): Promise<any>
     }
   }
 
-  // Dual-write or fallback execution in local SQLite
+  // On Vercel, Neon PostgreSQL is the primary persistent store
+  if (process.env.VERCEL && neonSuccess) {
+    return { changes: 1 };
+  }
+
+  // Dual-write or fallback execution in local SQLite for localhost
   try {
     const sqlite = getSqlite();
-    const result = sqlite.prepare(sqlText).run(...flatParams);
-    return result;
+    if (sqlite) {
+      const result = sqlite.prepare(sqlText).run(...flatParams);
+      return result;
+    }
+    return { changes: neonSuccess ? 1 : 0 };
   } catch (err: any) {
     if (!neonSuccess) {
       console.error('All database executions failed:', err?.message || err);

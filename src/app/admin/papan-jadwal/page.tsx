@@ -36,22 +36,42 @@ function PapanJadwalContent() {
     }
     return null;
   });
-  const [boardData, setBoardData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [boardData, setBoardData] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_papan_jadwal');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_papan_jadwal');
+    }
+    return true;
+  });
 
   // Filters
   const [selectedDate, setSelectedDate] = useState(searchParams.get('date') || getWIBDateString());
   const [selectedDept, setSelectedDept] = useState(searchParams.get('departmentId') || '');
   const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || '');
   const [searchQuery, setSearchQuery] = useState('');
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_departments');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
 
   useEffect(() => {
     fetchBoardData();
   }, [selectedDate, selectedDept, selectedStatus]);
 
   const fetchBoardData = async () => {
-    setLoading(true);
     try {
       let url = `/api/schedules/board?date=${selectedDate}`;
       if (selectedDept) url += `&departmentId=${selectedDept}`;
@@ -79,12 +99,23 @@ function PapanJadwalContent() {
 
       if (empRes.ok) {
         const empData = await empRes.json();
-        setDepartments(empData.departments || []);
+        const depts = empData.departments || [];
+        setDepartments(depts);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_departments', JSON.stringify(depts));
+          } catch {}
+        }
       }
 
       if (boardRes.ok) {
         const boardJson = await boardRes.json();
         setBoardData(boardJson);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_papan_jadwal', JSON.stringify(boardJson));
+          } catch {}
+        }
       }
 
       setLoading(false);
