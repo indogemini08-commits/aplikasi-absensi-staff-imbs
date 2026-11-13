@@ -282,6 +282,32 @@ export default function PengaturanPage() {
       }
 
       toast.success(data.message || 'Pengaturan sistem & identitas lembaga berhasil disimpan');
+      if (typeof window !== 'undefined') {
+        try {
+          if (logoApp) sessionStorage.setItem('imbs_app_logo', logoApp);
+          sessionStorage.setItem('imbs_app_org_name', orgName);
+          sessionStorage.setItem('imbs_app_foundation_name', foundationName);
+          sessionStorage.setItem('imbs_settings_data', JSON.stringify({
+            gov_name: govName,
+            foundation_name: foundationName,
+            organization_name: orgName,
+            organization_address: orgAddress,
+            organization_email: orgEmail,
+            organization_phone: orgPhone,
+            headmaster_name: headmasterName,
+            tu_name: tuName,
+            logo_app: logoApp,
+            logo_institution: logoInstitution,
+            logo_foundation: logoFoundation,
+            grace_period_minutes: gracePeriod,
+            require_selfie: requireSelfie ? '1' : '0',
+            max_gps_accuracy_meters: maxGpsAccuracy,
+            default_radius_meters: defaultRadius,
+            timezone: 'Asia/Jakarta',
+          }));
+          window.dispatchEvent(new Event('imbs_settings_updated'));
+        } catch {}
+      }
       setIsSaving(false);
     } catch (e) {
       toast.error('Gagal menyimpan pengaturan');

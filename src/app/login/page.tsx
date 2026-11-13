@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, User, Eye, EyeOff, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ToastContext';
@@ -13,6 +13,47 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [appLogo, setAppLogo] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('imbs_app_logo') || '';
+      } catch {}
+    }
+    return '';
+  });
+  const [orgName, setOrgName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('imbs_app_org_name') || 'IMAM MUZANI BOARDING SCHOOL';
+      } catch {}
+    }
+    return 'IMAM MUZANI BOARDING SCHOOL';
+  });
+  const [foundationName, setFoundationName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('imbs_app_foundation_name') || 'YAYASAN SABILUL HUDA NAMBO';
+      } catch {}
+    }
+    return 'YAYASAN SABILUL HUDA NAMBO';
+  });
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.settings) {
+          const s = data.settings;
+          const logo = s.logo_app || s.logo_institution || '';
+          const name = s.organization_name || 'IMAM MUZANI BOARDING SCHOOL';
+          const foundation = s.foundation_name || 'YAYASAN SABILUL HUDA NAMBO';
+          if (logo) setAppLogo(logo);
+          if (name) setOrgName(name);
+          if (foundation) setFoundationName(foundation);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,18 +105,28 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo and Institution Title */}
         <div className="text-center mb-6">
-          <div className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-emerald-400 text-white items-center justify-center font-extrabold text-2xl shadow-xl shadow-emerald-500/25 mb-3 ring-4 ring-emerald-500/10">
-            IM
+          <div className="inline-flex h-16 max-w-[140px] px-3 py-1.5 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700/80 items-center justify-center mb-3 ring-4 ring-emerald-500/10">
+            {appLogo ? (
+              <img
+                src={appLogo}
+                alt={orgName || 'Logo IMBS'}
+                className="max-h-full w-auto object-contain"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-emerald-400 text-white flex items-center justify-center font-extrabold text-xl shadow-xs">
+                IMBS
+              </div>
+            )}
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
             Absensi Staff IMBS
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Insan Mandiri Boarding School & Institute
+          <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 uppercase tracking-wider">
+            {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
           </p>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 mt-2.5">
             <ShieldCheck className="w-3.5 h-3.5" />
-            Portal Presensi Resmi Berbasis GPS (WIB)
+            {foundationName ? `${foundationName} • Portal Presensi GPS` : 'Portal Presensi Resmi Berbasis GPS'}
           </div>
         </div>
 
@@ -197,7 +248,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-6">
-          &copy; 2026 Yayasan Insan Mandiri Boarding School. Hak Cipta Dilindungi.
+          &copy; 2026 {foundationName || 'YAYASAN SABILUL HUDA NAMBO'}. Hak Cipta Dilindungi.
         </p>
       </div>
     </div>

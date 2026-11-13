@@ -21,7 +21,30 @@ export default function Navbar({ user }: NavbarProps) {
   const pathname = usePathname();
   const [wibTime, setWibTime] = useState('');
   const [wibDate, setWibDate] = useState('');
-  const [appLogo, setAppLogo] = useState<string>('');
+  const [appLogo, setAppLogo] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('imbs_app_logo') || '';
+      } catch {}
+    }
+    return '';
+  });
+  const [orgName, setOrgName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('imbs_app_org_name') || 'IMAM MUZANI BOARDING SCHOOL';
+      } catch {}
+    }
+    return 'IMAM MUZANI BOARDING SCHOOL';
+  });
+  const [foundationName, setFoundationName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('imbs_app_foundation_name') || 'YAYASAN SABILUL HUDA NAMBO';
+      } catch {}
+    }
+    return 'YAYASAN SABILUL HUDA NAMBO';
+  });
 
   // Persistent user state: prioritize prop, fallback to localStorage cache
   const [currentUser, setCurrentUser] = useState<any>(() => {
@@ -60,24 +83,54 @@ export default function Navbar({ user }: NavbarProps) {
     updateTime();
     const interval = setInterval(updateTime, 1000);
 
-    const cachedLogo = typeof window !== 'undefined' ? sessionStorage.getItem('imbs_app_logo') : null;
-    if (cachedLogo) {
-      setAppLogo(cachedLogo);
-    } else {
+    // Fetch official identity and logos from system settings
+    const loadSettings = () => {
       fetch('/api/settings')
         .then((res) => res.json())
         .then((data) => {
-          if (data?.settings?.logo_app) {
-            setAppLogo(data.settings.logo_app);
+          if (data?.settings) {
+            const s = data.settings;
+            const logo = s.logo_app || s.logo_institution || '';
+            const name = s.organization_name || 'IMAM MUZANI BOARDING SCHOOL';
+            const foundation = s.foundation_name || 'YAYASAN SABILUL HUDA NAMBO';
+
+            if (logo) setAppLogo(logo);
+            if (name) setOrgName(name);
+            if (foundation) setFoundationName(foundation);
+
             try {
-              sessionStorage.setItem('imbs_app_logo', data.settings.logo_app);
+              if (logo) sessionStorage.setItem('imbs_app_logo', logo);
+              sessionStorage.setItem('imbs_app_org_name', name);
+              sessionStorage.setItem('imbs_app_foundation_name', foundation);
             } catch {}
           }
         })
         .catch(() => {});
-    }
+    };
 
-    return () => clearInterval(interval);
+    loadSettings();
+
+    // Listen for live settings changes from Pengaturan Sistem
+    const handleSettingsUpdate = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedLogo = sessionStorage.getItem('imbs_app_logo');
+          const cachedOrg = sessionStorage.getItem('imbs_app_org_name');
+          const cachedFound = sessionStorage.getItem('imbs_app_foundation_name');
+          if (cachedLogo) setAppLogo(cachedLogo);
+          if (cachedOrg) setOrgName(cachedOrg);
+          if (cachedFound) setFoundationName(cachedFound);
+        } catch {}
+      }
+      loadSettings();
+    };
+
+    window.addEventListener('imbs_settings_updated', handleSettingsUpdate);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('imbs_settings_updated', handleSettingsUpdate);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -97,29 +150,50 @@ export default function Navbar({ user }: NavbarProps) {
   return (
     <header className="sticky top-0 z-40 w-full glass-card border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs">
       <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Left: Brand & Title */}
-        <div className="flex items-center gap-3">
-          {appLogo ? (
-            <div className="h-9 w-auto max-w-[120px] rounded-xl flex items-center justify-center overflow-hidden">
-              <img src={appLogo} alt="Logo" className="max-h-9 max-w-full object-contain" />
-            </div>
-          ) : (
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white flex items-center justify-center font-bold text-base shadow-md shadow-emerald-500/20">
-              IM
-            </div>
-          )}
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 bg-clip-text text-transparent">
+        {/* Left: Brand & Institution Identity */}
+        <div
+          onClick={() => router.push(currentUser?.role === 'staff' ? '/dashboard' : '/admin')}
+          className="flex items-center gap-3 cursor-pointer group select-none transition-transform active:scale-[0.99]"
+          title="Beranda Presensi IMBS"
+        >
+          {/* Logo Frame */}
+          <div className="h-10 sm:h-11 min-w-[2.75rem] max-w-[5.5rem] px-1.5 py-1 rounded-xl bg-white dark:bg-slate-800/95 shadow-xs border border-slate-200/90 dark:border-slate-700/80 flex items-center justify-center shrink-0 overflow-hidden ring-1 ring-slate-900/5 dark:ring-white/5 transition-all group-hover:border-emerald-500/50 group-hover:shadow-sm">
+            {appLogo ? (
+              <img
+                src={appLogo}
+                alt={orgName || 'Logo IMBS'}
+                className="max-h-full w-auto object-contain filter drop-shadow-2xs"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 text-white flex items-center justify-center font-black text-xs shadow-xs">
                 IMBS
+              </div>
+            )}
+          </div>
+
+          {/* Title & Organization Subtitle */}
+          <div className="flex flex-col justify-center min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans truncate max-w-[170px] sm:max-w-xs md:max-w-md">
+                {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs leading-none shrink-0">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
                 Presensi Staff
               </span>
             </div>
-            <p className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 leading-none">
-              Insan Mandiri Boarding School & Institute
-            </p>
+            <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+              <span className="font-medium text-slate-500 dark:text-slate-400 truncate max-w-[220px] sm:max-w-sm md:max-w-lg">
+                {foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
+              </span>
+              <span className="hidden xl:inline text-slate-300 dark:text-slate-600">•</span>
+              <span className="hidden xl:inline text-slate-400 dark:text-slate-500 text-[10px]">
+                Portal Presensi Resmi Berbasis GPS
+              </span>
+            </div>
           </div>
         </div>
 
