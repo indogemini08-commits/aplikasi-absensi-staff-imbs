@@ -70,3 +70,4 @@ const count = db.prepare('SELECT count(*) as c FROM audit_logs').get();
 console.log('Total audit logs now:', count.c);
 const logs = db.prepare('SELECT id, user_name, action, created_at FROM audit_logs ORDER BY created_at DESC LIMIT 10').all();
 console.log('Recent audit logs:', logs);
+

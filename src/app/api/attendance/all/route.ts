@@ -30,8 +30,8 @@ export async function GET(req: NextRequest) {
              lr.reason as late_reason,
              lr.status as late_reason_status
       FROM attendance_records a
-      JOIN employees e ON a.employee_id = e.id
-      JOIN departments d ON e.department_id = d.id
+      LEFT JOIN employees e ON a.employee_id = e.id
+      LEFT JOIN departments d ON e.department_id = d.id
       LEFT JOIN work_locations l1 ON a.clock_in_location_id = l1.id
       LEFT JOIN work_locations l2 ON a.clock_out_location_id = l2.id
       LEFT JOIN late_reasons lr ON a.id = lr.attendance_id

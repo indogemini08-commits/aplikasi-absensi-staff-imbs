@@ -22,3 +22,4 @@ function transformFile(filePath) {
 const testPath = 'src/app/api/settings/route.ts';
 const transformed = transformFile(testPath);
 console.log(transformed);
+

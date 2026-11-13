@@ -86,3 +86,4 @@ insertNotif.run(
 );
 
 console.log('Complete database purge successful! Database is now 100% clean real IMBS data.');
+

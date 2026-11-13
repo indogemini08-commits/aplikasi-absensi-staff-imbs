@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
              d.id as department_id, d.name as department_name, d.code as department_code,
              d.start_time, d.end_time, d.grace_period_minutes, d.work_days, d.daily_schedules
       FROM employees e
-      JOIN departments d ON e.department_id = d.id
+      LEFT JOIN departments d ON e.department_id = d.id
       WHERE e.is_active = 1
     `;
     const empParams: any[] = [];
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       empParams.push(`%${search}%`, `%${search}%`);
     }
 
-    empQuery += ` ORDER BY d.name ASC, e.name ASC`;
+    empQuery += ` ORDER BY CAST(SUBSTR(e.nip, 6) AS INTEGER) ASC, e.name ASC`;
     const employees = await db.prepare(empQuery).all(...empParams) as any[];
 
     // Default shift for fallback

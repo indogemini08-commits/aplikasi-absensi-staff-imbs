@@ -4,6 +4,46 @@ import { getDb } from '@/lib/db';
 import { recordAuditLog } from '@/lib/audit';
 import { notifyAdmins } from '@/lib/notify';
 
+export async function GET(req: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
+      return NextResponse.json({ error: 'Tidak memiliki otorisasi' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const filter = searchParams.get('filter'); // 'pending' | 'submitted' | 'all'
+
+    const db = getDb();
+    let query = `
+      SELECT lr.*,
+             e.name as employee_name, e.nip as employee_nip,
+             d.name as department_name,
+             a.date as attendance_date,
+             a.clock_in_time,
+             a.clock_in_minutes_late
+      FROM late_reasons lr
+      JOIN employees e ON lr.employee_id = e.id
+      JOIN departments d ON e.department_id = d.id
+      JOIN attendance_records a ON lr.attendance_id = a.id
+      WHERE 1=1
+    `;
+    const params: any[] = [];
+
+    if (filter === 'pending') {
+      query += ` AND lr.status = 'pending'`;
+    }
+
+    query += ` ORDER BY lr.submitted_at DESC`;
+    const reasons = await db.prepare(query).all(...params) as any[];
+
+    return NextResponse.json({ reasons });
+  } catch (err: any) {
+    console.error('Late reasons GET error:', err);
+    return NextResponse.json({ error: 'Gagal memuat alasan keterlambatan' }, { status: 500 });
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -94,14 +134,26 @@ export async function PUT(req: NextRequest) {
     const db = getDb();
     const now = new Date().toISOString();
 
-    await db.prepare(`
-      UPDATE late_reasons SET
-        status = ?,
-        reviewed_by = ?,
-        reviewed_at = ?,
-        admin_notes = ?
-      WHERE id = ?
-    `).run(status, user.userId, now, adminNotes || null, id);
+    const existing = await db.prepare(`SELECT * FROM late_reasons WHERE id = ? OR attendance_id = ?`).get(id, id) as any;
+    if (existing) {
+      await db.prepare(`
+        UPDATE late_reasons SET
+          status = ?,
+          reviewed_by = ?,
+          reviewed_at = ?,
+          admin_notes = ?
+        WHERE id = ?
+      `).run(status, user.userId, now, adminNotes || null, existing.id);
+    } else {
+      const att = await db.prepare(`SELECT * FROM attendance_records WHERE id = ?`).get(id) as any;
+      if (att) {
+        const newId = `lr-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+        await db.prepare(`
+          INSERT INTO late_reasons (id, attendance_id, employee_id, reason, submitted_at, status, reviewed_by, reviewed_at, admin_notes)
+          VALUES (?, ?, ?, 'Ditinjau Langsung oleh Admin', ?, ?, ?, ?, ?)
+        `).run(newId, att.id, att.employee_id, now, status, user.userId, now, adminNotes || null);
+      }
+    }
 
     // Audit log
     recordAuditLog({
@@ -123,4 +175,3 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'Gagal meninjau alasan keterlambatan' }, { status: 500 });
   }
 }
-

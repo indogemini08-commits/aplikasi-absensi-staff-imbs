@@ -25,3 +25,4 @@ console.log('Test 1:', convertSqlToPostgres('SELECT * FROM users WHERE id = ? AN
 console.log('Test 2:', convertSqlToPostgres("SELECT * FROM attendance WHERE strftime('%Y-%m', date) = ?"));
 console.log('Test 3:', convertSqlToPostgres('PRAGMA foreign_keys = ON;'));
 console.log('Test 4:', convertSqlToPostgres('INSERT OR IGNORE INTO leave_types (id, name) VALUES (?, ?)'));
+

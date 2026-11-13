@@ -25,8 +25,8 @@ export async function GET(req: NextRequest) {
              lb.remaining_days as leave_remaining,
              st.name as shift_name
       FROM employees e
-      JOIN departments d ON e.department_id = d.id
-      JOIN users u ON e.user_id = u.id
+      LEFT JOIN departments d ON e.department_id = d.id
+      LEFT JOIN users u ON e.user_id = u.id
       LEFT JOIN leave_balances lb ON e.id = lb.employee_id AND lb.year = ?
       LEFT JOIN employee_schedules es ON e.id = es.employee_id
       LEFT JOIN shift_templates st ON es.shift_id = st.id
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    query += ` ORDER BY e.name ASC`;
+    query += ` ORDER BY CAST(SUBSTR(e.nip, 6) AS INTEGER) ASC, e.name ASC`;
     const rawEmployees = await db.prepare(query).all(...params) as any[];
     const employees = rawEmployees.map((emp) => ({
       ...emp,

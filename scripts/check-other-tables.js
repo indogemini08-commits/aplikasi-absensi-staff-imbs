@@ -10,3 +10,4 @@ console.log(db.prepare('SELECT * FROM leave_requests').all());
 
 console.log('Late reasons:');
 console.log(db.prepare('SELECT * FROM late_reasons').all());
+

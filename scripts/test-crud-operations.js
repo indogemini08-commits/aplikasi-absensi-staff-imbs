@@ -70,3 +70,4 @@ if (deletedEmp) throw new Error('Emp delete failed');
 console.log('   ✓ Employee Deleted successfully!');
 
 console.log('=== All CRUD operations tested and working 100% normally! ===');
+

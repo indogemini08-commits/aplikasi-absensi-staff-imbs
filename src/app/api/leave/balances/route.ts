@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       params.push(user.employeeId);
     }
 
-    query += ` ORDER BY e.name ASC`;
+    query += ` ORDER BY CAST(SUBSTR(e.nip, 6) AS INTEGER) ASC, e.name ASC`;
     const balances = await db.prepare(query).all(...params);
 
     return NextResponse.json({ balances, year });

@@ -169,12 +169,27 @@ export default function AdminAbsensiMasterPage() {
                 onChange={(e) => setSelectedDate(e.target.value)}
                 className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500"
               />
+              <button
+                type="button"
+                onClick={() => {
+                  const todayStr = new Date().toISOString().split('T')[0];
+                  setSelectedDate(todayStr);
+                }}
+                className={`py-1.5 px-3 rounded-lg font-bold text-xs transition ${
+                  selectedDate === new Date().toISOString().split('T')[0]
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                }`}
+              >
+                Hari Ini
+              </button>
               {selectedDate && (
                 <button
+                  type="button"
                   onClick={() => setSelectedDate('')}
-                  className="text-xs text-slate-400 hover:text-slate-600 underline ml-1"
+                  className="py-1.5 px-3 rounded-lg font-bold text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition"
                 >
-                  Semua Tanggal
+                  Semua Riwayat
                 </button>
               )}
             </div>
