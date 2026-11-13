@@ -36,7 +36,12 @@ export default function ProfilPage() {
     }
     return null;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('imbs_user_session');
+    }
+    return true;
+  });
 
   useEffect(() => {
     fetchProfile();

@@ -59,8 +59,21 @@ export default function LokasiPage() {
     }
     return null;
   });
-  const [locations, setLocations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [locations, setLocations] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_locations_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_locations_list');
+    }
+    return true;
+  });
 
   // Modal form state
   const [showModal, setShowModal] = useState(false);
@@ -87,7 +100,6 @@ export default function LokasiPage() {
   }, []);
 
   const fetchLocations = async () => {
-    setLoading(true);
     try {
       const [userRes, res] = await Promise.all([
         fetch('/api/auth/me'),
@@ -99,17 +111,25 @@ export default function LokasiPage() {
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
-      try {
-        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
-      } catch {}
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+        } catch {}
+      }
 
       const data = res.ok ? await res.json() : { locations: [] };
-      setLocations(data.locations || []);
+      const locList = data.locations || [];
+      setLocations(locList);
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('imbs_locations_list', JSON.stringify(locList));
+        } catch {}
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

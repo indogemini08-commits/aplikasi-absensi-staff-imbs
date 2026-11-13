@@ -43,10 +43,39 @@ export default function PegawaiPage() {
     }
     return null;
   });
-  const [employees, setEmployees] = useState<any[]>([]);
-  const [departments, setDepartments] = useState<any[]>([]);
-  const [shifts, setShifts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [employees, setEmployees] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_pegawai_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [departments, setDepartments] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_departments_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [shifts, setShifts] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_shifts_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_pegawai_list');
+    }
+    return true;
+  });
   const [search, setSearch] = useState('');
 
   // Add / Edit Modal state
@@ -81,7 +110,6 @@ export default function PegawaiPage() {
   }, []);
 
   const fetchEmployees = async () => {
-    setLoading(true);
     try {
       const [userRes, empRes] = await Promise.all([
         fetch('/api/auth/me'),
@@ -93,21 +121,39 @@ export default function PegawaiPage() {
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+        } catch {}
+      }
 
       const data = empRes.ok ? await empRes.json() : { employees: [], departments: [], shifts: [] };
-      setEmployees(data.employees || []);
-      setDepartments(data.departments || []);
-      setShifts(data.shifts || []);
-      if (data.departments?.length > 0 && !departmentId) {
-        setDepartmentId(data.departments[0].id);
+      const emps = data.employees || [];
+      const depts = data.departments || [];
+      const shfs = data.shifts || [];
+
+      setEmployees(emps);
+      setDepartments(depts);
+      setShifts(shfs);
+
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('imbs_pegawai_list', JSON.stringify(emps));
+          sessionStorage.setItem('imbs_departments_list', JSON.stringify(depts));
+          sessionStorage.setItem('imbs_shifts_list', JSON.stringify(shfs));
+        } catch {}
       }
-      if (data.shifts?.length > 0 && !shiftId) {
-        setShiftId(data.shifts[0].id);
+
+      if (depts.length > 0 && !departmentId) {
+        setDepartmentId(depts[0].id);
+      }
+      if (shfs.length > 0 && !shiftId) {
+        setShiftId(shfs[0].id);
       }
       setLoading(false);
     } catch (e) {

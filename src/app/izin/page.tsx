@@ -37,10 +37,31 @@ export default function IzinPage() {
     }
     return null;
   });
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_staff_leaves');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
   const [leaveTypes, setLeaveTypes] = useState<any[]>([]);
-  const [balance, setBalance] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [balance, setBalance] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_staff_balance');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_staff_leaves');
+    }
+    return true;
+  });
 
   // Form modal state
   const [showModal, setShowModal] = useState(false);
@@ -74,9 +95,18 @@ export default function IzinPage() {
         localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
       }
       const data = await res.json();
-      setRequests(data.requests || []);
+      const reqList = data.requests || [];
+      setRequests(reqList);
       setLeaveTypes(data.leaveTypes || []);
       setBalance(data.balance || null);
+
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('imbs_staff_leaves', JSON.stringify(reqList));
+          sessionStorage.setItem('imbs_staff_balance', JSON.stringify(data.balance || null));
+        } catch {}
+      }
+
       if (data.leaveTypes && data.leaveTypes.length > 0) {
         setLeaveTypeId(data.leaveTypes[0].id);
       }

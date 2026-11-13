@@ -21,8 +21,21 @@ export default function AdminAuditLogPage() {
     }
     return null;
   });
-  const [logs, setLogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [logs, setLogs] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_audit_logs');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_audit_logs');
+    }
+    return true;
+  });
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -30,7 +43,6 @@ export default function AdminAuditLogPage() {
   }, []);
 
   const fetchLogs = async () => {
-    setLoading(true);
     try {
       const [userRes, logRes] = await Promise.all([
         fetch('/api/auth/me'),
@@ -53,7 +65,13 @@ export default function AdminAuditLogPage() {
 
       if (logRes.ok) {
         const data = await logRes.json();
-        setLogs(data.logs || []);
+        const logList = data.logs || [];
+        setLogs(logList);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_audit_logs', JSON.stringify(logList));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

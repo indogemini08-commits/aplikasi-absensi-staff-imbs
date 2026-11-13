@@ -64,9 +64,30 @@ export default function JadwalDepartemenPage() {
     }
     return null;
   });
-  const [departments, setDepartments] = useState<any[]>([]);
-  const [employees, setEmployees] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [departments, setDepartments] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_jadwal_depts');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [employees, setEmployees] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_jadwal_emps');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_jadwal_depts');
+    }
+    return true;
+  });
   const [selectedDeptFilter, setSelectedDeptFilter] = useState('ALL');
 
   // Selection state for deletion
@@ -97,7 +118,6 @@ export default function JadwalDepartemenPage() {
   }, []);
 
   const fetchData = async () => {
-    setLoading(true);
     try {
       const [userRes, deptRes, empRes] = await Promise.all([
         fetch('/api/auth/me'),
@@ -110,20 +130,31 @@ export default function JadwalDepartemenPage() {
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
-      try {
-        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
-      } catch {}
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+        } catch {}
+      }
 
       const deptData = deptRes.ok ? await deptRes.json() : { departments: [] };
-      setDepartments(deptData.departments || []);
+      const depts = deptData.departments || [];
+      setDepartments(depts);
 
       const empData = empRes.ok ? await empRes.json() : { employees: [] };
-      setEmployees(empData.employees || []);
+      const emps = empData.employees || [];
+      setEmployees(emps);
+
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('imbs_jadwal_depts', JSON.stringify(depts));
+          sessionStorage.setItem('imbs_jadwal_emps', JSON.stringify(emps));
+        } catch {}
+      }
 
       setSelectedIds([]);
       setLoading(false);

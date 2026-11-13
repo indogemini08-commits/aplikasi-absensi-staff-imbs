@@ -36,8 +36,21 @@ export default function AdminKeterlambatanPage() {
     return null;
   });
   const [activeTab, setActiveTab] = useState<TabMode>('pending');
-  const [records, setRecords] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_late_records');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_late_records');
+    }
+    return true;
+  });
   const [search, setSearch] = useState('');
 
   // Review Modal state
@@ -52,7 +65,6 @@ export default function AdminKeterlambatanPage() {
   }, [activeTab]);
 
   const fetchLateRecords = async (tab: TabMode) => {
-    setLoading(true);
     try {
       let dataUrl = '/api/attendance/late-reason?filter=pending';
       if (tab === 'submitted') {
@@ -71,20 +83,25 @@ export default function AdminKeterlambatanPage() {
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
-      try {
-        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
-      } catch {}
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+        } catch {}
+      }
 
       const data = res.ok ? await res.json() : {};
-      if (tab === 'pending' || tab === 'submitted') {
-        setRecords(data.reasons || []);
-      } else {
-        setRecords(data.records || []);
+      const list = (tab === 'pending' || tab === 'submitted') ? (data.reasons || []) : (data.records || []);
+      setRecords(list);
+
+      if (typeof window !== 'undefined' && tab === 'pending') {
+        try {
+          sessionStorage.setItem('imbs_late_records', JSON.stringify(list));
+        } catch {}
       }
       setLoading(false);
     } catch (e) {

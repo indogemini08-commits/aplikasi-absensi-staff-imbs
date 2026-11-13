@@ -23,9 +23,30 @@ export default function NotifikasiPage() {
     }
     return null;
   });
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_notifications');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [unreadCount, setUnreadCount] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_unread_count');
+        return cached ? Number(cached) : 0;
+      } catch {}
+    }
+    return 0;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_notifications');
+    }
+    return true;
+  });
 
   useEffect(() => {
     fetchNotifications();
@@ -50,8 +71,16 @@ export default function NotifikasiPage() {
 
       if (dataRes.ok) {
         const data = await dataRes.json();
-        setNotifications(data.notifications || []);
-        setUnreadCount(data.unreadCount || 0);
+        const notifs = data.notifications || [];
+        const count = data.unreadCount || 0;
+        setNotifications(notifs);
+        setUnreadCount(count);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_notifications', JSON.stringify(notifs));
+            sessionStorage.setItem('imbs_unread_count', String(count));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

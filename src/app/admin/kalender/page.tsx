@@ -25,8 +25,21 @@ export default function AdminKalenderPage() {
     }
     return null;
   });
-  const [holidays, setHolidays] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [holidays, setHolidays] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_holidays_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_holidays_list');
+    }
+    return true;
+  });
 
   // Form modal
   const [showModal, setShowModal] = useState(false);
@@ -41,7 +54,6 @@ export default function AdminKalenderPage() {
   }, []);
 
   const fetchHolidays = async () => {
-    setLoading(true);
     try {
       const [userRes, dataRes] = await Promise.all([
         fetch('/api/auth/me'),
@@ -64,7 +76,13 @@ export default function AdminKalenderPage() {
 
       if (dataRes.ok) {
         const data = await dataRes.json();
-        setHolidays(data.holidays || []);
+        const holList = data.holidays || [];
+        setHolidays(holList);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_holidays_list', JSON.stringify(holList));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

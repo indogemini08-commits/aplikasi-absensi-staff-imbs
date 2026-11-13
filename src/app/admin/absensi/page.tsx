@@ -33,8 +33,21 @@ export default function AdminAbsensiMasterPage() {
     }
     return null;
   });
-  const [records, setRecords] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_absensi_master');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_absensi_master');
+    }
+    return true;
+  });
 
   // Filters
   const [selectedDate, setSelectedDate] = useState('');
@@ -54,7 +67,6 @@ export default function AdminAbsensiMasterPage() {
   }, [selectedDate]);
 
   const fetchRecords = async () => {
-    setLoading(true);
     try {
       let url = '/api/attendance/all';
       if (selectedDate) url += `?date=${selectedDate}`;
@@ -69,17 +81,25 @@ export default function AdminAbsensiMasterPage() {
         return;
       }
       const userData = await userRes.json();
-      if (userData.user.role === 'staff') {
+      if (userData?.user?.role === 'staff') {
         router.push('/dashboard');
         return;
       }
       setUser(userData.user);
-      try {
-        localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
-      } catch {}
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('imbs_user_session', JSON.stringify(userData.user));
+        } catch {}
+      }
 
       const data = res.ok ? await res.json() : { records: [] };
-      setRecords(data.records || []);
+      const recList = data.records || [];
+      setRecords(recList);
+      if (typeof window !== 'undefined' && !selectedDate) {
+        try {
+          sessionStorage.setItem('imbs_absensi_master', JSON.stringify(recList));
+        } catch {}
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

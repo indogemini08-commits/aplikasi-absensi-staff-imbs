@@ -25,8 +25,21 @@ export default function KoreksiPage() {
     }
     return null;
   });
-  const [corrections, setCorrections] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [corrections, setCorrections] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_staff_corrections');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_staff_corrections');
+    }
+    return true;
+  });
 
   // Modal form state
   const [showModal, setShowModal] = useState(false);
@@ -60,7 +73,13 @@ export default function KoreksiPage() {
 
       if (dataRes.ok) {
         const data = await dataRes.json();
-        setCorrections(data.corrections || []);
+        const corrList = data.corrections || [];
+        setCorrections(corrList);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_staff_corrections', JSON.stringify(corrList));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

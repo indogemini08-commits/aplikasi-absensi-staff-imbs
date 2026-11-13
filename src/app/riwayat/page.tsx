@@ -36,9 +36,30 @@ export default function RiwayatPage() {
     }
     return null;
   });
-  const [records, setRecords] = useState<any[]>([]);
-  const [summary, setSummary] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_history_records');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [summary, setSummary] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_history_summary');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_history_records');
+    }
+    return true;
+  });
 
   // Month filter (default to current month YYYY-MM)
   const currentMonthStr = new Date().toISOString().substring(0, 7);
@@ -55,7 +76,6 @@ export default function RiwayatPage() {
   }, [selectedMonth]);
 
   const fetchHistory = async () => {
-    setLoading(true);
     try {
       const [userRes, dataRes] = await Promise.all([
         fetch('/api/auth/me'),
@@ -74,8 +94,15 @@ export default function RiwayatPage() {
 
       if (dataRes.ok) {
         const data = await dataRes.json();
-        setRecords(data.records || []);
+        const recList = data.records || [];
+        setRecords(recList);
         setSummary(data.summary || null);
+        if (typeof window !== 'undefined' && selectedMonth === currentMonthStr) {
+          try {
+            sessionStorage.setItem('imbs_history_records', JSON.stringify(recList));
+            sessionStorage.setItem('imbs_history_summary', JSON.stringify(data.summary || null));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

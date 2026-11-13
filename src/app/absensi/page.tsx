@@ -39,8 +39,21 @@ export default function AbsensiPage() {
     }
     return null;
   });
-  const [statusData, setStatusData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [statusData, setStatusData] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_staff_status');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_staff_status');
+    }
+    return true;
+  });
 
   // GPS state
   const [userCoord, setUserCoord] = useState<{ latitude: number; longitude: number } | null>(null);

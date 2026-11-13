@@ -46,3 +46,6 @@ data/*.db-journal
 
 .vercel
 .env*
+
+.vercel
+.env*

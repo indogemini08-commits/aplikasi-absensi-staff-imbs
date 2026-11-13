@@ -20,8 +20,21 @@ export default function KalenderPage() {
     }
     return null;
   });
-  const [holidays, setHolidays] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [holidays, setHolidays] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_holidays_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_holidays_list');
+    }
+    return true;
+  });
 
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -48,7 +61,13 @@ export default function KalenderPage() {
 
       if (holRes.ok) {
         const holData = await holRes.json();
-        setHolidays(holData.holidays || []);
+        const holList = holData.holidays || [];
+        setHolidays(holList);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_holidays_list', JSON.stringify(holList));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

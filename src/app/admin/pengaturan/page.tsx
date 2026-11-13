@@ -34,23 +34,116 @@ export default function PengaturanPage() {
     }
     return null;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_settings_data');
+    }
+    return true;
+  });
   const [isSaving, setIsSaving] = useState(false);
 
-  // Institution & Foundation Identity
-  const [govName, setGovName] = useState('PEMERINTAH DAERAH KABUPATEN BOGOR');
-  const [foundationName, setFoundationName] = useState('YAYASAN SABILUL HUDA NAMBO');
-  const [orgName, setOrgName] = useState('IMAM MUZANI BOARDING SCHOOL');
-  const [orgAddress, setOrgAddress] = useState('Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610');
-  const [orgEmail, setOrgEmail] = useState('imammuzanibs@gmail.com');
-  const [orgPhone, setOrgPhone] = useState('0852 8242 4628');
-  const [headmasterName, setHeadmasterName] = useState('Fauzan Azhiimaa, Lc');
-  const [tuName, setTuName] = useState('ALDRI WAHYUDI CHANDRA');
+  // Institution & Foundation Identity (Hydrated from cache if present)
+  const [govName, setGovName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).gov_name || 'PEMERINTAH DAERAH KABUPATEN BOGOR';
+      } catch {}
+    }
+    return 'PEMERINTAH DAERAH KABUPATEN BOGOR';
+  });
+  const [foundationName, setFoundationName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).foundation_name || 'YAYASAN SABILUL HUDA NAMBO';
+      } catch {}
+    }
+    return 'YAYASAN SABILUL HUDA NAMBO';
+  });
+  const [orgName, setOrgName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).organization_name || 'IMAM MUZANI BOARDING SCHOOL';
+      } catch {}
+    }
+    return 'IMAM MUZANI BOARDING SCHOOL';
+  });
+  const [orgAddress, setOrgAddress] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).organization_address || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610';
+      } catch {}
+    }
+    return 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610';
+  });
+  const [orgEmail, setOrgEmail] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).organization_email || 'imammuzanibs@gmail.com';
+      } catch {}
+    }
+    return 'imammuzanibs@gmail.com';
+  });
+  const [orgPhone, setOrgPhone] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).organization_phone || '0852 8242 4628';
+      } catch {}
+    }
+    return '0852 8242 4628';
+  });
+  const [headmasterName, setHeadmasterName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).headmaster_name || 'Fauzan Azhiimaa, Lc';
+      } catch {}
+    }
+    return 'Fauzan Azhiimaa, Lc';
+  });
+  const [tuName, setTuName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).tu_name || 'ALDRI WAHYUDI CHANDRA';
+      } catch {}
+    }
+    return 'ALDRI WAHYUDI CHANDRA';
+  });
 
   // 3 Official Logos
-  const [logoApp, setLogoApp] = useState('');
-  const [logoInstitution, setLogoInstitution] = useState('');
-  const [logoFoundation, setLogoFoundation] = useState('');
+  const [logoApp, setLogoApp] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).logo_app || '';
+      } catch {}
+    }
+    return '';
+  });
+  const [logoInstitution, setLogoInstitution] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).logo_institution || '';
+      } catch {}
+    }
+    return '';
+  });
+  const [logoFoundation, setLogoFoundation] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).logo_foundation || '';
+      } catch {}
+    }
+    return '';
+  });
 
   // Attendance & GPS Rules
   const [gracePeriod, setGracePeriod] = useState('10');
@@ -68,7 +161,6 @@ export default function PengaturanPage() {
   }, []);
 
   const fetchSettings = async () => {
-    setLoading(true);
     try {
       const [userRes, res] = await Promise.all([
         fetch('/api/auth/me'),
@@ -109,6 +201,12 @@ export default function PengaturanPage() {
         setRequireSelfie(s.require_selfie === '1');
         if (s.max_gps_accuracy_meters) setMaxGpsAccuracy(s.max_gps_accuracy_meters);
         if (s.default_radius_meters) setDefaultRadius(s.default_radius_meters);
+
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_settings_data', JSON.stringify(s));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

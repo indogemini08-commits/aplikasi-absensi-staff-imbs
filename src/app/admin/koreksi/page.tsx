@@ -34,8 +34,21 @@ export default function AdminKoreksiPage() {
     }
     return null;
   });
-  const [corrections, setCorrections] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [corrections, setCorrections] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_corrections_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_corrections_list');
+    }
+    return true;
+  });
 
   // Decision Modal state
   const [showModal, setShowModal] = useState(false);
@@ -49,7 +62,6 @@ export default function AdminKoreksiPage() {
   }, []);
 
   const fetchCorrections = async () => {
-    setLoading(true);
     try {
       const [userRes, dataRes] = await Promise.all([
         fetch('/api/auth/me'),
@@ -72,7 +84,13 @@ export default function AdminKoreksiPage() {
 
       if (dataRes.ok) {
         const data = await dataRes.json();
-        setCorrections(data.corrections || []);
+        const corrList = data.corrections || [];
+        setCorrections(corrList);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_corrections_list', JSON.stringify(corrList));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

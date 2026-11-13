@@ -43,10 +43,39 @@ function LaporanContent() {
     }
     return null;
   });
-  const [reportData, setReportData] = useState<any>(null);
-  const [departments, setDepartments] = useState<any[]>([]);
-  const [employees, setEmployees] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [reportData, setReportData] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_laporan_data');
+        return cached ? JSON.parse(cached) : null;
+      } catch {}
+    }
+    return null;
+  });
+  const [departments, setDepartments] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_departments_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [employees, setEmployees] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_pegawai_list');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_laporan_data');
+    }
+    return true;
+  });
 
   // Active Tab: 'recap' (Executive Grouped) or 'records' (Daily Detail)
   const [activeTab, setActiveTab] = useState<'recap' | 'records'>('recap');
@@ -70,7 +99,6 @@ function LaporanContent() {
   }, [startDate, endDate, departmentId, employeeId]);
 
   const fetchReport = async () => {
-    setLoading(true);
     try {
       let url = `/api/reports/recap?startDate=${startDate}&endDate=${endDate}`;
       if (departmentId) url += `&departmentId=${departmentId}`;
@@ -105,6 +133,11 @@ function LaporanContent() {
       if (reportRes.ok) {
         const data = await reportRes.json();
         setReportData(data);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem('imbs_laporan_data', JSON.stringify(data));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {

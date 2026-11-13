@@ -35,8 +35,21 @@ export default function AdminIzinCutiPage() {
     }
     return null;
   });
-  const [requests, setRequests] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_leave_requests');
+        return cached ? JSON.parse(cached) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imbs_leave_requests');
+    }
+    return true;
+  });
   const [statusFilter, setStatusFilter] = useState('pending');
 
   // Decision Modal state
@@ -51,7 +64,6 @@ export default function AdminIzinCutiPage() {
   }, [statusFilter]);
 
   const fetchRequests = async () => {
-    setLoading(true);
     try {
       let url = '/api/leave';
       if (statusFilter) url += `?status=${statusFilter}`;
@@ -77,7 +89,13 @@ export default function AdminIzinCutiPage() {
 
       if (dataRes.ok) {
         const data = await dataRes.json();
-        setRequests(data.requests || []);
+        const reqList = data.requests || [];
+        setRequests(reqList);
+        if (typeof window !== 'undefined' && statusFilter === 'pending') {
+          try {
+            sessionStorage.setItem('imbs_leave_requests', JSON.stringify(reqList));
+          } catch {}
+        }
       }
       setLoading(false);
     } catch (e) {
