@@ -21,6 +21,7 @@ export default function Navbar({ user }: NavbarProps) {
   const pathname = usePathname();
   const [wibTime, setWibTime] = useState('');
   const [wibDate, setWibDate] = useState('');
+  const [appLogo, setAppLogo] = useState<string>('');
 
   useEffect(() => {
     // Live ticking WIB clock
@@ -30,6 +31,16 @@ export default function Navbar({ user }: NavbarProps) {
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
+
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.settings?.logo_app) {
+          setAppLogo(data.settings.logo_app);
+        }
+      })
+      .catch(() => {});
+
     return () => clearInterval(interval);
   }, []);
 
@@ -45,12 +56,18 @@ export default function Navbar({ user }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-40 w-full glass-card border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Left: Brand & Title */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white flex items-center justify-center font-bold text-base shadow-md shadow-emerald-500/20">
-            IM
-          </div>
+          {appLogo ? (
+            <div className="h-9 w-auto max-w-[120px] rounded-xl flex items-center justify-center overflow-hidden">
+              <img src={appLogo} alt="Logo" className="max-h-9 max-w-full object-contain" />
+            </div>
+          ) : (
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white flex items-center justify-center font-bold text-base shadow-md shadow-emerald-500/20">
+              IM
+            </div>
+          )}
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 bg-clip-text text-transparent">

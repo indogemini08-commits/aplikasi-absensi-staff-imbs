@@ -17,3 +17,4 @@ const employees = sqlite.prepare(`
 console.log('Employees found:', employees.length);
 console.log('First employee:', employees[0].nip, employees[0].name, 'Dept:', employees[0].department_name, 'Username:', employees[0].username, 'Leave:', employees[0].leave_remaining);
 console.log('Last employee:', employees[21].nip, employees[21].name, 'Dept:', employees[21].department_name, 'Username:', employees[21].username, 'Leave:', employees[21].leave_remaining);
+

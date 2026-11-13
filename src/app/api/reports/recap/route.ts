@@ -62,8 +62,13 @@ export async function GET(req: NextRequest) {
       schoolName: settings['organization_name'] || 'IMAM MUZANI BOARDING SCHOOL',
       address: settings['organization_address'] || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610',
       contact: `E-Mail: ${settings['organization_email'] || 'imammuzanibs@gmail.com'}   No Telepon : ${settings['organization_phone'] || '0852 8242 4628'}`,
+      email: settings['organization_email'] || 'imammuzanibs@gmail.com',
+      phone: settings['organization_phone'] || '0852 8242 4628',
       headmaster: settings['headmaster_name'] || 'Fauzan Azhiimaa, Lc',
       tuStaff: settings['tu_name'] || 'ALDRI WAHYUDI CHANDRA',
+      logoInstitution: settings['logo_institution'] || '',
+      logoFoundation: settings['logo_foundation'] || '',
+      logoApp: settings['logo_app'] || '',
     };
 
     // 2. Compute date range & month name

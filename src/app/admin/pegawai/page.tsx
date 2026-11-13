@@ -18,6 +18,10 @@ import {
   EyeOff,
   Clock,
   CheckCircle2,
+  Trash2,
+  Square,
+  CheckSquare,
+  AlertTriangle,
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
@@ -57,6 +61,12 @@ export default function PegawaiPage() {
   const [showCsvModal, setShowCsvModal] = useState(false);
   const [csvText, setCsvText] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+
+  // Selection & Delete state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [empToDelete, setEmpToDelete] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchEmployees();
@@ -286,6 +296,66 @@ export default function PegawaiPage() {
     );
   });
 
+  const isAllSelected =
+    filteredEmployees.length > 0 &&
+    filteredEmployees.every((emp) => selectedIds.includes(emp.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredEmployees.map((emp) => emp.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const confirmDeleteSingle = (emp: any) => {
+    setEmpToDelete(emp);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteSelected = () => {
+    if (selectedIds.length === 0) return;
+    setEmpToDelete(null);
+    setShowDeleteModal(true);
+  };
+
+  const handleExecuteDelete = async () => {
+    const ids = empToDelete ? [empToDelete.id] : selectedIds;
+    if (ids.length === 0) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch('/api/employees', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Gagal menghapus akun pegawai');
+        setIsDeleting(false);
+        return;
+      }
+
+      toast.success(data.message || 'Akun pegawai berhasil dihapus.');
+      setShowDeleteModal(false);
+      setEmpToDelete(null);
+      setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+      setIsDeleting(false);
+      fetchEmployees();
+    } catch (e) {
+      console.error(e);
+      toast.error('Terjadi kesalahan saat menghapus data pegawai');
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090d16]">
       <Navbar user={user} />
@@ -293,7 +363,7 @@ export default function PegawaiPage() {
       <div className="flex flex-1">
         <Sidebar userRole={user?.role} />
 
-        <main className="flex-1 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 space-y-6">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -327,6 +397,43 @@ export default function PegawaiPage() {
             </div>
           </div>
 
+          {/* Selected Bulk Actions Bar */}
+          {selectedIds.length > 0 && (
+            <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-2xl p-3 sm:px-5 flex flex-wrap items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-rose-600/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold text-xs">
+                  {selectedIds.length}
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-rose-900 dark:text-rose-200">
+                    {selectedIds.length} Akun Pegawai Dipilih
+                  </div>
+                  <div className="text-[10.5px] text-rose-600/80 dark:text-rose-400">
+                    Pilih aksi massal untuk menghapus akun pegawai yang dicentang
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedIds([])}
+                  className="py-1.5 px-3 rounded-xl border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100/60 dark:hover:bg-rose-900/40 transition cursor-pointer"
+                >
+                  Batal Pilih
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDeleteSelected}
+                  className="py-1.5 px-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus ({selectedIds.length}) Akun Terpilih</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Search bar */}
           <div className="glass-card rounded-2xl p-3 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2">
             <Search className="w-4 h-4 text-slate-400 ml-2" />
@@ -353,6 +460,20 @@ export default function PegawaiPage() {
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <th className="py-3.5 px-3 w-10 text-center">
+                        <button
+                          type="button"
+                          onClick={toggleSelectAll}
+                          className="p-1 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer"
+                          title={isAllSelected ? 'Batalkan Semua Pilihan' : 'Pilih Semua Pegawai'}
+                        >
+                          {isAllSelected ? (
+                            <CheckSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <Square className="w-4 h-4 text-slate-400" />
+                          )}
+                        </button>
+                      </th>
                       <th className="py-3.5 px-4">Pegawai & NIP</th>
                       <th className="py-3.5 px-4">Divisi & Jabatan</th>
                       <th className="py-3.5 px-4">Akun & Role</th>
@@ -363,12 +484,29 @@ export default function PegawaiPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {filteredEmployees.map((emp) => (
+                    {filteredEmployees.map((emp) => {
+                      const isSelected = selectedIds.includes(emp.id);
+                      return (
                       <tr
                         key={emp.id}
-                        className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors ${emp.is_active === 0 ? 'opacity-60 bg-slate-100/40 dark:bg-slate-900/40' : ''
-                          }`}
+                        className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors ${
+                          isSelected ? 'bg-emerald-50/40 dark:bg-emerald-950/20 ' : ''
+                        }${emp.is_active === 0 ? 'opacity-60 bg-slate-100/40 dark:bg-slate-900/40' : ''}`}
                       >
+                        <td className="py-3.5 px-3 text-center">
+                          <button
+                            type="button"
+                            onClick={() => toggleSelect(emp.id)}
+                            className="p-1 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer"
+                          >
+                            {isSelected ? (
+                              <CheckSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                            ) : (
+                              <Square className="w-4 h-4 text-slate-400" />
+                            )}
+                          </button>
+                        </td>
+
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-indigo-600/10 dark:bg-indigo-400/20 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0">
@@ -451,10 +589,18 @@ export default function PegawaiPage() {
                             >
                               {emp.is_active === 1 ? <X className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}
                             </button>
+                            <button
+                              onClick={() => confirmDeleteSingle(emp)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                              title="Hapus Akun Pegawai"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -731,6 +877,63 @@ export default function PegawaiPage() {
             >
               {isImporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               Proses Impor Data
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => !isDeleting && setShowDeleteModal(false)}
+        title={empToDelete ? 'Konfirmasi Hapus Akun Pegawai' : `Hapus ${selectedIds.length} Akun Pegawai Terpilih`}
+        maxWidth="md"
+      >
+        <div className="space-y-4">
+          <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-rose-600/10 text-rose-600 dark:text-rose-400 shrink-0">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div className="text-xs text-rose-800 dark:text-rose-200">
+              <div className="font-bold text-sm mb-1">
+                {empToDelete
+                  ? `Hapus akun "${empToDelete.name}"?`
+                  : `Hapus ${selectedIds.length} akun pegawai terpilih?`}
+              </div>
+              <p className="leading-relaxed">
+                Tindakan ini akan menghapus akun pegawai beserta seluruh riwayat terkait (jadwal, saldo cuti, dan akun login).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setShowDeleteModal(false)}
+              disabled={isDeleting}
+              className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer disabled:opacity-50"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleExecuteDelete}
+              disabled={isDeleting}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Menghapus...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  <span>
+                    {empToDelete ? 'Ya, Hapus Akun' : `Ya, Hapus ${selectedIds.length} Akun`}
+                  </span>
+                </>
+              )}
             </button>
           </div>
         </div>

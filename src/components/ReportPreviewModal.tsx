@@ -39,7 +39,13 @@ interface InstitutionInfo {
   contact: string;
   headmaster: string;
   tuStaff: string;
+  logoInstitution?: string;
+  logoFoundation?: string;
+  logoApp?: string;
 }
+
+export type PaperSize = 'A4' | 'F4' | 'A3';
+export type Orientation = 'portrait' | 'landscape';
 
 interface ReportPreviewModalProps {
   isOpen: boolean;
@@ -66,17 +72,42 @@ export default function ReportPreviewModal({
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
 
+  // Paper Size & Orientation state
+  const [paperSize, setPaperSize] = useState<PaperSize>('A4');
+  const [orientation, setOrientation] = useState<Orientation>('portrait');
+
   if (!isOpen) return null;
 
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 15, 140));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 65));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 15, 60));
   const handleResetZoom = () => setZoomLevel(100);
 
   const cleanPeriodForFilename = periodFormatted
     .replace(/[^a-zA-Z0-9]/g, '_')
     .replace(/_+/g, '_');
 
-  // 1. Simpan dalam PNG High Quality (300 DPI / scale 3)
+  // Paper dimensions in mm
+  const getPaperDimensionsMm = () => {
+    let w = 210;
+    let h = 297;
+    if (paperSize === 'A4') {
+      w = 210;
+      h = 297;
+    } else if (paperSize === 'F4') {
+      w = 215;
+      h = 330;
+    } else if (paperSize === 'A3') {
+      w = 297;
+      h = 420;
+    }
+
+    if (orientation === 'landscape') {
+      return { width: h, height: w };
+    }
+    return { width: w, height: h };
+  };
+
+  // 1. Simpan dalam PNG High Quality (300 DPI)
   const handleDownloadPng = async () => {
     if (!documentRef.current) return;
     try {
@@ -91,19 +122,19 @@ export default function ReportPreviewModal({
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: 1200,
+        windowWidth: orientation === 'landscape' ? 1400 : 1100,
       });
 
       const dataUrl = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `Rekap_Kehadiran_IMBS_${cleanPeriodForFilename}_HQ.png`;
+      link.download = `Rekap_Kehadiran_IMBS_${cleanPeriodForFilename}_${paperSize}_${orientation}_HQ.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      setDownloadSuccess('File PNG High Quality (300 DPI) berhasil diunduh!');
-      setTimeout(() => setDownloadSuccess(null), 4000);
+      setDownloadSuccess(`File PNG High Quality (${paperSize} ${orientation === 'portrait' ? 'Portrait' : 'Landscape'} 300 DPI) berhasil diunduh!`);
+      setTimeout(() => setDownloadSuccess(null), 4500);
     } catch (err) {
       console.error('Error generating PNG:', err);
       alert('Gagal menghasilkan file PNG. Silakan coba kembali.');
@@ -112,7 +143,7 @@ export default function ReportPreviewModal({
     }
   };
 
-  // 2. Simpan dalam PDF Resmi (A4 Portrait Proportional)
+  // 2. Simpan dalam PDF Resmi (A4, F4, A3 | Portrait / Landscape)
   const handleDownloadPdf = async () => {
     if (!documentRef.current) return;
     try {
@@ -128,19 +159,28 @@ export default function ReportPreviewModal({
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: 1200,
+        windowWidth: orientation === 'landscape' ? 1400 : 1100,
       });
 
       const imgData = canvas.toDataURL('image/png', 1.0);
 
+      // jsPDF format mapping
+      let pdfFormat: string | [number, number] = 'a4';
+      if (paperSize === 'A4') {
+        pdfFormat = 'a4';
+      } else if (paperSize === 'F4') {
+        pdfFormat = [215, 330];
+      } else if (paperSize === 'A3') {
+        pdfFormat = 'a3';
+      }
+
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: orientation,
         unit: 'mm',
-        format: 'a4',
+        format: pdfFormat,
       });
 
-      const pageWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
+      const { width: pageWidth, height: pageHeight } = getPaperDimensionsMm();
       const margin = 8; // 8mm margin
       const printableWidth = pageWidth - margin * 2;
       const printableHeight = pageHeight - margin * 2;
@@ -152,7 +192,7 @@ export default function ReportPreviewModal({
         pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
       } else {
         const scaleFactor = printableHeight / imgHeight;
-        if (scaleFactor >= 0.75) {
+        if (scaleFactor >= 0.70) {
           pdf.addImage(imgData, 'PNG', margin, margin, imgWidth * scaleFactor, printableHeight);
         } else {
           let heightLeft = imgHeight;
@@ -169,9 +209,9 @@ export default function ReportPreviewModal({
         }
       }
 
-      pdf.save(`Rekap_Kehadiran_IMBS_${cleanPeriodForFilename}.pdf`);
-      setDownloadSuccess('Dokumen PDF resmi berhasil diunduh!');
-      setTimeout(() => setDownloadSuccess(null), 4000);
+      pdf.save(`Rekap_Kehadiran_IMBS_${cleanPeriodForFilename}_${paperSize}_${orientation}.pdf`);
+      setDownloadSuccess(`Dokumen PDF resmi (${paperSize} ${orientation === 'portrait' ? 'Portrait' : 'Landscape'}) berhasil diunduh!`);
+      setTimeout(() => setDownloadSuccess(null), 4500);
     } catch (err) {
       console.error('Error generating PDF:', err);
       alert('Gagal menghasilkan file PDF. Silakan coba kembali.');
@@ -296,6 +336,71 @@ export default function ReportPreviewModal({
           </div>
         </div>
 
+        {/* Paper Size & Orientation Sub-Toolbar */}
+        <div className="px-6 py-2.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Paper Size Selector */}
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-700 dark:text-slate-200">Ukuran Kertas:</span>
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                {(['A4', 'F4', 'A3'] as PaperSize[]).map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setPaperSize(size)}
+                    className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
+                      paperSize === size
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {size === 'F4' ? 'F4 / Folio' : size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Orientation Selector */}
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-700 dark:text-slate-200">Orientasi:</span>
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setOrientation('portrait')}
+                  className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer flex items-center gap-1.5 ${
+                    orientation === 'portrait'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Portrait (Tegak)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOrientation('landscape')}
+                  className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer flex items-center gap-1.5 ${
+                    orientation === 'landscape'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Landscape (Mendatar)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+            <span className="font-mono bg-slate-200/70 dark:bg-slate-700/70 px-2 py-0.5 rounded-md font-semibold text-slate-700 dark:text-slate-200">
+              {paperSize === 'A4'
+                ? orientation === 'portrait' ? '210 × 297 mm' : '297 × 210 mm'
+                : paperSize === 'F4'
+                ? orientation === 'portrait' ? '215 × 330 mm (Folio)' : '330 × 215 mm (Folio)'
+                : orientation === 'portrait' ? '297 × 420 mm (A3)' : '420 × 297 mm (A3)'}
+            </span>
+          </div>
+        </div>
+
         {/* Download Success Banner */}
         {downloadSuccess && (
           <div className="bg-emerald-50 dark:bg-emerald-950/60 border-b border-emerald-200 dark:border-emerald-800 px-6 py-2.5 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-200 animate-in slide-in-from-top-2">
@@ -326,16 +431,29 @@ export default function ReportPreviewModal({
             <div
               ref={documentRef}
               id="official-recap-document"
-              className="bg-white text-slate-900 w-full max-w-[850px] p-8 sm:p-10 shadow-2xl border border-slate-300 rounded-none font-sans"
-              style={{ minHeight: '1100px' }}
+              className={`bg-white text-slate-900 w-full p-8 sm:p-10 shadow-2xl border border-slate-300 rounded-none font-sans ${
+                orientation === 'landscape'
+                  ? paperSize === 'A3'
+                    ? 'max-w-[1350px]'
+                    : 'max-w-[1150px]'
+                  : paperSize === 'A3'
+                  ? 'max-w-[1000px]'
+                  : 'max-w-[850px]'
+              }`}
+              style={{
+                minHeight:
+                  orientation === 'landscape'
+                    ? paperSize === 'A3' ? '920px' : '780px'
+                    : paperSize === 'A3' ? '1450px' : paperSize === 'F4' ? '1280px' : '1100px',
+              }}
             >
               {/* 1. Official Kop Surat (Header) */}
               <div className="flex items-center justify-between gap-3 mb-2">
-                {/* Left Logo: Imam Muzani */}
+                {/* Left Logo: Lembaga / Sekolah */}
                 <div className="w-24 sm:w-28 flex items-center justify-center shrink-0">
                   <img
-                    src="/logo-imbs-left.png"
-                    alt="Logo IMBS"
+                    src={institution.logoInstitution || "/logo-imbs-left.png"}
+                    alt="Logo Lembaga"
                     className="max-h-[70px] w-auto object-contain"
                   />
                 </div>
@@ -359,10 +477,10 @@ export default function ReportPreviewModal({
                   </div>
                 </div>
 
-                {/* Right Logo: Emblem */}
+                {/* Right Logo: Yayasan */}
                 <div className="w-24 sm:w-28 flex items-center justify-center shrink-0">
                   <img
-                    src="/logo-imbs-right.png"
+                    src={institution.logoFoundation || "/logo-imbs-right.png"}
                     alt="Logo Yayasan"
                     className="max-h-[70px] w-auto object-contain"
                   />

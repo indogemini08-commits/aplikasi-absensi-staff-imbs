@@ -367,3 +367,97 @@ export async function PUT(req: NextRequest) {
   }
 }
 
+export async function DELETE(req: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
+      return NextResponse.json({ error: 'Akses ditolak' }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const queryId = searchParams.get('id');
+
+    let idsToDelete: string[] = [];
+    if (queryId) {
+      idsToDelete = [queryId];
+    } else {
+      try {
+        const body = await req.json();
+        if (body.ids && Array.isArray(body.ids)) {
+          idsToDelete = body.ids;
+        } else if (body.id) {
+          idsToDelete = [body.id];
+        }
+      } catch {
+        // no body
+      }
+    }
+
+    if (idsToDelete.length === 0) {
+      return NextResponse.json({ error: 'Pilih sekurang-kurangnya satu akun pegawai untuk dihapus' }, { status: 400 });
+    }
+
+    const db = getDb();
+    let deletedCount = 0;
+    const deletedNames: string[] = [];
+
+    for (const empId of idsToDelete) {
+      const emp = await db.prepare(`SELECT * FROM employees WHERE id = ?`).get(empId) as any;
+      if (!emp) continue;
+
+      deletedNames.push(emp.name);
+
+      // 1. Delete dependent attendance data
+      const attRecords = await db.prepare(`SELECT id FROM attendance_records WHERE employee_id = ?`).all(empId) as any[];
+      for (const att of attRecords) {
+        await db.prepare(`DELETE FROM late_reasons WHERE attendance_id = ?`).run(att.id);
+      }
+      await db.prepare(`DELETE FROM attendance_records WHERE employee_id = ?`).run(empId);
+      await db.prepare(`DELETE FROM attendance_corrections WHERE employee_id = ?`).run(empId);
+
+      // 2. Delete leave data
+      await db.prepare(`DELETE FROM leave_requests WHERE employee_id = ?`).run(empId);
+      await db.prepare(`DELETE FROM leave_balances WHERE employee_id = ?`).run(empId);
+
+      // 3. Delete schedules & locations
+      await db.prepare(`DELETE FROM employee_allowed_locations WHERE employee_id = ?`).run(empId);
+      await db.prepare(`DELETE FROM employee_schedules WHERE employee_id = ?`).run(empId);
+
+      // 4. Delete user account notifications and user
+      if (emp.user_id) {
+        await db.prepare(`DELETE FROM notifications WHERE user_id = ?`).run(emp.user_id);
+      }
+
+      // 5. Delete employee record
+      await db.prepare(`DELETE FROM employees WHERE id = ?`).run(empId);
+
+      // 6. Delete user account
+      if (emp.user_id) {
+        await db.prepare(`DELETE FROM users WHERE id = ?`).run(emp.user_id);
+      }
+
+      deletedCount++;
+    }
+
+    recordAuditLog({
+      userId: user.userId,
+      userName: user.name || user.username,
+      action: 'DELETE_EMPLOYEES',
+      entityType: 'employee',
+      entityId: idsToDelete.join(','),
+      details: { count: deletedCount, names: deletedNames, ids: idsToDelete },
+      ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: `Berhasil menghapus ${deletedCount} akun pegawai (${deletedNames.slice(0, 3).join(', ')}${deletedNames.length > 3 ? '...' : ''}).`,
+      deletedCount,
+    });
+  } catch (err: any) {
+    console.error('Employees DELETE error:', err);
+    return NextResponse.json({ error: 'Gagal menghapus data pegawai' }, { status: 500 });
+  }
+}
+
+

@@ -152,15 +152,6 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Lokasi kerja tidak ditemukan' }, { status: 404 });
     }
 
-    // Safety check: ensure at least 1 work location remains
-    const totalCount = await db.prepare(`SELECT count(*) as count FROM work_locations WHERE is_active = 1`).get() as any;
-    if (totalCount.count <= 1) {
-      return NextResponse.json(
-        { error: 'Sistem harus memiliki sekurang-kurangnya satu lokasi kerja aktif untuk acuan geofencing absensi.' },
-        { status: 400 }
-      );
-    }
-
     await db.exec('BEGIN TRANSACTION;');
     try {
       // 1. Clear foreign key references in attendance_records

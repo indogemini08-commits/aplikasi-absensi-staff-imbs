@@ -79,3 +79,4 @@ async function syncAll() {
 }
 
 syncAll().catch(console.error);
+
