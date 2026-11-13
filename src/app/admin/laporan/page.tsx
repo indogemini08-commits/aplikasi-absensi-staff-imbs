@@ -166,6 +166,16 @@ function LaporanContent() {
     setEndDate(getWIBDateString());
   };
 
+  const handlePresetLastMonth = () => {
+    const today = new Date();
+    const lastMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const y = lastMonthDate.getFullYear();
+    const m = String(lastMonthDate.getMonth() + 1).padStart(2, '0');
+    const lastDay = new Date(y, lastMonthDate.getMonth() + 1, 0).getDate();
+    setStartDate(`${y}-${m}-01`);
+    setEndDate(`${y}-${m}-${String(lastDay).padStart(2, '0')}`);
+  };
+
   const handlePresetLast30Days = () => {
     setStartDate(getWIBDateString(new Date(Date.now() - 30 * 86400000)));
     setEndDate(getWIBDateString());
@@ -259,6 +269,24 @@ function LaporanContent() {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <button
+                  onClick={handlePresetThisMonth}
+                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                >
+                  Bulan Ini
+                </button>
+                <button
+                  onClick={handlePresetLastMonth}
+                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                >
+                  Bulan Lalu
+                </button>
+                <button
+                  onClick={handlePresetLast30Days}
+                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                >
+                  30 Hari Terakhir
+                </button>
+                <button
                   onClick={handlePresetAugust2026}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
                     startDate === '2026-08-01' && endDate === '2026-08-25'
@@ -266,19 +294,7 @@ function LaporanContent() {
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
-                  Agustus 2026 (Sesuai Template Dokumen)
-                </button>
-                <button
-                  onClick={handlePresetThisMonth}
-                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
-                >
-                  Bulan Ini
-                </button>
-                <button
-                  onClick={handlePresetLast30Days}
-                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
-                >
-                  30 Hari Terakhir
+                  Agustus 2026
                 </button>
               </div>
             </div>
@@ -382,9 +398,9 @@ function LaporanContent() {
                 }`}
               >
                 <Award className="w-4 h-4" />
-                <span>Rekap Eksekutif Dewan Guru & Pegawai</span>
+                <span>Rekapitulasi Kehadiran Pegawai</span>
                 <span className="text-[10px] bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 px-1.5 py-0.5 rounded-full font-bold">
-                  Format Resmi IMBS
+                  Ringkasan Eksekutif
                 </span>
               </button>
 
@@ -425,30 +441,30 @@ function LaporanContent() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="bg-[#1b5f8c] text-white text-[11px] font-bold uppercase tracking-wider">
-                        <th rowSpan={2} className="py-3 px-3 text-center border-r border-[#246b9c] w-12">
+                      <tr className="bg-[#0f2942] text-white text-[11px] font-bold uppercase tracking-wider">
+                        <th rowSpan={2} className="py-3 px-3 text-center border-r border-[#1a4168] w-12">
                           No
                         </th>
-                        <th rowSpan={2} className="py-3 px-3 border-r border-[#246b9c]">
+                        <th rowSpan={2} className="py-3 px-3 border-r border-[#1a4168]">
                           Nama Pegawai
                         </th>
-                        <th rowSpan={2} className="py-3 px-3 border-r border-[#246b9c]">
+                        <th rowSpan={2} className="py-3 px-3 border-r border-[#1a4168]">
                           Departemen
                         </th>
-                        <th colSpan={6} className="py-2 px-3 text-center border-b border-[#246b9c]">
-                          Keterangan Kehadiran
+                        <th colSpan={6} className="py-2 px-3 text-center border-b border-[#1a4168] tracking-widest">
+                          Keterangan Kehadiran (Hari Kerja)
                         </th>
                         <th rowSpan={2} className="py-3 px-3 text-center w-28">
                           Predikat
                         </th>
                       </tr>
-                      <tr className="bg-[#1b5f8c] text-white/90 text-[10px] font-semibold text-center border-b border-[#246b9c]">
-                        <th className="py-2 px-2 border-r border-[#246b9c]/60">Absen Masuk</th>
-                        <th className="py-2 px-2 border-r border-[#246b9c]/60">Absen Pulang</th>
-                        <th className="py-2 px-2 border-r border-[#246b9c]/60">Telat</th>
-                        <th className="py-2 px-2 border-r border-[#246b9c]/60">Pulang Lebih Awal</th>
-                        <th className="py-2 px-2 border-r border-[#246b9c]/60">Lupa Absen Pulang</th>
-                        <th className="py-2 px-2 border-r border-[#246b9c]/60">Tidak Hadir</th>
+                      <tr className="bg-[#163a5f] text-white/95 text-[10px] font-semibold text-center border-b border-[#1a4168]">
+                        <th className="py-2 px-2 border-r border-[#204c77]">Absen Masuk</th>
+                        <th className="py-2 px-2 border-r border-[#204c77]">Absen Pulang</th>
+                        <th className="py-2 px-2 border-r border-[#204c77]">Telat</th>
+                        <th className="py-2 px-2 border-r border-[#204c77]">Pulang Cepat</th>
+                        <th className="py-2 px-2 border-r border-[#204c77]">Lupa Pulang</th>
+                        <th className="py-2 px-2 border-r border-[#204c77]">Tidak Hadir</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -605,6 +621,7 @@ function LaporanContent() {
         formattedEndDate={formattedEndDate}
         institution={institution}
         recapSummary={recapSummary}
+        stats={stats}
       />
     </div>
   );
