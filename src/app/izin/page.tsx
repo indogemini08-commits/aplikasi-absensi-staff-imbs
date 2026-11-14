@@ -21,6 +21,7 @@ import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
 import { useToast } from '@/components/ToastContext';
 import { calculateDaysBetween } from '@/lib/date';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function IzinPage() {
   const router = useRouter();
@@ -78,11 +79,15 @@ export default function IzinPage() {
     fetchLeaveData();
   }, []);
 
+  useDataSync(() => {
+    fetchLeaveData();
+  }, ['leave']);
+
   const fetchLeaveData = async () => {
     try {
       const [userRes, res] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/leave')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/leave', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -102,8 +107,13 @@ export default function IzinPage() {
 
       if (typeof window !== 'undefined') {
         try {
-          sessionStorage.setItem('imbs_staff_leaves', JSON.stringify(reqList));
-          sessionStorage.setItem('imbs_staff_balance', JSON.stringify(data.balance || null));
+          if (reqList.length === 0) {
+            sessionStorage.removeItem('imbs_staff_leaves');
+            sessionStorage.removeItem('imbs_staff_balance');
+          } else {
+            sessionStorage.setItem('imbs_staff_leaves', JSON.stringify(reqList));
+            sessionStorage.setItem('imbs_staff_balance', JSON.stringify(data.balance || null));
+          }
         } catch {}
       }
 
@@ -171,6 +181,7 @@ export default function IzinPage() {
       setEmergencyContact('');
       setAttachmentUrl('');
       setIsSubmitting(false);
+      broadcastDataChange('leave');
       fetchLeaveData();
     } catch (e) {
       toast.error('Gagal mengirimkan permohonan');

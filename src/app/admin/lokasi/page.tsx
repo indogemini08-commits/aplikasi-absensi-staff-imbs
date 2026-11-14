@@ -26,6 +26,7 @@ import Sidebar from '@/components/Sidebar';
 import Modal from '@/components/Modal';
 import { useToast } from '@/components/ToastContext';
 import { parseGoogleMapsCoordinates } from '@/lib/geo-parser';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 import dynamic from 'next/dynamic';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), {
@@ -99,11 +100,15 @@ export default function LokasiPage() {
     fetchLocations();
   }, []);
 
+  useDataSync(() => {
+    fetchLocations();
+  }, ['locations']);
+
   const fetchLocations = async () => {
     try {
       const [userRes, res] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/locations'),
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/locations', { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -127,7 +132,11 @@ export default function LokasiPage() {
       setLocations(locList);
       if (typeof window !== 'undefined') {
         try {
-          sessionStorage.setItem('imbs_locations_list', JSON.stringify(locList));
+          if (locList.length === 0) {
+            sessionStorage.removeItem('imbs_locations_list');
+          } else {
+            sessionStorage.setItem('imbs_locations_list', JSON.stringify(locList));
+          }
         } catch {}
       }
       setLoading(false);
@@ -184,6 +193,7 @@ export default function LokasiPage() {
       toast.success(data.message || 'Lokasi kerja berhasil dihapus.');
       setShowDeleteModal(false);
       setIsDeleting(false);
+      broadcastDataChange('locations');
       fetchLocations();
     } catch (e) {
       console.error(e);
@@ -338,6 +348,7 @@ export default function LokasiPage() {
 
       setShowModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('locations');
       fetchLocations();
     } catch (e) {
       toast.error('Terjadi kesalahan sistem');

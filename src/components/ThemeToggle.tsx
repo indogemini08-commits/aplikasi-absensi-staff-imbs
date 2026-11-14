@@ -44,9 +44,9 @@ export default function ThemeToggle() {
       aria-label="Toggle Theme"
     >
       {isDark ? (
-        <Sun className="w-4.5 h-4.5 text-amber-400 group-hover:rotate-45 group-hover:drop-shadow-[0_0_8px_#f59e0b] transition-transform duration-300" />
+        <Sun className="w-5 h-5 text-amber-400 group-hover:rotate-45 group-hover:drop-shadow-[0_0_8px_#f59e0b] transition-transform duration-300" />
       ) : (
-        <Moon className="w-4.5 h-4.5 text-indigo-500 group-hover:-rotate-12 group-hover:drop-shadow-[0_0_8px_#6366f1] transition-transform duration-300" />
+        <Moon className="w-5 h-5 text-indigo-500 group-hover:-rotate-12 group-hover:drop-shadow-[0_0_8px_#6366f1] transition-transform duration-300" />
       )}
     </button>
   );

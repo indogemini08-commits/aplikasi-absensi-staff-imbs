@@ -20,6 +20,7 @@ import BottomNav from '@/components/BottomNav';
 import { SkeletonCard } from '@/components/Skeleton';
 import EmptyState from '@/components/EmptyState';
 import { formatIndonesianDate } from '@/lib/date';
+import { useDataSync } from '@/lib/sync';
 
 export default function StaffDashboard() {
   const router = useRouter();
@@ -72,12 +73,16 @@ export default function StaffDashboard() {
     fetchDashboardData();
   }, []);
 
+  useDataSync(() => {
+    fetchDashboardData();
+  });
+
   const fetchDashboardData = async () => {
     try {
       const [userRes, statusRes, histRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/attendance/status'),
-        fetch('/api/attendance/history')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/attendance/status', { cache: 'no-store' }),
+        fetch('/api/attendance/history', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -98,6 +103,11 @@ export default function StaffDashboard() {
             sessionStorage.setItem('imbs_staff_status', JSON.stringify(statusJson));
           } catch {}
         }
+      } else {
+        setStatusData(null);
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('imbs_staff_status');
+        }
       }
 
       if (histRes.ok) {
@@ -107,9 +117,21 @@ export default function StaffDashboard() {
         setRecentRecords(recs);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_staff_history_summary', JSON.stringify(histJson.summary));
-            sessionStorage.setItem('imbs_staff_recent_records', JSON.stringify(recs));
+            if (recs.length === 0) {
+              sessionStorage.removeItem('imbs_staff_recent_records');
+              sessionStorage.removeItem('imbs_staff_history_summary');
+            } else {
+              sessionStorage.setItem('imbs_staff_history_summary', JSON.stringify(histJson.summary));
+              sessionStorage.setItem('imbs_staff_recent_records', JSON.stringify(recs));
+            }
           } catch {}
+        }
+      } else {
+        setRecentRecords([]);
+        setHistorySummary(null);
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('imbs_staff_recent_records');
+          sessionStorage.removeItem('imbs_staff_history_summary');
         }
       }
 

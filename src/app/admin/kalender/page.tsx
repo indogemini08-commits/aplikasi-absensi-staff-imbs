@@ -9,6 +9,7 @@ import Modal from '@/components/Modal';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
 import { formatIndonesianDate } from '@/lib/date';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function AdminKalenderPage() {
   const router = useRouter();
@@ -53,11 +54,15 @@ export default function AdminKalenderPage() {
     fetchHolidays();
   }, []);
 
+  useDataSync(() => {
+    fetchHolidays();
+  }, ['holidays']);
+
   const fetchHolidays = async () => {
     try {
       const [userRes, dataRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/holidays')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/holidays', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -80,7 +85,11 @@ export default function AdminKalenderPage() {
         setHolidays(holList);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_holidays_list', JSON.stringify(holList));
+            if (holList.length === 0) {
+              sessionStorage.removeItem('imbs_holidays_list');
+            } else {
+              sessionStorage.setItem('imbs_holidays_list', JSON.stringify(holList));
+            }
           } catch {}
         }
       }
@@ -117,6 +126,7 @@ export default function AdminKalenderPage() {
       setDate('');
       setDescription('');
       setIsSubmitting(false);
+      broadcastDataChange('holidays');
       fetchHolidays();
     } catch (e) {
       toast.error('Gagal menambahkan');
@@ -134,6 +144,7 @@ export default function AdminKalenderPage() {
         return;
       }
       toast.success(data.message);
+      broadcastDataChange('holidays');
       fetchHolidays();
     } catch (e) {
       toast.error('Gagal menghapus');

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser, hashPassword } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { recordAuditLog } from '@/lib/audit';
+import { jsonResponse } from '@/lib/api-response';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
@@ -65,10 +69,10 @@ export async function GET(req: NextRequest) {
       daily_schedules: typeof d.daily_schedules === 'string' ? JSON.parse(d.daily_schedules) : d.daily_schedules,
     }));
 
-    return NextResponse.json({ employees, departments, shifts });
+    return jsonResponse({ employees, departments, shifts });
   } catch (err: any) {
     console.error('Employees GET error:', err);
-    return NextResponse.json({ error: 'Gagal memuat data pegawai' }, { status: 500 });
+    return jsonResponse({ error: 'Gagal memuat data pegawai' }, { status: 500 });
   }
 }
 

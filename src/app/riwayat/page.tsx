@@ -20,6 +20,7 @@ import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function RiwayatPage() {
   const router = useRouter();
@@ -75,11 +76,15 @@ export default function RiwayatPage() {
     fetchHistory();
   }, [selectedMonth]);
 
+  useDataSync(() => {
+    fetchHistory();
+  }, ['attendance']);
+
   const fetchHistory = async () => {
     try {
       const [userRes, dataRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch(`/api/attendance/history?month=${selectedMonth}`)
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch(`/api/attendance/history?month=${selectedMonth}`, { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -99,8 +104,13 @@ export default function RiwayatPage() {
         setSummary(data.summary || null);
         if (typeof window !== 'undefined' && selectedMonth === currentMonthStr) {
           try {
-            sessionStorage.setItem('imbs_history_records', JSON.stringify(recList));
-            sessionStorage.setItem('imbs_history_summary', JSON.stringify(data.summary || null));
+            if (recList.length === 0) {
+              sessionStorage.removeItem('imbs_history_records');
+              sessionStorage.removeItem('imbs_history_summary');
+            } else {
+              sessionStorage.setItem('imbs_history_records', JSON.stringify(recList));
+              sessionStorage.setItem('imbs_history_summary', JSON.stringify(data.summary || null));
+            }
           } catch {}
         }
       }
@@ -145,6 +155,7 @@ export default function RiwayatPage() {
       toast.success(data.message);
       setShowLateModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('attendance');
       fetchHistory();
     } catch (e) {
       toast.error('Gagal mengirim alasan keterlambatan');

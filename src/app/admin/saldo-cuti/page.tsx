@@ -8,6 +8,7 @@ import Sidebar from '@/components/Sidebar';
 import Modal from '@/components/Modal';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function AdminSaldoCutiPage() {
   const router = useRouter();
@@ -49,11 +50,15 @@ export default function AdminSaldoCutiPage() {
     fetchBalances();
   }, []);
 
+  useDataSync(() => {
+    fetchBalances();
+  }, ['leave']);
+
   const fetchBalances = async () => {
     try {
       const [userRes, res] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/leave/balances'),
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/leave/balances', { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -75,7 +80,11 @@ export default function AdminSaldoCutiPage() {
       setBalances(balanceList);
       if (typeof window !== 'undefined') {
         try {
-          sessionStorage.setItem('imbs_saldo_cuti', JSON.stringify(balanceList));
+          if (balanceList.length === 0) {
+            sessionStorage.removeItem('imbs_saldo_cuti');
+          } else {
+            sessionStorage.setItem('imbs_saldo_cuti', JSON.stringify(balanceList));
+          }
         } catch {}
       }
       setLoading(false);
@@ -114,6 +123,7 @@ export default function AdminSaldoCutiPage() {
       toast.success(data.message);
       setShowModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('leave');
       fetchBalances();
     } catch (e) {
       toast.error('Gagal memperbarui saldo cuti');

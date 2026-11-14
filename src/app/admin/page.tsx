@@ -20,6 +20,7 @@ import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { SkeletonCard, SkeletonTable } from '@/components/Skeleton';
 import { formatIndonesianDate } from '@/lib/date';
+import { useDataSync } from '@/lib/sync';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -71,14 +72,19 @@ export default function AdminDashboardPage() {
     fetchAdminDashboard();
   }, []);
 
+  // Real-time synchronization whenever database or entities change
+  useDataSync(() => {
+    fetchAdminDashboard();
+  });
+
   const fetchAdminDashboard = async () => {
     try {
-      // Fetch user session and all dashboard metrics simultaneously in parallel
+      // Fetch user session and all dashboard metrics simultaneously in parallel without cache
       const [userRes, boardRes, leaveRes, auditRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/schedules/board'),
-        fetch('/api/leave?status=pending'),
-        fetch('/api/audit-logs'),
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/schedules/board', { cache: 'no-store' }),
+        fetch('/api/leave?status=pending', { cache: 'no-store' }),
+        fetch('/api/audit-logs', { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -109,9 +115,21 @@ export default function AdminDashboardPage() {
 
       if (typeof window !== 'undefined') {
         try {
-          sessionStorage.setItem('imbs_admin_board', JSON.stringify(boardJson));
-          sessionStorage.setItem('imbs_admin_leaves', JSON.stringify(leaveJson.requests || []));
-          sessionStorage.setItem('imbs_admin_logs', JSON.stringify(auditJson.logs?.slice(0, 5) || []));
+          if (boardJson && (boardJson.stats?.total_employees > 0 || (boardJson.items && boardJson.items.length > 0))) {
+            sessionStorage.setItem('imbs_admin_board', JSON.stringify(boardJson));
+          } else {
+            sessionStorage.removeItem('imbs_admin_board');
+          }
+          if (leaveJson.requests && leaveJson.requests.length > 0) {
+            sessionStorage.setItem('imbs_admin_leaves', JSON.stringify(leaveJson.requests));
+          } else {
+            sessionStorage.removeItem('imbs_admin_leaves');
+          }
+          if (auditJson.logs && auditJson.logs.length > 0) {
+            sessionStorage.setItem('imbs_admin_logs', JSON.stringify(auditJson.logs.slice(0, 5)));
+          } else {
+            sessionStorage.removeItem('imbs_admin_logs');
+          }
         } catch {}
       }
 

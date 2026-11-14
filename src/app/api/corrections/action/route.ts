@@ -4,6 +4,9 @@ import { getDb } from '@/lib/db';
 import { recordAuditLog } from '@/lib/audit';
 import { createNotification } from '@/lib/notify';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();

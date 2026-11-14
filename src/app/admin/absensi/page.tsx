@@ -19,6 +19,7 @@ import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
 import { getWIBDateString, formatIndonesianDate } from '@/lib/date';
+import { broadcastDataChange, useDataSync } from '@/lib/sync';
 
 export default function AdminAbsensiMasterPage() {
   const router = useRouter();
@@ -66,14 +67,19 @@ export default function AdminAbsensiMasterPage() {
     fetchRecords();
   }, [selectedDate]);
 
+  // Real-time synchronization
+  useDataSync(() => {
+    fetchRecords();
+  }, ['attendance', 'all']);
+
   const fetchRecords = async () => {
     try {
       let url = '/api/attendance/all';
       if (selectedDate) url += `?date=${selectedDate}`;
 
       const [userRes, res] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch(url),
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch(url, { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -97,7 +103,11 @@ export default function AdminAbsensiMasterPage() {
       setRecords(recList);
       if (typeof window !== 'undefined' && !selectedDate) {
         try {
-          sessionStorage.setItem('imbs_absensi_master', JSON.stringify(recList));
+          if (recList.length > 0) {
+            sessionStorage.setItem('imbs_absensi_master', JSON.stringify(recList));
+          } else {
+            sessionStorage.removeItem('imbs_absensi_master');
+          }
         } catch {}
       }
       setLoading(false);
@@ -147,6 +157,7 @@ export default function AdminAbsensiMasterPage() {
       toast.success(data.message);
       setShowModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('attendance');
       fetchRecords();
     } catch (e) {
       toast.error('Gagal memproses koreksi data');

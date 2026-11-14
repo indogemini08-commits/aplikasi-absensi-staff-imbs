@@ -7,7 +7,13 @@ export const metadata: Metadata = {
   description: 'Portal Presensi dan Pengelolaan Kehadiran Digital Pegawai IMBS Mobile-First & Geofencing GPS',
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/logo-imbs-left.png', type: 'image/png' },
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/logo-imbs-left.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -27,6 +33,9 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/logo-imbs-left.png" type="image/png" sizes="any" />
+        <link rel="shortcut icon" href="/logo-imbs-left.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

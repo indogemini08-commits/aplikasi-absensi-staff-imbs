@@ -19,6 +19,7 @@ import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 type TabMode = 'pending' | 'submitted' | 'all_late';
 
@@ -64,6 +65,10 @@ export default function AdminKeterlambatanPage() {
     fetchLateRecords(activeTab);
   }, [activeTab]);
 
+  useDataSync(() => {
+    fetchLateRecords(activeTab);
+  }, ['attendance']);
+
   const fetchLateRecords = async (tab: TabMode) => {
     try {
       let dataUrl = '/api/attendance/late-reason?filter=pending';
@@ -74,8 +79,8 @@ export default function AdminKeterlambatanPage() {
       }
 
       const [userRes, res] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch(dataUrl),
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch(dataUrl, { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -98,9 +103,13 @@ export default function AdminKeterlambatanPage() {
       const list = (tab === 'pending' || tab === 'submitted') ? (data.reasons || []) : (data.records || []);
       setRecords(list);
 
-      if (typeof window !== 'undefined' && tab === 'pending') {
+      if (typeof window !== 'undefined') {
         try {
-          sessionStorage.setItem('imbs_late_records', JSON.stringify(list));
+          if (list.length === 0 || tab !== 'pending') {
+            sessionStorage.removeItem('imbs_late_records');
+          } else {
+            sessionStorage.setItem('imbs_late_records', JSON.stringify(list));
+          }
         } catch {}
       }
       setLoading(false);
@@ -141,6 +150,7 @@ export default function AdminKeterlambatanPage() {
       toast.success(data.message);
       setShowModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('attendance');
       fetchLateRecords(activeTab);
     } catch (e) {
       toast.error('Gagal memproses peninjauan');

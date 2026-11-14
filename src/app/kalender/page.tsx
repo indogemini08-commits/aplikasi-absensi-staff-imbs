@@ -6,6 +6,7 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, Star, Alert
 import Navbar from '@/components/Navbar';
 import BottomNav from '@/components/BottomNav';
 import { formatIndonesianDate } from '@/lib/date';
+import { useDataSync } from '@/lib/sync';
 
 export default function KalenderPage() {
   const router = useRouter();
@@ -42,11 +43,15 @@ export default function KalenderPage() {
     fetchData();
   }, []);
 
+  useDataSync(() => {
+    fetchData();
+  }, ['holidays']);
+
   const fetchData = async () => {
     try {
       const [userRes, holRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/holidays')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/holidays', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -65,7 +70,11 @@ export default function KalenderPage() {
         setHolidays(holList);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_holidays_list', JSON.stringify(holList));
+            if (holList.length === 0) {
+              sessionStorage.removeItem('imbs_holidays_list');
+            } else {
+              sessionStorage.setItem('imbs_holidays_list', JSON.stringify(holList));
+            }
           } catch {}
         }
       }

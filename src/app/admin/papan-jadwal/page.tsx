@@ -20,6 +20,7 @@ import Sidebar from '@/components/Sidebar';
 import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
 import { getWIBDateString, formatIndonesianDate } from '@/lib/date';
+import { useDataSync } from '@/lib/sync';
 
 function PapanJadwalContent() {
   const router = useRouter();
@@ -71,6 +72,11 @@ function PapanJadwalContent() {
     fetchBoardData();
   }, [selectedDate, selectedDept, selectedStatus]);
 
+  // Real-time synchronization
+  useDataSync(() => {
+    fetchBoardData();
+  });
+
   const fetchBoardData = async () => {
     try {
       let url = `/api/schedules/board?date=${selectedDate}`;
@@ -78,9 +84,9 @@ function PapanJadwalContent() {
       if (selectedStatus) url += `&status=${encodeURIComponent(selectedStatus)}`;
 
       const [userRes, empRes, boardRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/employees'),
-        fetch(url)
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/employees', { cache: 'no-store' }),
+        fetch(url, { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -103,7 +109,11 @@ function PapanJadwalContent() {
         setDepartments(depts);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_departments', JSON.stringify(depts));
+            if (depts.length > 0) {
+              sessionStorage.setItem('imbs_departments', JSON.stringify(depts));
+            } else {
+              sessionStorage.removeItem('imbs_departments');
+            }
           } catch {}
         }
       }
@@ -113,7 +123,11 @@ function PapanJadwalContent() {
         setBoardData(boardJson);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_papan_jadwal', JSON.stringify(boardJson));
+            if (boardJson && (boardJson.stats?.total_employees > 0 || (boardJson.items && boardJson.items.length > 0))) {
+              sessionStorage.setItem('imbs_papan_jadwal', JSON.stringify(boardJson));
+            } else {
+              sessionStorage.removeItem('imbs_papan_jadwal');
+            }
           } catch {}
         }
       }

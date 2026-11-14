@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
+import { useDataSync } from '@/lib/sync';
 
 export default function AdminAuditLogPage() {
   const router = useRouter();
@@ -42,11 +43,15 @@ export default function AdminAuditLogPage() {
     fetchLogs();
   }, []);
 
+  useDataSync(() => {
+    fetchLogs();
+  });
+
   const fetchLogs = async () => {
     try {
       const [userRes, logRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/audit-logs')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/audit-logs', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -69,7 +74,11 @@ export default function AdminAuditLogPage() {
         setLogs(logList);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_audit_logs', JSON.stringify(logList));
+            if (logList.length === 0) {
+              sessionStorage.removeItem('imbs_audit_logs');
+            } else {
+              sessionStorage.setItem('imbs_audit_logs', JSON.stringify(logList));
+            }
           } catch {}
         }
       }

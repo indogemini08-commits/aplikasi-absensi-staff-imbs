@@ -23,6 +23,7 @@ import SelfieCapture from '@/components/SelfieCapture';
 import Modal from '@/components/Modal';
 import { useToast } from '@/components/ToastContext';
 import { calculateHaversineDistance, checkGeofence } from '@/lib/geo';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function AbsensiPage() {
   const router = useRouter();
@@ -81,11 +82,15 @@ export default function AbsensiPage() {
     fetchInitialData();
   }, []);
 
+  useDataSync(() => {
+    fetchInitialData();
+  }, ['attendance', 'locations', 'schedules']);
+
   const fetchInitialData = async () => {
     try {
       const [userRes, statusRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/attendance/status')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/attendance/status', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -241,7 +246,9 @@ export default function AbsensiPage() {
         setShowLateModal(true);
       }
 
-      // Refresh status
+      // Refresh status & broadcast to admin/other tabs
+      broadcastDataChange('attendance');
+      broadcastDataChange('attendance');
       await fetchInitialData();
       setIsSubmitting(false);
     } catch (e: any) {
@@ -292,6 +299,7 @@ export default function AbsensiPage() {
         origin: { y: 0.7 },
       });
 
+      broadcastDataChange('attendance');
       await fetchInitialData();
       setIsSubmitting(false);
     } catch (e: any) {
@@ -328,6 +336,7 @@ export default function AbsensiPage() {
       toast.success(data.message);
       setShowLateModal(false);
       setSubmittingLateReason(false);
+      broadcastDataChange('attendance');
       await fetchInitialData();
     } catch (e: any) {
       toast.error('Gagal mengirim alasan keterlambatan.');

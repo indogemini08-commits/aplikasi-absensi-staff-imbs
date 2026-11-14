@@ -9,6 +9,7 @@ import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
 import { useToast } from '@/components/ToastContext';
 import { formatIndonesianDate } from '@/lib/date';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function KoreksiPage() {
   const router = useRouter();
@@ -54,11 +55,15 @@ export default function KoreksiPage() {
     fetchData();
   }, []);
 
+  useDataSync(() => {
+    fetchData();
+  }, ['corrections', 'attendance']);
+
   const fetchData = async () => {
     try {
       const [userRes, dataRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/corrections')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/corrections', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -77,7 +82,11 @@ export default function KoreksiPage() {
         setCorrections(corrList);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_staff_corrections', JSON.stringify(corrList));
+            if (corrList.length === 0) {
+              sessionStorage.removeItem('imbs_staff_corrections');
+            } else {
+              sessionStorage.setItem('imbs_staff_corrections', JSON.stringify(corrList));
+            }
           } catch {}
         }
       }
@@ -120,6 +129,7 @@ export default function KoreksiPage() {
       setShowModal(false);
       setReason('');
       setIsSubmitting(false);
+      broadcastDataChange('corrections');
       fetchData();
     } catch (e) {
       toast.error('Gagal mengajukan koreksi');

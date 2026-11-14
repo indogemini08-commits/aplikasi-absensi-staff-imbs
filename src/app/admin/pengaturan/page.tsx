@@ -18,6 +18,7 @@ import {
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { useToast } from '@/components/ToastContext';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function PengaturanPage() {
   const router = useRouter();
@@ -196,11 +197,15 @@ export default function PengaturanPage() {
     fetchSettings();
   }, []);
 
+  useDataSync(() => {
+    fetchSettings();
+  }, ['settings']);
+
   const fetchSettings = async () => {
     try {
       const [userRes, res] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/settings')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/settings', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -360,6 +365,9 @@ export default function PengaturanPage() {
 
           // Purge stale report cache so Laporan page immediately refetches fresh data
           sessionStorage.removeItem('imbs_laporan_data');
+
+          // Broadcast settings change to all tabs and pages immediately
+          broadcastDataChange('settings');
 
           window.dispatchEvent(new Event('imbs_settings_updated'));
           try {

@@ -3,6 +3,9 @@ import { getDb } from '@/lib/db';
 import { verifyPassword, createSessionToken, COOKIE_NAME } from '@/lib/auth';
 import { recordAuditLog } from '@/lib/audit';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(req: NextRequest) {
   try {
     const { username, password } = await req.json();

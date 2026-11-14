@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, User, Eye, EyeOff, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/ToastContext';
 import ThemeToggle from '@/components/ThemeToggle';
+import { invalidateMasterCache } from '@/lib/sync';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    fetch('/api/settings')
+    fetch('/api/settings', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (data?.settings) {
@@ -97,6 +98,7 @@ export default function LoginPage() {
 
       toast.success(`Selamat datang, ${data.user.name}!`);
       try {
+        invalidateMasterCache();
         localStorage.setItem('imbs_user_session', JSON.stringify(data.user));
       } catch {}
       router.push(data.redirectUrl || '/dashboard');

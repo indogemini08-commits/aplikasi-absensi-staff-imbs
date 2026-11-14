@@ -28,6 +28,7 @@ import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import Modal from '@/components/Modal';
 import { useToast } from '@/components/ToastContext';
+import { broadcastDataChange, useDataSync } from '@/lib/sync';
 
 const ALL_DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
@@ -117,12 +118,17 @@ export default function JadwalDepartemenPage() {
     fetchData();
   }, []);
 
+  // Real-time synchronization
+  useDataSync(() => {
+    fetchData();
+  }, ['departments', 'all']);
+
   const fetchData = async () => {
     try {
       const [userRes, deptRes, empRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/departments'),
-        fetch('/api/employees'),
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/departments', { cache: 'no-store' }),
+        fetch('/api/employees', { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -151,8 +157,16 @@ export default function JadwalDepartemenPage() {
 
       if (typeof window !== 'undefined') {
         try {
-          sessionStorage.setItem('imbs_jadwal_depts', JSON.stringify(depts));
-          sessionStorage.setItem('imbs_jadwal_emps', JSON.stringify(emps));
+          if (depts.length > 0) {
+            sessionStorage.setItem('imbs_jadwal_depts', JSON.stringify(depts));
+          } else {
+            sessionStorage.removeItem('imbs_jadwal_depts');
+          }
+          if (emps.length > 0) {
+            sessionStorage.setItem('imbs_jadwal_emps', JSON.stringify(emps));
+          } else {
+            sessionStorage.removeItem('imbs_jadwal_emps');
+          }
         } catch {}
       }
 
@@ -221,6 +235,7 @@ export default function JadwalDepartemenPage() {
       toast.success(data.message || 'Departemen berhasil dihapus.');
       setShowDeleteModal(false);
       setIsDeleting(false);
+      broadcastDataChange('departments');
       fetchData();
     } catch (e) {
       console.error(e);
@@ -319,6 +334,7 @@ export default function JadwalDepartemenPage() {
       toast.success(data.message || 'Jadwal harian departemen berhasil diperbarui!');
       setShowEditModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('departments');
       fetchData();
     } catch (err) {
       console.error(err);
@@ -386,6 +402,7 @@ export default function JadwalDepartemenPage() {
       toast.success(data.message || 'Departemen baru berhasil ditambahkan!');
       setShowAddModal(false);
       setIsAdding(false);
+      broadcastDataChange('departments');
       fetchData();
     } catch (err) {
       console.error(err);

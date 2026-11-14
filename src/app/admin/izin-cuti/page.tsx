@@ -19,6 +19,7 @@ import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function AdminIzinCutiPage() {
   const router = useRouter();
@@ -63,14 +64,18 @@ export default function AdminIzinCutiPage() {
     fetchRequests();
   }, [statusFilter]);
 
+  useDataSync(() => {
+    fetchRequests();
+  }, ['leave']);
+
   const fetchRequests = async () => {
     try {
       let url = '/api/leave';
       if (statusFilter) url += `?status=${statusFilter}`;
 
       const [userRes, dataRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch(url)
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch(url, { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -91,9 +96,13 @@ export default function AdminIzinCutiPage() {
         const data = await dataRes.json();
         const reqList = data.requests || [];
         setRequests(reqList);
-        if (typeof window !== 'undefined' && statusFilter === 'pending') {
+        if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_leave_requests', JSON.stringify(reqList));
+            if (reqList.length === 0 || statusFilter !== 'pending') {
+              sessionStorage.removeItem('imbs_leave_requests');
+            } else {
+              sessionStorage.setItem('imbs_leave_requests', JSON.stringify(reqList));
+            }
           } catch {}
         }
       }
@@ -135,6 +144,7 @@ export default function AdminIzinCutiPage() {
       toast.success(data.message);
       setShowModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('leave');
       fetchRequests();
     } catch (e) {
       toast.error('Gagal memproses keputusan');

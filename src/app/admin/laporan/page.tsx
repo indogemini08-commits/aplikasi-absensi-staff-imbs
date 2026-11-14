@@ -26,6 +26,7 @@ import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
 import { getWIBDateString, formatIndonesianDate } from '@/lib/date';
 import ReportPreviewModal from '@/components/ReportPreviewModal';
+import { useDataSync } from '@/lib/sync';
 
 function LaporanContent() {
   const router = useRouter();
@@ -141,6 +142,11 @@ function LaporanContent() {
       if (channel) channel.close();
     };
   }, [startDate, endDate, departmentId, employeeId]);
+
+  // Real-time synchronization when database changes
+  useDataSync(() => {
+    fetchReport();
+  });
 
   const fetchReport = async () => {
     try {

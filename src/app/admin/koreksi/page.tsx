@@ -18,6 +18,7 @@ import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
 import { formatIndonesianDate } from '@/lib/date';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function AdminKoreksiPage() {
   const router = useRouter();
@@ -61,11 +62,15 @@ export default function AdminKoreksiPage() {
     fetchCorrections();
   }, []);
 
+  useDataSync(() => {
+    fetchCorrections();
+  }, ['attendance', 'corrections']);
+
   const fetchCorrections = async () => {
     try {
       const [userRes, dataRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/corrections')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/corrections', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -88,7 +93,11 @@ export default function AdminKoreksiPage() {
         setCorrections(corrList);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_corrections_list', JSON.stringify(corrList));
+            if (corrList.length === 0) {
+              sessionStorage.removeItem('imbs_corrections_list');
+            } else {
+              sessionStorage.setItem('imbs_corrections_list', JSON.stringify(corrList));
+            }
           } catch {}
         }
       }
@@ -130,6 +139,7 @@ export default function AdminKoreksiPage() {
       toast.success(data.message);
       setShowModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('corrections');
       fetchCorrections();
     } catch (e) {
       toast.error('Gagal memproses keputusan koreksi');

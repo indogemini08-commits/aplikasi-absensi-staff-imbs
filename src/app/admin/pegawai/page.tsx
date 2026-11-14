@@ -29,6 +29,7 @@ import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
 import { SkeletonTable } from '@/components/Skeleton';
 import { useToast } from '@/components/ToastContext';
+import { broadcastDataChange, useDataSync } from '@/lib/sync';
 
 export default function PegawaiPage() {
   const router = useRouter();
@@ -109,11 +110,16 @@ export default function PegawaiPage() {
     fetchEmployees();
   }, []);
 
+  // Real-time synchronization across tabs and pages
+  useDataSync(() => {
+    fetchEmployees();
+  }, ['employees', 'all']);
+
   const fetchEmployees = async () => {
     try {
       const [userRes, empRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/employees'),
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/employees', { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -143,9 +149,21 @@ export default function PegawaiPage() {
 
       if (typeof window !== 'undefined') {
         try {
-          sessionStorage.setItem('imbs_pegawai_list', JSON.stringify(emps));
-          sessionStorage.setItem('imbs_departments_list', JSON.stringify(depts));
-          sessionStorage.setItem('imbs_shifts_list', JSON.stringify(shfs));
+          if (emps.length > 0) {
+            sessionStorage.setItem('imbs_pegawai_list', JSON.stringify(emps));
+          } else {
+            sessionStorage.removeItem('imbs_pegawai_list');
+          }
+          if (depts.length > 0) {
+            sessionStorage.setItem('imbs_departments_list', JSON.stringify(depts));
+          } else {
+            sessionStorage.removeItem('imbs_departments_list');
+          }
+          if (shfs.length > 0) {
+            sessionStorage.setItem('imbs_shifts_list', JSON.stringify(shfs));
+          } else {
+            sessionStorage.removeItem('imbs_shifts_list');
+          }
         } catch {}
       }
 
@@ -251,6 +269,7 @@ export default function PegawaiPage() {
 
       setShowModal(false);
       setIsSubmitting(false);
+      broadcastDataChange('employees');
       fetchEmployees();
     } catch (e) {
       toast.error('Terjadi kesalahan sistem');
@@ -275,6 +294,7 @@ export default function PegawaiPage() {
         return;
       }
       toast.success(`Akun ${emp.name} berhasil ${nextState ? 'diaktifkan kembali' : 'dinonaktifkan'}. Data riwayat tetap tersimpan.`);
+      broadcastDataChange('employees');
       fetchEmployees();
     } catch (e) {
       toast.error('Gagal memperbarui status');
@@ -335,6 +355,7 @@ export default function PegawaiPage() {
       setShowCsvModal(false);
       setCsvText('');
       setIsImporting(false);
+      broadcastDataChange('employees');
       fetchEmployees();
     } catch (e) {
       toast.error('Gagal memproses impor CSV');
@@ -405,6 +426,7 @@ export default function PegawaiPage() {
       setEmpToDelete(null);
       setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
       setIsDeleting(false);
+      broadcastDataChange('employees');
       fetchEmployees();
     } catch (e) {
       console.error(e);

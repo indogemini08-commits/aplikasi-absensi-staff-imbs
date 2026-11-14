@@ -8,6 +8,7 @@ import BottomNav from '@/components/BottomNav';
 import EmptyState from '@/components/EmptyState';
 import { formatIndonesianDate } from '@/lib/date';
 import { useToast } from '@/components/ToastContext';
+import { useDataSync, broadcastDataChange } from '@/lib/sync';
 
 export default function NotifikasiPage() {
   const router = useRouter();
@@ -52,11 +53,15 @@ export default function NotifikasiPage() {
     fetchNotifications();
   }, []);
 
+  useDataSync(() => {
+    fetchNotifications();
+  }, ['notifications']);
+
   const fetchNotifications = async () => {
     try {
       const [userRes, dataRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/notifications')
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/notifications', { cache: 'no-store' })
       ]);
 
       if (!userRes.ok) {
@@ -77,8 +82,13 @@ export default function NotifikasiPage() {
         setUnreadCount(count);
         if (typeof window !== 'undefined') {
           try {
-            sessionStorage.setItem('imbs_notifications', JSON.stringify(notifs));
-            sessionStorage.setItem('imbs_unread_count', String(count));
+            if (notifs.length === 0) {
+              sessionStorage.removeItem('imbs_notifications');
+              sessionStorage.removeItem('imbs_unread_count');
+            } else {
+              sessionStorage.setItem('imbs_notifications', JSON.stringify(notifs));
+              sessionStorage.setItem('imbs_unread_count', String(count));
+            }
           } catch {}
         }
       }
@@ -97,6 +107,7 @@ export default function NotifikasiPage() {
         body: JSON.stringify({ markAll: true }),
       });
       toast.success('Semua notifikasi ditandai telah dibaca');
+      broadcastDataChange('notifications');
       fetchNotifications();
     } catch (e) {
       console.error(e);
@@ -110,6 +121,7 @@ export default function NotifikasiPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
       });
+      broadcastDataChange('notifications');
       fetchNotifications();
     } catch (e) {
       console.error(e);
