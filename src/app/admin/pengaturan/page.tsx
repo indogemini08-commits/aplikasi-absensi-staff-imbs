@@ -328,10 +328,7 @@ export default function PengaturanPage() {
       toast.success(data.message || 'Pengaturan sistem & identitas lembaga berhasil disimpan');
       if (typeof window !== 'undefined') {
         try {
-          if (logoApp) sessionStorage.setItem('imbs_app_logo', logoApp);
-          sessionStorage.setItem('imbs_app_org_name', orgName);
-          sessionStorage.setItem('imbs_app_foundation_name', foundationName);
-          sessionStorage.setItem('imbs_settings_data', JSON.stringify({
+          const settingsPayload = {
             gov_name: govName,
             foundation_name: foundationName,
             organization_name: orgName,
@@ -352,8 +349,24 @@ export default function PengaturanPage() {
             max_gps_accuracy_meters: maxGpsAccuracy,
             default_radius_meters: defaultRadius,
             timezone: 'Asia/Jakarta',
-          }));
+          };
+
+          if (logoApp) sessionStorage.setItem('imbs_app_logo', logoApp);
+          sessionStorage.setItem('imbs_app_org_name', orgName);
+          sessionStorage.setItem('imbs_app_foundation_name', foundationName);
+          sessionStorage.setItem('imbs_settings_data', JSON.stringify(settingsPayload));
+          localStorage.setItem('imbs_settings_data', JSON.stringify(settingsPayload));
+          localStorage.setItem('imbs_settings_updated_at', String(Date.now()));
+
+          // Purge stale report cache so Laporan page immediately refetches fresh data
+          sessionStorage.removeItem('imbs_laporan_data');
+
           window.dispatchEvent(new Event('imbs_settings_updated'));
+          try {
+            const channel = new BroadcastChannel('imbs_channel');
+            channel.postMessage({ type: 'SETTINGS_UPDATED', settings: settingsPayload });
+            channel.close();
+          } catch {}
         } catch {}
       }
       setIsSaving(false);

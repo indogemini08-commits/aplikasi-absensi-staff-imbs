@@ -98,20 +98,61 @@ function LaporanContent() {
   const [departmentId, setDepartmentId] = useState(searchParams.get('departmentId') || '');
   const [employeeId, setEmployeeId] = useState(searchParams.get('employeeId') || '');
 
+  const [liveSettings, setLiveSettings] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = sessionStorage.getItem('imbs_settings_data') || localStorage.getItem('imbs_settings_data');
+        return raw ? JSON.parse(raw) : null;
+      } catch {}
+    }
+    return null;
+  });
+
   useEffect(() => {
     fetchReport();
+
+    const handleSettingsUpdated = () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = sessionStorage.getItem('imbs_settings_data') || localStorage.getItem('imbs_settings_data');
+          if (raw) setLiveSettings(JSON.parse(raw));
+        } catch {}
+      }
+      fetchReport();
+    };
+
+    window.addEventListener('imbs_settings_updated', handleSettingsUpdated);
+    window.addEventListener('storage', handleSettingsUpdated);
+
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel('imbs_channel');
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'SETTINGS_UPDATED') {
+          if (event.data?.settings) setLiveSettings(event.data.settings);
+          fetchReport();
+        }
+      };
+    } catch {}
+
+    return () => {
+      window.removeEventListener('imbs_settings_updated', handleSettingsUpdated);
+      window.removeEventListener('storage', handleSettingsUpdated);
+      if (channel) channel.close();
+    };
   }, [startDate, endDate, departmentId, employeeId]);
 
   const fetchReport = async () => {
     try {
-      let url = `/api/reports/recap?startDate=${startDate}&endDate=${endDate}`;
+      let url = `/api/reports/recap?startDate=${startDate}&endDate=${endDate}&_t=${Date.now()}`;
       if (departmentId) url += `&departmentId=${departmentId}`;
       if (employeeId) url += `&employeeId=${employeeId}`;
 
-      const [userRes, empRes, reportRes] = await Promise.all([
-        fetch('/api/auth/me'),
-        fetch('/api/employees'),
-        fetch(url)
+      const [userRes, empRes, reportRes, settingsRes] = await Promise.all([
+        fetch('/api/auth/me', { cache: 'no-store' }),
+        fetch('/api/employees', { cache: 'no-store' }),
+        fetch(url, { cache: 'no-store' }),
+        fetch(`/api/settings?_t=${Date.now()}`, { cache: 'no-store' }),
       ]);
 
       if (!userRes.ok) {
@@ -132,6 +173,18 @@ function LaporanContent() {
         const empData = await empRes.json();
         setDepartments(empData.departments || []);
         setEmployees(empData.employees || []);
+      }
+
+      if (settingsRes.ok) {
+        const sData = await settingsRes.json();
+        if (sData?.settings) {
+          setLiveSettings(sData.settings);
+          if (typeof window !== 'undefined') {
+            try {
+              sessionStorage.setItem('imbs_settings_data', JSON.stringify(sData.settings));
+            } catch {}
+          }
+        }
       }
 
       if (reportRes.ok) {
@@ -182,18 +235,24 @@ function LaporanContent() {
 
   const records = reportData?.records || [];
   const recapSummary = reportData?.recapSummary || [];
-  const institution = reportData?.institution || {
-    govName: 'PEMERINTAH DAERAH KABUPATEN BOGOR',
-    foundationName: 'YAYASAN SABILUL HUDA NAMBO',
-    schoolName: 'IMAM MUZANI BOARDING SCHOOL',
-    address: 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610',
-    contact: 'E-Mail: imammuzanibs@gmail.com   No Telepon : 0852 8242 4628',
-    headmaster: 'Fauzan Azhiimaa, Lc',
-    headmasterTitle: 'Kepala Sekolah',
-    headmasterNip: '—',
-    tuStaff: 'ALDRI WAHYUDI CHANDRA',
-    tuStaffTitle: 'Petugas Tata Usaha',
-    tuStaffNip: '—',
+  const serverInst = reportData?.institution;
+  const institution = {
+    govName: liveSettings?.gov_name || serverInst?.govName || 'PEMERINTAH DAERAH KABUPATEN BOGOR',
+    foundationName: liveSettings?.foundation_name || serverInst?.foundationName || 'YAYASAN SABILUL HUDA NAMBO',
+    schoolName: liveSettings?.organization_name || serverInst?.schoolName || 'IMAM MUZANI BOARDING SCHOOL',
+    address: liveSettings?.organization_address || serverInst?.address || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610',
+    contact: `E-Mail: ${liveSettings?.organization_email || serverInst?.email || 'imammuzanibs@gmail.com'}   No Telepon : ${liveSettings?.organization_phone || serverInst?.phone || '0852 8242 4628'}`,
+    email: liveSettings?.organization_email || serverInst?.email || 'imammuzanibs@gmail.com',
+    phone: liveSettings?.organization_phone || serverInst?.phone || '0852 8242 4628',
+    headmaster: liveSettings?.headmaster_name || serverInst?.headmaster || 'Fauzan Azhiimaa, Lc',
+    headmasterTitle: liveSettings?.headmaster_title || serverInst?.headmasterTitle || 'Kepala Sekolah',
+    headmasterNip: liveSettings?.headmaster_nip || serverInst?.headmasterNip || '—',
+    tuStaff: liveSettings?.tu_name || serverInst?.tuStaff || 'ALDRI WAHYUDI CHANDRA',
+    tuStaffTitle: liveSettings?.tu_title || serverInst?.tuStaffTitle || 'Petugas Tata Usaha',
+    tuStaffNip: liveSettings?.tu_nip || serverInst?.tuStaffNip || '—',
+    logoInstitution: liveSettings?.logo_institution || serverInst?.logoInstitution || '',
+    logoFoundation: liveSettings?.logo_foundation || serverInst?.logoFoundation || '',
+    logoApp: liveSettings?.logo_app || serverInst?.logoApp || '',
   };
   const periodFormatted = reportData?.periodFormatted || `${startDate} – ${endDate}`;
   const monthName = reportData?.monthName || 'AGUSTUS';

@@ -33,6 +33,9 @@ function determinePredikat(
   return 'Kurang Baik';
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -357,26 +360,35 @@ export async function GET(req: NextRequest) {
 
     const formattedSignDate = `${parseInt(eD, 10)} ${capEndM} ${eY}`;
 
-    return NextResponse.json({
-      startDate,
-      endDate,
-      formattedStartDate: `${sD} ${capStartM} ${sY}`,
-      formattedEndDate: formattedSignDate,
-      periodFormatted,
-      monthName,
-      institution,
-      records,
-      recapSummary,
-      stats: {
-        totalRecords: records.length,
-        totalEmployees: activeEmployees.length,
-        totalHadir,
-        totalTerlambat,
-        totalPulangCepat,
-        totalMenitTerlambat,
-        persentaseKehadiranTepat: records.length > 0 ? Math.round((totalHadir / records.length) * 100) : 100,
+    return NextResponse.json(
+      {
+        startDate,
+        endDate,
+        formattedStartDate: `${sD} ${capStartM} ${sY}`,
+        formattedEndDate: formattedSignDate,
+        periodFormatted,
+        monthName,
+        institution,
+        records,
+        recapSummary,
+        stats: {
+          totalRecords: records.length,
+          totalEmployees: activeEmployees.length,
+          totalHadir,
+          totalTerlambat,
+          totalPulangCepat,
+          totalMenitTerlambat,
+          persentaseKehadiranTepat: records.length > 0 ? Math.round((totalHadir / records.length) * 100) : 100,
+        },
       },
-    });
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      }
+    );
   } catch (err: any) {
     console.error('Reports recap error:', err);
     return NextResponse.json({ error: 'Gagal memuat rekap laporan' }, { status: 500 });

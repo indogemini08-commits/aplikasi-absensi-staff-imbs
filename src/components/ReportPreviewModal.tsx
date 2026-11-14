@@ -243,9 +243,36 @@ export default function ReportPreviewModal({
   const totalLupaPulangAll = recapSummary.reduce((acc, i) => acc + (i.total_lupa_pulang || 0), 0);
   const totalTidakHadirAll = recapSummary.reduce((acc, i) => acc + (i.total_tidak_hadir || 0), 0);
 
+  // Real-time synchronization: read latest live settings from storage
+  let localSettings: any = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = sessionStorage.getItem('imbs_settings_data') || localStorage.getItem('imbs_settings_data');
+      if (raw) localSettings = JSON.parse(raw);
+    } catch {}
+  }
+
+  const activeInst = {
+    ...institution,
+    headmaster: localSettings?.headmaster_name || institution.headmaster,
+    headmasterTitle: localSettings?.headmaster_title || institution.headmasterTitle || 'Kepala Sekolah',
+    headmasterNip: localSettings?.headmaster_nip || institution.headmasterNip || '—',
+    tuStaff: localSettings?.tu_name || institution.tuStaff,
+    tuStaffTitle: localSettings?.tu_title || institution.tuStaffTitle || 'Petugas Tata Usaha',
+    tuStaffNip: localSettings?.tu_nip || institution.tuStaffNip || '—',
+    schoolName: localSettings?.organization_name || institution.schoolName,
+    foundationName: localSettings?.foundation_name || institution.foundationName,
+    address: localSettings?.organization_address || institution.address,
+    email: localSettings?.organization_email || institution.email,
+    phone: localSettings?.organization_phone || institution.phone,
+    logoApp: localSettings?.logo_app || institution.logoApp,
+    logoInstitution: localSettings?.logo_institution || institution.logoInstitution,
+    logoFoundation: localSettings?.logo_foundation || institution.logoFoundation,
+  };
+
   // Parse contact info for clean display
-  const orgEmail = institution.email || 'imammuzanibs@gmail.com';
-  const orgPhone = institution.phone || '0852 8242 4628';
+  const orgEmail = activeInst.email || 'imammuzanibs@gmail.com';
+  const orgPhone = activeInst.phone || '0852 8242 4628';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
@@ -533,20 +560,20 @@ export default function ReportPreviewModal({
                 <div className="flex items-start gap-3.5">
                   <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-xs">
                     <img
-                      src={institution.logoInstitution || institution.logoApp || "/logo-imbs-left.png"}
+                      src={activeInst.logoInstitution || activeInst.logoApp || "/logo-imbs-left.png"}
                       alt="Logo Lembaga"
                       className="max-h-full max-w-full object-contain"
                     />
                   </div>
                   <div>
                     <h1 className="text-base sm:text-lg font-black text-[#0c2340] tracking-tight uppercase leading-tight whitespace-nowrap">
-                      {institution.schoolName || 'IMAM MUZANI BOARDING SCHOOL'}
+                      {activeInst.schoolName || 'IMAM MUZANI BOARDING SCHOOL'}
                     </h1>
                     <div className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wider mt-0.5 whitespace-nowrap">
-                      {institution.foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
+                      {activeInst.foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
                     </div>
                     <p className="text-[10.5px] text-slate-500 font-medium leading-tight mt-0.5">
-                      {institution.address || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610'}
+                      {activeInst.address || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610'}
                     </p>
                     <div className="text-[10px] text-slate-600 font-semibold leading-tight mt-1 flex flex-wrap items-center gap-1.5 whitespace-nowrap">
                       <span>E-Mail: <span className="text-slate-800">{orgEmail}</span></span>
@@ -576,12 +603,12 @@ export default function ReportPreviewModal({
                   <div className="flex items-center whitespace-nowrap">
                     <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Nama Lembaga</span>
                     <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-slate-900 text-[11px] whitespace-nowrap truncate">{institution.schoolName}</span>
+                    <span className="font-bold text-slate-900 text-[11px] whitespace-nowrap truncate">{activeInst.schoolName}</span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
                     <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Yayasan Naungan</span>
                     <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-semibold text-slate-800 text-[11px] whitespace-nowrap truncate">{institution.foundationName}</span>
+                    <span className="font-semibold text-slate-800 text-[11px] whitespace-nowrap truncate">{activeInst.foundationName}</span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
                     <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Periode Absensi</span>
@@ -599,11 +626,11 @@ export default function ReportPreviewModal({
                   </div>
                   <div className="flex items-center whitespace-nowrap">
                     <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">
-                      {institution.tuStaffTitle || 'Petugas Tata Usaha'}
+                      {activeInst.tuStaffTitle || 'Petugas Tata Usaha'}
                     </span>
                     <span className="w-3 text-slate-400 text-center shrink-0">:</span>
                     <span className="font-semibold text-slate-900 text-[11px] whitespace-nowrap">
-                      {institution.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
+                      {activeInst.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
                     </span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
@@ -801,16 +828,16 @@ export default function ReportPreviewModal({
                 <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
                   <div className="text-slate-500 text-[10.5px] whitespace-nowrap">Mengetahui,</div>
                   <div className="font-bold text-slate-900 text-xs whitespace-nowrap">
-                    {institution.headmasterTitle || 'Kepala Sekolah'}
+                    {activeInst.headmasterTitle || 'Kepala Sekolah'}
                   </div>
                   <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap">
                     [ Tanda Tangan & Cap Sah ]
                   </div>
                   <div className="font-extrabold text-slate-950 underline text-xs tracking-tight whitespace-nowrap">
-                    {institution.headmaster || 'Fauzan Azhiimaa, Lc'}
+                    {activeInst.headmaster || 'Fauzan Azhiimaa, Lc'}
                   </div>
                   <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap">
-                    NIP: {institution.headmasterNip || '—'}
+                    NIP: {activeInst.headmasterNip || '—'}
                   </div>
                 </div>
 
@@ -820,16 +847,16 @@ export default function ReportPreviewModal({
                     Bogor, <span className="font-semibold text-slate-800">{formattedEndDate}</span>
                   </div>
                   <div className="font-bold text-slate-900 text-xs whitespace-nowrap">
-                    {institution.tuStaffTitle || 'Petugas Tata Usaha'}
+                    {activeInst.tuStaffTitle || 'Petugas Tata Usaha'}
                   </div>
                   <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap">
                     [ Tanda Tangan Sah ]
                   </div>
                   <div className="font-extrabold text-slate-950 underline text-xs tracking-tight whitespace-nowrap">
-                    {institution.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
+                    {activeInst.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
                   </div>
                   <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap">
-                    NIP: {institution.tuStaffNip || '—'}
+                    NIP: {activeInst.tuStaffNip || '—'}
                   </div>
                 </div>
               </div>

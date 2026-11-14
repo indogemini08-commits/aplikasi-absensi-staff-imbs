@@ -3,6 +3,15 @@ import { getCurrentUser } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { recordAuditLog } from '@/lib/audit';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+  Pragma: 'no-cache',
+  Expires: '0',
+};
+
 export async function GET(req: NextRequest) {
   try {
     const db = getDb();
@@ -12,10 +21,10 @@ export async function GET(req: NextRequest) {
       return acc;
     }, {} as Record<string, string>);
 
-    return NextResponse.json({ settings, list: rows });
+    return NextResponse.json({ settings, list: rows }, { headers: NO_CACHE_HEADERS });
   } catch (err: any) {
     console.error('Settings GET error:', err);
-    return NextResponse.json({ error: 'Gagal memuat pengaturan' }, { status: 500 });
+    return NextResponse.json({ error: 'Gagal memuat pengaturan' }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }
 
@@ -23,13 +32,13 @@ export async function PUT(req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
-      return NextResponse.json({ error: 'Akses ditolak' }, { status: 403 });
+      return NextResponse.json({ error: 'Akses ditolak' }, { status: 403, headers: NO_CACHE_HEADERS });
     }
 
     const { settings } = await req.json();
 
     if (!settings || typeof settings !== 'object') {
-      return NextResponse.json({ error: 'Data pengaturan tidak valid' }, { status: 400 });
+      return NextResponse.json({ error: 'Data pengaturan tidak valid' }, { status: 400, headers: NO_CACHE_HEADERS });
     }
 
     const db = getDb();
@@ -51,10 +60,10 @@ export async function PUT(req: NextRequest) {
       ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
     });
 
-    return NextResponse.json({ success: true, message: 'Pengaturan sistem berhasil disimpan' });
+    return NextResponse.json({ success: true, message: 'Pengaturan sistem berhasil disimpan' }, { headers: NO_CACHE_HEADERS });
   } catch (err: any) {
     console.error('Settings PUT error:', err);
-    return NextResponse.json({ error: 'Gagal memperbarui pengaturan' }, { status: 500 });
+    return NextResponse.json({ error: 'Gagal memperbarui pengaturan' }, { status: 500, headers: NO_CACHE_HEADERS });
   }
 }
 
