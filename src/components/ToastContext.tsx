@@ -68,7 +68,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <div
               className={`absolute top-0 left-0 right-0 h-[2px] ${
                 t.type === 'success'
-                  ? 'bg-gradient-to-r from-blue-500 via-teal-400 to-blue-500 shadow-[0_0_10px_#2563eb]'
+                  ? 'bg-gradient-to-r from-blue-500 via-sky-400 to-blue-600 shadow-[0_0_10px_#2563eb]'
                   : t.type === 'error'
                   ? 'bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500 shadow-[0_0_10px_#f43f5e]'
                   : t.type === 'warning'

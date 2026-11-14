@@ -104,7 +104,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
       <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 shrink-0">
         {!collapsed && (
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-500/20 to-teal-500/10 dark:from-blue-500/25 dark:to-teal-500/20 flex items-center justify-center border border-blue-500/30 shadow-[0_0_12px_rgba(37, 99, 235,0.25)]">
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-500/20 to-indigo-500/10 dark:from-blue-500/25 dark:to-indigo-500/20 flex items-center justify-center border border-blue-500/30 shadow-[0_0_12px_rgba(37, 99, 235,0.25)]">
               <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
             <span className="font-black text-xs uppercase tracking-wider text-slate-900 dark:text-white">
@@ -142,7 +142,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
                   title={collapsed ? item.label : undefined}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 group relative ${
                     isActive
-                      ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-teal-500 text-white shadow-[0_0_20px_rgba(37, 99, 235,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-blue-400/50 scale-[1.01]'
+                      ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(37, 99, 235,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-blue-400/50 scale-[1.01]'
                       : item.highlight
                       ? 'text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100/90 dark:hover:bg-blue-900/50 border border-blue-200/60 dark:border-blue-800/40 hover:border-blue-500/40 shadow-xs'
                       : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-slate-800/80 border border-transparent hover:border-slate-200/80 dark:hover:border-slate-700/80 hover:shadow-xs'

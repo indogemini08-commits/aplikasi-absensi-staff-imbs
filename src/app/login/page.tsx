@@ -210,7 +210,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 rounded-2xl font-extrabold text-sm bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-lg shadow-blue-600/35 neon-glow-blue active:scale-98 transition flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+              className="w-full mt-2 py-3.5 px-4 rounded-2xl font-extrabold text-sm bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/35 neon-glow-blue active:scale-98 transition flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -260,9 +260,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => selectQuickAccount('fajar', 'password123')}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 text-left transition"
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-sky-500 hover:bg-sky-50/50 dark:hover:bg-sky-950/30 text-left transition"
               >
-                <div className="font-bold text-teal-700 dark:text-teal-400">Staff IT</div>
+                <div className="font-bold text-sky-700 dark:text-sky-400">Staff IT</div>
                 <div className="text-slate-500 dark:text-slate-400">Fajar Hidayat</div>
               </button>
             </div>

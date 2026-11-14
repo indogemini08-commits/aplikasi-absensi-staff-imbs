@@ -214,7 +214,7 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent 5%, #2563eb 30%, #06b6d4 70%, transparent 95%);
+  background: linear-gradient(90deg, transparent 5%, #2563eb 30%, #38bdf8 70%, transparent 95%);
   box-shadow: 0 0 14px rgba(37, 99, 235, 0.75);
   pointer-events: none;
 }

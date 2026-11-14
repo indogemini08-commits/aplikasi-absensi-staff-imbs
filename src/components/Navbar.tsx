@@ -310,7 +310,7 @@ export default function Navbar({ user }: NavbarProps) {
                 onClick={() => router.push(currentUser.role === 'staff' ? '/profil' : '/admin')}
                 className="cursor-pointer flex items-center gap-2 p-1.5 pr-2.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/70 dark:border-slate-700/70 hover:border-blue-500/40 hover:shadow-[0_0_15px_rgba(37, 99, 235,0.2)] transition-all group"
               >
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-teal-500 to-cyan-500 text-white flex items-center justify-center font-bold text-xs shadow-xs neon-glow-blue">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs neon-glow-blue">
                   {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div className="hidden lg:block text-left text-xs">
@@ -343,7 +343,7 @@ export default function Navbar({ user }: NavbarProps) {
           ) : (
             <button
               onClick={() => router.push('/login')}
-              className="text-xs px-4 py-2 rounded-xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 text-white shadow-md shadow-blue-600/30 neon-glow-blue transition cursor-pointer"
+              className="text-xs px-4 py-2 rounded-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md shadow-blue-600/30 neon-glow-blue transition cursor-pointer"
             >
               Masuk
             </button>
@@ -357,7 +357,7 @@ export default function Navbar({ user }: NavbarProps) {
           <div className="bg-white/95 dark:bg-[#070b14]/95 backdrop-blur-2xl border-b border-slate-200/80 dark:border-white/10 max-h-[85vh] overflow-y-auto p-4 space-y-4 shadow-2xl flex-1">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/60 dark:border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-500/20 to-teal-500/20 flex items-center justify-center border border-blue-500/30">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 flex items-center justify-center border border-blue-500/30">
                   <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
@@ -395,7 +395,7 @@ export default function Navbar({ user }: NavbarProps) {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center justify-between p-2.5 rounded-2xl text-xs font-bold transition-all ${
                           isActive
-                            ? 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-blue-500/25'
+                            ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25'
                             : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
                         }`}
                       >

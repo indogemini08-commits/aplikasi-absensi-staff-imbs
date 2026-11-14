@@ -180,7 +180,7 @@ export default function NotifikasiPage() {
                   <div className="shrink-0 mt-0.5">
                     {n.type === 'leave' && <FileText className="w-4 h-4 text-purple-500" />}
                     {n.type === 'attendance' && <AlertTriangle className="w-4 h-4 text-amber-500" />}
-                    {n.type === 'correction' && <Clock className="w-4 h-4 text-teal-500" />}
+                    {n.type === 'correction' && <Clock className="w-4 h-4 text-sky-500" />}
                     {n.type === 'system' && <Info className="w-4 h-4 text-indigo-500" />}
                   </div>
 

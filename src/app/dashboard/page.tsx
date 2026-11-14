@@ -304,8 +304,8 @@ export default function StaffDashboard() {
               isClockedOut
                 ? 'bg-slate-700 hover:bg-slate-600'
                 : isClockedIn
-                ? 'bg-gradient-to-r from-teal-600 via-cyan-600 to-indigo-600 hover:from-teal-500 hover:to-indigo-500 shadow-teal-600/35 neon-glow-cyan'
-                : 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 shadow-blue-600/35 neon-glow-blue'
+                ? 'bg-gradient-to-r from-indigo-600 via-blue-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 shadow-blue-600/35 neon-glow-blue'
+                : 'bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 shadow-blue-600/35 neon-glow-blue'
             }`}
           >
             <MapPin className="w-5 h-5 animate-bounce" />

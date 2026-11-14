@@ -35,8 +35,8 @@ export default function BottomNav() {
                   <div
                     className={`w-12 h-12 xs:w-14 xs:h-14 rounded-full flex items-center justify-center text-white transition-all duration-300 active:scale-95 relative ${
                       isActive
-                        ? 'bg-gradient-to-tr from-blue-600 via-blue-500 to-teal-400 ring-4 ring-blue-500/30 shadow-[0_0_25px_rgba(37, 99, 235,0.7)] scale-105'
-                        : 'bg-gradient-to-tr from-blue-600 via-teal-500 to-cyan-500 shadow-[0_0_20px_rgba(37, 99, 235,0.5)] group-hover:scale-105'
+                        ? 'bg-gradient-to-tr from-blue-600 via-blue-500 to-indigo-500 ring-4 ring-blue-500/30 shadow-[0_0_25px_rgba(37, 99, 235,0.7)] scale-105'
+                        : 'bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 shadow-[0_0_20px_rgba(37, 99, 235,0.5)] group-hover:scale-105'
                     }`}
                   >
                     <div className="absolute inset-0 rounded-full bg-white/20 blur-sm pointer-events-none animate-pulse" />

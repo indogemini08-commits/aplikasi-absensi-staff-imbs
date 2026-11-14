@@ -480,7 +480,7 @@ export default function AbsensiPage() {
               disabled={!isWithinRadius || isSubmitting || isLocating}
               className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-lg transition-all duration-200 active:scale-98 flex items-center justify-center gap-2.5 ${
                 isWithinRadius && !isSubmitting && !isLocating
-                  ? 'bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 text-white shadow-blue-600/30 ring-4 ring-blue-500/20'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30 ring-4 ring-blue-500/20'
                   : 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed shadow-none'
               }`}
             >
@@ -505,7 +505,7 @@ export default function AbsensiPage() {
               disabled={!isWithinRadius || isSubmitting || isLocating}
               className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-lg transition-all duration-200 active:scale-98 flex items-center justify-center gap-2.5 ${
                 isWithinRadius && !isSubmitting && !isLocating
-                  ? 'bg-gradient-to-r from-teal-600 to-indigo-600 hover:from-teal-500 hover:to-indigo-500 text-white shadow-teal-600/30 ring-4 ring-teal-500/20'
+                  ? 'bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-500 hover:to-blue-600 text-white shadow-indigo-600/30 ring-4 ring-indigo-500/20'
                   : 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed shadow-none'
               }`}
             >

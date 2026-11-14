@@ -254,11 +254,11 @@ function PapanJadwalContent() {
             <button
               onClick={() => setSelectedStatus('Pulang')}
               className={`glass-card p-3 rounded-2xl border transition ${
-                selectedStatus === 'Pulang' ? 'border-teal-500 ring-2 ring-teal-500/20' : 'border-slate-200/80 dark:border-slate-800/80'
+                selectedStatus === 'Pulang' ? 'border-sky-500 ring-2 ring-sky-500/20' : 'border-slate-200/80 dark:border-slate-800/80'
               }`}
             >
-              <div className="text-[10px] text-teal-600 font-semibold">Sudah Pulang</div>
-              <div className="text-lg font-black text-teal-600 dark:text-teal-400 mt-0.5">
+              <div className="text-[10px] text-sky-600 font-semibold">Sudah Pulang</div>
+              <div className="text-lg font-black text-sky-600 dark:text-sky-400 mt-0.5">
                 {stats.pulang}
               </div>
             </button>
@@ -453,7 +453,7 @@ function PapanJadwalContent() {
                                 item.status === 'Hadir'
                                   ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                   : item.status === 'Pulang'
-                                  ? 'bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300'
+                                  ? 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300'
                                   : item.status === 'Terlambat'
                                   ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                                   : item.status === 'Cuti'

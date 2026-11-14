@@ -100,7 +100,7 @@ export default function ProfilPage() {
       <main className="max-w-md mx-auto px-4 py-5 space-y-4">
         {/* Profile Card */}
         <div className="glass-card rounded-3xl p-6 text-center border border-slate-200/80 dark:border-slate-800/80 relative overflow-hidden">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-teal-400 text-white font-extrabold text-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/25 ring-4 ring-blue-500/20">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/25 ring-4 ring-blue-500/20">
             {user?.name ? user.name.charAt(0) : 'U'}
           </div>
           <h2 className="text-lg font-black text-slate-900 dark:text-white">
@@ -169,7 +169,7 @@ export default function ProfilPage() {
             className="w-full p-3.5 flex items-center justify-between text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-2xl transition"
           >
             <div className="flex items-center gap-3">
-              <Layers className="w-4 h-4 text-teal-500" />
+              <Layers className="w-4 h-4 text-sky-500" />
               <span className="font-semibold">Pengajuan Koreksi Absensi</span>
             </div>
             <ChevronRight className="w-4 h-4 text-slate-400" />

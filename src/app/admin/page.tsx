@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
             <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 sm:gap-3 relative z-10 w-full sm:w-auto">
               <button
                 onClick={() => router.push('/admin/papan-jadwal')}
-                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-lg shadow-blue-600/30 neon-glow-blue transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
+                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/30 neon-glow-blue transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
               >
                 <CalendarDays className="w-4 h-4 shrink-0" />
                 <span>Buka Papan Jadwal</span>
@@ -414,7 +414,7 @@ export default function AdminDashboardPage() {
                                 : item.status === 'Terlambat'
                                 ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30'
                                 : item.status === 'Pulang'
-                                ? 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/30'
+                                ? 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/30'
                                 : 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20'
                             }`}
                           >

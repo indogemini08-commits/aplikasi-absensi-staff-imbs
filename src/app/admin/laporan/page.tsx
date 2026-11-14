@@ -453,7 +453,7 @@ function LaporanContent() {
                 onClick={() => setActiveTab('recap')}
                 className={`py-2 px-3 sm:px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
                   activeTab === 'recap'
-                    ? 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-blue-500/30 neon-glow-blue scale-[1.01]'
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30 neon-glow-blue scale-[1.01]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
                 }`}
               >
@@ -470,7 +470,7 @@ function LaporanContent() {
                 onClick={() => setActiveTab('records')}
                 className={`py-2 px-3 sm:px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
                   activeTab === 'records'
-                    ? 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-blue-500/30 neon-glow-blue scale-[1.01]'
+                    ? 'bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30 neon-glow-blue scale-[1.01]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
                 }`}
               >
@@ -481,7 +481,7 @@ function LaporanContent() {
 
             <button
               onClick={() => setIsPreviewModalOpen(true)}
-              className="py-2.5 px-4 rounded-2xl text-xs font-extrabold bg-gradient-to-r from-blue-500/15 via-teal-500/15 to-cyan-500/15 hover:from-blue-500/25 hover:to-cyan-500/25 text-blue-700 dark:text-blue-300 transition flex items-center justify-center gap-2 border border-blue-500/30 dark:border-blue-500/40 shadow-xs hover:shadow-[0_0_20px_rgba(37, 99, 235,0.25)] active:scale-95 cursor-pointer w-full sm:w-auto"
+              className="py-2.5 px-4 rounded-2xl text-xs font-extrabold bg-gradient-to-r from-blue-500/15 via-blue-500/10 to-indigo-500/15 hover:from-blue-500/25 hover:to-indigo-500/25 text-blue-700 dark:text-blue-300 transition flex items-center justify-center gap-2 border border-blue-500/30 dark:border-blue-500/40 shadow-xs hover:shadow-[0_0_20px_rgba(37, 99, 235,0.25)] active:scale-95 cursor-pointer w-full sm:w-auto"
             >
               <Eye className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
               <span>Buka Pratinjau Dokumen (Preview)</span>
