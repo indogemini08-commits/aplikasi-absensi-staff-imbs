@@ -97,6 +97,15 @@ export default function PengaturanPage() {
     }
     return '0852 8242 4628';
   });
+  const [headmasterTitle, setHeadmasterTitle] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).headmaster_title || 'Kepala Sekolah';
+      } catch {}
+    }
+    return 'Kepala Sekolah';
+  });
   const [headmasterName, setHeadmasterName] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -106,6 +115,24 @@ export default function PengaturanPage() {
     }
     return 'Fauzan Azhiimaa, Lc';
   });
+  const [headmasterNip, setHeadmasterNip] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).headmaster_nip || '';
+      } catch {}
+    }
+    return '';
+  });
+  const [tuTitle, setTuTitle] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).tu_title || 'Petugas Tata Usaha';
+      } catch {}
+    }
+    return 'Petugas Tata Usaha';
+  });
   const [tuName, setTuName] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -114,6 +141,15 @@ export default function PengaturanPage() {
       } catch {}
     }
     return 'ALDRI WAHYUDI CHANDRA';
+  });
+  const [tuNip, setTuNip] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('imbs_settings_data');
+        if (cached) return JSON.parse(cached).tu_nip || '';
+      } catch {}
+    }
+    return '';
   });
 
   // 3 Official Logos
@@ -190,8 +226,12 @@ export default function PengaturanPage() {
         if (s.organization_address) setOrgAddress(s.organization_address);
         if (s.organization_email) setOrgEmail(s.organization_email);
         if (s.organization_phone) setOrgPhone(s.organization_phone);
+        if (s.headmaster_title) setHeadmasterTitle(s.headmaster_title);
         if (s.headmaster_name) setHeadmasterName(s.headmaster_name);
+        if (s.headmaster_nip) setHeadmasterNip(s.headmaster_nip);
+        if (s.tu_title) setTuTitle(s.tu_title);
         if (s.tu_name) setTuName(s.tu_name);
+        if (s.tu_nip) setTuNip(s.tu_nip);
 
         if (s.logo_app) setLogoApp(s.logo_app);
         if (s.logo_institution) setLogoInstitution(s.logo_institution);
@@ -260,8 +300,12 @@ export default function PengaturanPage() {
             organization_address: orgAddress,
             organization_email: orgEmail,
             organization_phone: orgPhone,
+            headmaster_title: headmasterTitle,
             headmaster_name: headmasterName,
+            headmaster_nip: headmasterNip,
+            tu_title: tuTitle,
             tu_name: tuName,
+            tu_nip: tuNip,
             logo_app: logoApp,
             logo_institution: logoInstitution,
             logo_foundation: logoFoundation,
@@ -294,8 +338,12 @@ export default function PengaturanPage() {
             organization_address: orgAddress,
             organization_email: orgEmail,
             organization_phone: orgPhone,
+            headmaster_title: headmasterTitle,
             headmaster_name: headmasterName,
+            headmaster_nip: headmasterNip,
+            tu_title: tuTitle,
             tu_name: tuName,
+            tu_nip: tuNip,
             logo_app: logoApp,
             logo_institution: logoInstitution,
             logo_foundation: logoFoundation,
@@ -570,50 +618,127 @@ export default function PengaturanPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Email Resmi Lembaga:
-                  </label>
-                  <input
-                    type="email"
-                    value={orgEmail}
-                    onChange={(e) => setOrgEmail(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
-                    placeholder="imammuzanibs@gmail.com"
-                  />
-                </div>
+              <div className="pt-2">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Email Resmi Lembaga:
+                </label>
+                <input
+                  type="email"
+                  value={orgEmail}
+                  onChange={(e) => setOrgEmail(e.target.value)}
+                  className="w-full sm:w-1/2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                  placeholder="imammuzanibs@gmail.com"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Nama Kepala Sekolah / Pimpinan:
-                  </label>
-                  <input
-                    type="text"
-                    value={headmasterName}
-                    onChange={(e) => setHeadmasterName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
-                    placeholder="Fauzan Azhiimaa, Lc"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">
-                    Penandatangan Dokumen (Kiri)
-                  </span>
-                </div>
+              {/* Sub-section: Konfigurasi Penandatangan Dokumen Resmi */}
+              <div className="border-t border-slate-200/80 dark:border-slate-800 pt-4 mt-2">
+                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                  Konfigurasi Kolom Tanda Tangan & Pejabat Dokumen Rekap Kehadiran
+                </h4>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Nama Tata Usaha / Admin:
-                  </label>
-                  <input
-                    type="text"
-                    value={tuName}
-                    onChange={(e) => setTuName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
-                    placeholder="ALDRI WAHYUDI CHANDRA"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">
-                    Penandatangan Dokumen (Kanan)
-                  </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/60 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+                  {/* Penandatangan 1 (Kepala Sekolah / Pimpinan) */}
+                  <div className="space-y-3">
+                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center justify-between">
+                      <span>Penandatangan 1 (Kolom Tengah / Pimpinan)</span>
+                      <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">Mengetahui</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        Keterangan Jabatan:
+                      </label>
+                      <input
+                        type="text"
+                        value={headmasterTitle}
+                        onChange={(e) => setHeadmasterTitle(e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        placeholder="Contoh: Kepala Sekolah / Mudir / Pimpinan"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        Nama Lengkap Pejabat:
+                      </label>
+                      <input
+                        type="text"
+                        value={headmasterName}
+                        onChange={(e) => setHeadmasterName(e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        placeholder="Contoh: Fauzan Azhiimaa, Lc"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        NIP / Nomor Identitas (Opsional):
+                      </label>
+                      <input
+                        type="text"
+                        value={headmasterNip}
+                        onChange={(e) => setHeadmasterNip(e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        placeholder="Kosongkan atau beri — jika belum ada"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Penandatangan 2 (Tata Usaha / Petugas) */}
+                  <div className="space-y-3">
+                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center justify-between">
+                      <span>Penandatangan 2 (Kolom Kanan / Petugas)</span>
+                      <span className="text-[10px] text-blue-600 font-semibold bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded">Menyesuaikan</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        Keterangan Jabatan (Menyesuaikan):
+                      </label>
+                      <input
+                        type="text"
+                        value={tuTitle}
+                        onChange={(e) => setTuTitle(e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        placeholder="Contoh: Petugas Tata Usaha / Tata Usaha / Bendahara"
+                        required
+                      />
+                      <span className="text-[10px] text-slate-400 mt-0.5 block">
+                        Tampil di baris tabel metadata & kolom tanda tangan kanan
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        Nama Lengkap Petugas:
+                      </label>
+                      <input
+                        type="text"
+                        value={tuName}
+                        onChange={(e) => setTuName(e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        placeholder="Contoh: ALDRI WAHYUDI CHANDRA"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        NIP / Nomor Identitas (Opsional):
+                      </label>
+                      <input
+                        type="text"
+                        value={tuNip}
+                        onChange={(e) => setTuNip(e.target.value)}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        placeholder="Kosongkan atau beri — jika belum ada"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

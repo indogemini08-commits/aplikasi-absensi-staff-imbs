@@ -40,7 +40,11 @@ export interface InstitutionInfo {
   email?: string;
   phone?: string;
   headmaster: string;
+  headmasterTitle?: string;
+  headmasterNip?: string;
   tuStaff: string;
+  tuStaffTitle?: string;
+  tuStaffNip?: string;
   logoInstitution?: string;
   logoFoundation?: string;
   logoApp?: string;
@@ -552,18 +556,15 @@ export default function ReportPreviewModal({
                   </div>
                 </div>
 
-                {/* Right: Badge & Dokumen Meta */}
+                {/* Right: Badge & Dokumen Meta (Tanggal Cetak dipindahkan ke grid metadata) */}
                 <div className="flex flex-col sm:items-end shrink-0 pt-0.5 whitespace-nowrap">
                   <div className="bg-[#edf4fb] text-[#1c4974] font-black text-xs px-3.5 py-1.5 rounded-xl border border-[#cfe1f3] uppercase tracking-wider shadow-2xs flex items-center gap-1.5 whitespace-nowrap">
                     <FileSpreadsheet className="w-3.5 h-3.5 text-[#1c4974]" />
                     <span>REKAPITULASI KEHADIRAN</span>
                   </div>
-                  <div className="flex items-center gap-1 text-[10.5px] font-mono font-bold text-slate-800 mt-1.5 whitespace-nowrap">
-                    <span className="text-slate-400 font-sans text-[10px] font-medium">No. Dok:</span>
+                  <div className="flex items-center gap-1 text-[10.5px] font-sans font-bold text-slate-800 mt-2 whitespace-nowrap">
+                    <span className="text-slate-400 text-[10px] font-medium">No. Dok:</span>
                     <span>IMBS/ABS/{cleanPeriodForFilename.toUpperCase()}</span>
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-medium mt-0.5 whitespace-nowrap">
-                    Tgl Cetak: <span className="font-semibold text-slate-700">{formattedEndDate}</span>
                   </div>
                 </div>
               </div>
@@ -597,35 +598,39 @@ export default function ReportPreviewModal({
                     <span className="font-bold text-[#0c2340] text-[11px] uppercase tracking-wide whitespace-nowrap">{monthName}</span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
-                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Petugas Tata Usaha</span>
-                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-semibold text-slate-900 text-[11px] whitespace-nowrap">{institution.tuStaff || 'ALDRI WAHYUDI CHANDRA'}</span>
-                  </div>
-                  <div className="flex items-center whitespace-nowrap">
-                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Penanggung Jawab</span>
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">
+                      {institution.tuStaffTitle || 'Petugas Tata Usaha'}
+                    </span>
                     <span className="w-3 text-slate-400 text-center shrink-0">:</span>
                     <span className="font-semibold text-slate-900 text-[11px] whitespace-nowrap">
-                      {institution.headmaster || 'Fauzan Azhiimaa, Lc'} <span className="text-slate-400 text-[10px] font-normal">(Kepala Sekolah)</span>
+                      {institution.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
+                    </span>
+                  </div>
+                  <div className="flex items-center whitespace-nowrap">
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Tanggal Cetak</span>
+                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                    <span className="font-bold text-[#0c2340] text-[11px] whitespace-nowrap">
+                      {formattedEndDate}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* 3. Tabel Rekapitulasi Kehadiran (Full Frame - Menyesuaikan Lebar Kertas Tanpa Scroll/Crop) */}
+              {/* 3. Tabel Rekapitulasi Kehadiran (Full Frame - Tidak Absen Pulang Bebas Wrap) */}
               <div className="w-full rounded-2xl border border-slate-200/80 shadow-xs backdrop-blur-md bg-white/80 my-4 overflow-hidden">
                 <table className="w-full text-left border-collapse table-auto whitespace-nowrap">
                   <thead>
                     <tr className="bg-[#0c2340] text-white text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap">
                       <th className="py-2.5 px-1.5 text-center w-[3.5%] whitespace-nowrap">No</th>
-                      <th className="py-2.5 px-3 text-left w-[22%] whitespace-nowrap">Nama Pegawai</th>
-                      <th className="py-2.5 px-3 text-left w-[17%] whitespace-nowrap">Departemen</th>
-                      <th className="py-2.5 px-2 text-center w-[8%] whitespace-nowrap">Absen Masuk</th>
-                      <th className="py-2.5 px-2 text-center w-[8%] whitespace-nowrap">Absen Pulang</th>
+                      <th className="py-2.5 px-3 text-left w-[21%] whitespace-nowrap">Nama Pegawai</th>
+                      <th className="py-2.5 px-3 text-left w-[15%] whitespace-nowrap">Departemen</th>
+                      <th className="py-2.5 px-2 text-center w-[8.5%] whitespace-nowrap">Absen Masuk</th>
+                      <th className="py-2.5 px-2 text-center w-[8.5%] whitespace-nowrap">Absen Pulang</th>
                       <th className="py-2.5 px-1.5 text-center w-[6.5%] whitespace-nowrap">Telat</th>
                       <th className="py-2.5 px-1.5 text-center w-[8.5%] whitespace-nowrap">Pulang Cepat</th>
-                      <th className="py-2.5 px-1.5 text-center w-[8.5%] whitespace-nowrap">Lupa Pulang</th>
+                      <th className="py-2.5 px-2 text-center w-[11.5%] whitespace-nowrap">Tidak Absen Pulang</th>
                       <th className="py-2.5 px-1.5 text-center w-[8%] whitespace-nowrap">Tidak Hadir</th>
-                      <th className="py-2.5 px-2.5 text-center w-[10%] whitespace-nowrap">Predikat</th>
+                      <th className="py-2.5 px-2.5 text-center w-[9%] whitespace-nowrap">Predikat</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 whitespace-nowrap text-[10.5px] sm:text-[11px]">
@@ -653,7 +658,7 @@ export default function ReportPreviewModal({
                                 {item.name}
                               </div>
                               {item.nip && (
-                                <div className="text-[9px] font-mono text-slate-400 mt-0.5 whitespace-nowrap">
+                                <div className="text-[9px] font-sans text-slate-400 mt-0.5 whitespace-nowrap">
                                   {item.nip}
                                 </div>
                               )}
@@ -690,9 +695,9 @@ export default function ReportPreviewModal({
                                 <span className="text-slate-400 font-normal whitespace-nowrap">0 Kali</span>
                               )}
                             </td>
-                            <td className="py-2 px-1.5 text-center whitespace-nowrap">
+                            <td className="py-2 px-2 text-center whitespace-nowrap">
                               {item.total_lupa_pulang > 0 ? (
-                                <span className="text-orange-700 font-bold bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200/70 inline-block whitespace-nowrap">
+                                <span className="text-orange-700 font-bold bg-orange-50 px-2 py-0.5 rounded border border-orange-200/70 inline-block whitespace-nowrap">
                                   {item.total_lupa_pulang} Kali
                                 </span>
                               ) : (
@@ -739,7 +744,7 @@ export default function ReportPreviewModal({
                         <td className="py-2.5 px-2 text-center text-slate-900 whitespace-nowrap">{totalPulangAll} Kali</td>
                         <td className="py-2.5 px-1.5 text-center text-amber-700 whitespace-nowrap">{totalTelatAll} Kali</td>
                         <td className="py-2.5 px-1.5 text-center text-blue-700 whitespace-nowrap">{totalPulangCepatAll} Kali</td>
-                        <td className="py-2.5 px-1.5 text-center text-orange-700 whitespace-nowrap">{totalLupaPulangAll} Kali</td>
+                        <td className="py-2.5 px-2 text-center text-orange-700 whitespace-nowrap">{totalLupaPulangAll} Kali</td>
                         <td className="py-2.5 px-1.5 text-center text-rose-700 whitespace-nowrap">{totalTidakHadirAll} Kali</td>
                         <td className="py-2.5 px-2.5 text-center text-slate-600 font-medium whitespace-nowrap">Terverifikasi</td>
                       </tr>
@@ -781,7 +786,7 @@ export default function ReportPreviewModal({
                       <rect x="72" y="72" width="16" height="16" rx="3" fill="#0c2340" />
                     </svg>
                   </div>
-                  <div className="font-mono text-[8.5px] font-bold text-slate-700 tracking-wider whitespace-nowrap">
+                  <div className="font-sans text-[8.5px] font-bold text-slate-700 tracking-wider whitespace-nowrap">
                     |||||| IMBS/ABS/{cleanPeriodForFilename.slice(0, 10).toUpperCase()} ||||||
                   </div>
                   <div className="text-[7.5px] text-slate-400 mt-0.5 whitespace-nowrap">
@@ -792,35 +797,39 @@ export default function ReportPreviewModal({
                   </div>
                 </div>
 
-                {/* Pilar 2: Tanda Tangan Kepala Sekolah (Tengah) */}
+                {/* Pilar 2: Tanda Tangan Penandatangan 1 / Kepala Sekolah (Tengah) */}
                 <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
                   <div className="text-slate-500 text-[10.5px] whitespace-nowrap">Mengetahui,</div>
-                  <div className="font-bold text-slate-900 text-xs whitespace-nowrap">Kepala Sekolah</div>
+                  <div className="font-bold text-slate-900 text-xs whitespace-nowrap">
+                    {institution.headmasterTitle || 'Kepala Sekolah'}
+                  </div>
                   <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap">
                     [ Tanda Tangan & Cap Sah ]
                   </div>
                   <div className="font-extrabold text-slate-950 underline text-xs tracking-tight whitespace-nowrap">
                     {institution.headmaster || 'Fauzan Azhiimaa, Lc'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5 whitespace-nowrap">
-                    NIP: —
+                  <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap">
+                    NIP: {institution.headmasterNip || '—'}
                   </div>
                 </div>
 
-                {/* Pilar 3: Tanggal Cetak & Tanda Tangan Tata Usaha (Kanan) */}
+                {/* Pilar 3: Tanggal Cetak & Tanda Tangan Penandatangan 2 / Tata Usaha (Kanan) */}
                 <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
                   <div className="text-slate-600 text-[10.5px] font-medium mb-0.5 whitespace-nowrap">
                     Bogor, <span className="font-semibold text-slate-800">{formattedEndDate}</span>
                   </div>
-                  <div className="font-bold text-slate-900 text-xs whitespace-nowrap">Petugas Tata Usaha</div>
+                  <div className="font-bold text-slate-900 text-xs whitespace-nowrap">
+                    {institution.tuStaffTitle || 'Petugas Tata Usaha'}
+                  </div>
                   <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap">
                     [ Tanda Tangan Sah ]
                   </div>
                   <div className="font-extrabold text-slate-950 underline text-xs tracking-tight whitespace-nowrap">
                     {institution.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
                   </div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-0.5 whitespace-nowrap">
-                    NIP: —
+                  <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap">
+                    NIP: {institution.tuStaffNip || '—'}
                   </div>
                 </div>
               </div>

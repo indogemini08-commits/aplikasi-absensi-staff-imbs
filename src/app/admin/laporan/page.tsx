@@ -189,7 +189,11 @@ function LaporanContent() {
     address: 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610',
     contact: 'E-Mail: imammuzanibs@gmail.com   No Telepon : 0852 8242 4628',
     headmaster: 'Fauzan Azhiimaa, Lc',
+    headmasterTitle: 'Kepala Sekolah',
+    headmasterNip: '—',
     tuStaff: 'ALDRI WAHYUDI CHANDRA',
+    tuStaffTitle: 'Petugas Tata Usaha',
+    tuStaffNip: '—',
   };
   const periodFormatted = reportData?.periodFormatted || `${startDate} – ${endDate}`;
   const monthName = reportData?.monthName || 'AGUSTUS';
