@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Prevent html2canvas text baseline shifts caused by block images */
+  img {
+    display: inline-block;
+  }
+}
+
 :root {
   --background: #edf2f9;
   --foreground: #0c1829;
