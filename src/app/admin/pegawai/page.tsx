@@ -420,7 +420,7 @@ export default function PegawaiPage() {
       <div className="flex flex-1">
         <Sidebar userRole={user?.role} />
 
-        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>

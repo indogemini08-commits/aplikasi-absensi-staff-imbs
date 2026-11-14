@@ -128,8 +128,8 @@ export default function AdminDashboardPage() {
         <Navbar user={user} />
         <div className="flex flex-1">
           <Sidebar userRole={user?.role} />
-          <main className="flex-1 p-6 space-y-6">
-            <div className="grid grid-cols-4 gap-4">
+          <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
               <SkeletonCard />
               <SkeletonCard />
               <SkeletonCard />
@@ -159,9 +159,9 @@ export default function AdminDashboardPage() {
       <div className="flex flex-1">
         <Sidebar userRole={user?.role} />
 
-        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
           {/* Executive Header Banner with Futuristic Glass & Holographic Accent */}
-          <div className="glass-card rounded-3xl p-6 sm:p-7 border border-white/80 dark:border-white/10 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden">
+          <div className="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-white/80 dark:border-white/10 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden">
             {/* Subtle corner light refraction */}
             <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-emerald-500/20 dark:bg-emerald-500/25 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-cyan-500/20 dark:bg-cyan-500/25 blur-3xl pointer-events-none" />
@@ -172,10 +172,10 @@ export default function AdminDashboardPage() {
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>Panel Pemantauan Eksekutif HRD</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                 Dashboard Kehadiran Staff IMBS
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center gap-1.5">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium flex flex-wrap items-center gap-1.5">
                 <span>Data real-time hari ini:</span>
                 <span className="font-bold text-slate-700 dark:text-slate-200">{boardData?.formattedDate}</span>
                 <span>•</span>
@@ -183,140 +183,140 @@ export default function AdminDashboardPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 relative z-10">
+            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 sm:gap-3 relative z-10 w-full sm:w-auto">
               <button
                 onClick={() => router.push('/admin/papan-jadwal')}
-                className="py-3 px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 text-white shadow-lg shadow-emerald-600/30 neon-glow-emerald transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
+                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 text-white shadow-lg shadow-emerald-600/30 neon-glow-emerald transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
               >
-                <CalendarDays className="w-4 h-4" />
+                <CalendarDays className="w-4 h-4 shrink-0" />
                 <span>Buka Papan Jadwal</span>
               </button>
               <button
                 onClick={() => router.push('/admin/laporan')}
-                className="py-3 px-5 rounded-2xl font-extrabold text-xs border border-emerald-500/30 dark:border-emerald-500/40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-100 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
+                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs border border-emerald-500/30 dark:border-emerald-500/40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-100 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
               >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Rekap Laporan</span>
               </button>
             </div>
           </div>
 
           {/* Real-time Statistics Cards: 6 Futuristic Neon Glass Capsules */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
             {/* 1. Total Pegawai (Electric Blue / Indigo Aura) */}
             <div
               onClick={() => router.push('/admin/pegawai')}
-              className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-indigo-400/30 dark:border-indigo-500/30 hover:border-indigo-400/70 hover:shadow-[0_0_25px_rgba(99,102,241,0.3)] cursor-pointer transition-all group relative overflow-hidden"
+              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-indigo-400/30 dark:border-indigo-500/30 hover:border-indigo-400/70 hover:shadow-[0_0_25px_rgba(99,102,241,0.3)] cursor-pointer transition-all group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-indigo-500 dark:text-indigo-400">
-                <span className="text-[11px] font-bold tracking-wide">Total Pegawai</span>
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Total Pegawai</span>
                 <div className="p-1.5 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 group-hover:scale-110 transition-transform">
-                  <Users className="w-4 h-4" />
+                  <Users className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 tabular-nums">
+              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1.5 sm:mt-2 tabular-nums">
                 {stats.totalEmployees}
               </div>
-              <span className="text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block">Aktif Bertugas</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block">Aktif Bertugas</span>
             </div>
 
             {/* 2. Sudah Hadir (Neon Emerald Aura) */}
             <div
               onClick={() => router.push('/admin/papan-jadwal?status=hadir')}
-              className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-emerald-400/30 dark:border-emerald-500/35 hover:border-emerald-400/80 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] cursor-pointer transition-all group relative overflow-hidden"
+              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-emerald-400/30 dark:border-emerald-500/35 hover:border-emerald-400/80 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] cursor-pointer transition-all group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
-                <span className="text-[11px] font-bold tracking-wide">Sudah Hadir</span>
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Sudah Hadir</span>
                 <div className="p-1.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 group-hover:scale-110 transition-transform">
-                  <CalendarCheck className="w-4 h-4" />
+                  <CalendarCheck className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]">
                 {stats.hadir}
               </div>
-              <span className="text-[10.5px] font-semibold text-emerald-600/80 dark:text-emerald-400/80 mt-1 block">Tercatat di Lokasi</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-emerald-600/80 dark:text-emerald-400/80 mt-1 block">Tercatat di Lokasi</span>
             </div>
 
             {/* 3. Terlambat (Golden Amber Aura) */}
             <div
               onClick={() => router.push('/admin/keterlambatan')}
-              className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-amber-400/30 dark:border-amber-500/35 hover:border-amber-400/80 hover:shadow-[0_0_25px_rgba(245,158,11,0.35)] cursor-pointer transition-all group relative overflow-hidden"
+              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-amber-400/30 dark:border-amber-500/35 hover:border-amber-400/80 hover:shadow-[0_0_25px_rgba(245,158,11,0.35)] cursor-pointer transition-all group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-amber-500">
-                <span className="text-[11px] font-bold tracking-wide">Terlambat</span>
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Terlambat</span>
                 <div className="p-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 group-hover:scale-110 transition-transform">
-                  <AlertTriangle className="w-4 h-4" />
+                  <AlertTriangle className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-amber-500 mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-amber-500 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]">
                 {stats.terlambat}
               </div>
-              <span className="text-[10.5px] font-semibold text-amber-500/80 mt-1 block">Lewat Grace Period</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-amber-500/80 mt-1 block">Lewat Grace Period</span>
             </div>
 
             {/* 4. Belum Absen (Neon Cyan Aura) */}
             <div
               onClick={() => router.push('/admin/papan-jadwal?status=belum absen')}
-              className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-cyan-400/30 dark:border-cyan-500/35 hover:border-cyan-400/80 hover:shadow-[0_0_25px_rgba(6,182,212,0.35)] cursor-pointer transition-all group relative overflow-hidden"
+              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-cyan-400/30 dark:border-cyan-500/35 hover:border-cyan-400/80 hover:shadow-[0_0_25px_rgba(6,182,212,0.35)] cursor-pointer transition-all group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-cyan-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400">
-                <span className="text-[11px] font-bold tracking-wide">Belum Absen</span>
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Belum Absen</span>
                 <div className="p-1.5 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 group-hover:scale-110 transition-transform">
-                  <Clock className="w-4 h-4" />
+                  <Clock className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(6,182,212,0.3)]">
+              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(6,182,212,0.3)]">
                 {stats.belumAbsen}
               </div>
-              <span className="text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block">Menunggu Clock-In</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block">Menunggu Clock-In</span>
             </div>
 
             {/* 5. Cuti / Izin (Cosmic Violet Aura) */}
             <div
               onClick={() => router.push('/admin/izin-cuti')}
-              className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-violet-400/30 dark:border-violet-500/35 hover:border-violet-400/80 hover:shadow-[0_0_25px_rgba(139,92,246,0.35)] cursor-pointer transition-all group relative overflow-hidden"
+              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-violet-400/30 dark:border-violet-500/35 hover:border-violet-400/80 hover:shadow-[0_0_25px_rgba(139,92,246,0.35)] cursor-pointer transition-all group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-violet-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-violet-600 dark:text-violet-400">
-                <span className="text-[11px] font-bold tracking-wide">Cuti / Izin</span>
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Cuti / Izin</span>
                 <div className="p-1.5 rounded-xl bg-violet-500/10 dark:bg-violet-500/20 group-hover:scale-110 transition-transform">
-                  <FileCheck className="w-4 h-4" />
+                  <FileCheck className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-violet-600 dark:text-violet-400 mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(139,92,246,0.3)]">
+              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-violet-600 dark:text-violet-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(139,92,246,0.3)]">
                 {stats.cuti + stats.izin}
               </div>
-              <span className="text-[10.5px] font-semibold text-violet-500/80 dark:text-violet-400/80 mt-1 block">Disetujui HRD</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-violet-500/80 dark:text-violet-400/80 mt-1 block">Disetujui HRD</span>
             </div>
 
             {/* 6. Sakit (Rose / Coral Aura) */}
             <div
               onClick={() => router.push('/admin/papan-jadwal')}
-              className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-rose-400/30 dark:border-rose-500/35 hover:border-rose-400/80 hover:shadow-[0_0_25px_rgba(244,63,94,0.35)] cursor-pointer transition-all group relative overflow-hidden"
+              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-rose-400/30 dark:border-rose-500/35 hover:border-rose-400/80 hover:shadow-[0_0_25px_rgba(244,63,94,0.35)] cursor-pointer transition-all group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-rose-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-rose-500 dark:text-rose-400">
-                <span className="text-[11px] font-bold tracking-wide">Sakit</span>
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Sakit</span>
                 <div className="p-1.5 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 group-hover:scale-110 transition-transform">
-                  <TrendingUp className="w-4 h-4" />
+                  <TrendingUp className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-rose-500 dark:text-rose-400 mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(244,63,94,0.3)]">
+              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-rose-500 dark:text-rose-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(244,63,94,0.3)]">
                 {stats.sakit}
               </div>
-              <span className="text-[10.5px] font-semibold text-rose-500/80 dark:text-rose-400/80 mt-1 block">Dengan Surat SKD</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-rose-500/80 dark:text-rose-400/80 mt-1 block">Dengan Surat SKD</span>
             </div>
           </div>
 
           {/* Quick Action Alerts */}
           {pendingLeaves.length > 0 && (
-            <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shrink-0">
                   {pendingLeaves.length}
                 </div>
                 <div>
@@ -330,7 +330,7 @@ export default function AdminDashboardPage() {
               </div>
               <button
                 onClick={() => router.push('/admin/izin-cuti')}
-                className="py-2 px-3.5 rounded-xl font-bold text-xs bg-amber-600 hover:bg-amber-500 text-white shadow-sm transition flex items-center gap-1.5"
+                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-amber-600 hover:bg-amber-500 text-white shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto shrink-0"
               >
                 <span>Buka Permohonan</span>
                 <ArrowRight className="w-3.5 h-3.5" />

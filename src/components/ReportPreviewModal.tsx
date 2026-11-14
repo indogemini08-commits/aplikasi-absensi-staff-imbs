@@ -77,7 +77,9 @@ export default function ReportPreviewModal({
   const documentRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [isGeneratingPng, setIsGeneratingPng] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState<number>(100);
+  const [zoomLevel, setZoomLevel] = useState<number>(() =>
+    typeof window !== 'undefined' && window.innerWidth < 640 ? 65 : 100
+  );
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
 
   // Default optimized to A4 Landscape for wide data tables

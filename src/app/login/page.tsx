@@ -16,15 +16,15 @@ export default function LoginPage() {
   const [appLogo, setAppLogo] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       try {
-        return sessionStorage.getItem('imbs_app_logo') || '';
+        return localStorage.getItem('imbs_app_logo') || sessionStorage.getItem('imbs_app_logo') || '/logo-imbs-left.png';
       } catch {}
     }
-    return '';
+    return '/logo-imbs-left.png';
   });
   const [orgName, setOrgName] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       try {
-        return sessionStorage.getItem('imbs_app_org_name') || 'IMAM MUZANI BOARDING SCHOOL';
+        return localStorage.getItem('imbs_app_org_name') || sessionStorage.getItem('imbs_app_org_name') || 'IMAM MUZANI BOARDING SCHOOL';
       } catch {}
     }
     return 'IMAM MUZANI BOARDING SCHOOL';
@@ -32,7 +32,7 @@ export default function LoginPage() {
   const [foundationName, setFoundationName] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       try {
-        return sessionStorage.getItem('imbs_app_foundation_name') || 'YAYASAN SABILUL HUDA NAMBO';
+        return localStorage.getItem('imbs_app_foundation_name') || sessionStorage.getItem('imbs_app_foundation_name') || 'YAYASAN SABILUL HUDA NAMBO';
       } catch {}
     }
     return 'YAYASAN SABILUL HUDA NAMBO';
@@ -44,12 +44,30 @@ export default function LoginPage() {
       .then((data) => {
         if (data?.settings) {
           const s = data.settings;
-          const logo = s.logo_app || s.logo_institution || '';
+          const logo = s.logo_app || s.logo_institution || '/logo-imbs-left.png';
           const name = s.organization_name || 'IMAM MUZANI BOARDING SCHOOL';
           const foundation = s.foundation_name || 'YAYASAN SABILUL HUDA NAMBO';
-          if (logo) setAppLogo(logo);
-          if (name) setOrgName(name);
-          if (foundation) setFoundationName(foundation);
+          if (logo) {
+            setAppLogo(logo);
+            try {
+              localStorage.setItem('imbs_app_logo', logo);
+              sessionStorage.setItem('imbs_app_logo', logo);
+            } catch {}
+          }
+          if (name) {
+            setOrgName(name);
+            try {
+              localStorage.setItem('imbs_app_org_name', name);
+              sessionStorage.setItem('imbs_app_org_name', name);
+            } catch {}
+          }
+          if (foundation) {
+            setFoundationName(foundation);
+            try {
+              localStorage.setItem('imbs_app_foundation_name', foundation);
+              sessionStorage.setItem('imbs_app_foundation_name', foundation);
+            } catch {}
+          }
         }
       })
       .catch(() => {});
@@ -105,18 +123,15 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo and Institution Title */}
         <div className="text-center mb-6">
-          <div className="inline-flex h-16 max-w-[140px] px-3 py-1.5 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700/80 items-center justify-center mb-3 ring-4 ring-emerald-500/10">
-            {appLogo ? (
-              <img
-                src={appLogo}
-                alt={orgName || 'Logo IMBS'}
-                className="max-h-full w-auto object-contain"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-emerald-400 text-white flex items-center justify-center font-extrabold text-xl shadow-xs">
-                IMBS
-              </div>
-            )}
+          <div className="inline-flex h-16 min-w-[3.5rem] max-w-[140px] px-3.5 py-1.5 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700/80 items-center justify-center mb-3 ring-4 ring-emerald-500/10">
+            <img
+              src={appLogo || '/logo-imbs-left.png'}
+              alt={orgName || 'Logo IMBS'}
+              className="max-h-full w-auto object-contain filter drop-shadow-xs"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/logo-imbs-left.png';
+              }}
+            />
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
             Absensi Staff IMBS
@@ -124,9 +139,11 @@ export default function LoginPage() {
           <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 uppercase tracking-wider">
             {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
           </p>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 mt-2.5">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            {foundationName ? `${foundationName} • Portal Presensi GPS` : 'Portal Presensi Resmi Berbasis GPS'}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50/90 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-[10px] sm:text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 mt-2.5 max-w-[92vw] truncate shadow-xs">
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">
+              {foundationName ? `${foundationName} • Portal Presensi GPS` : 'Portal Presensi Resmi Berbasis GPS'}
+            </span>
           </div>
         </div>
 

@@ -277,12 +277,12 @@ function LaporanContent() {
       <div className="flex flex-1">
         <Sidebar userRole={user?.role} />
 
-        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
           {/* Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
             <div>
               <div className="flex items-center gap-2">
-                <FileSpreadsheet className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <FileSpreadsheet className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Rekapitulasi & Laporan Kehadiran
                 </h1>
@@ -293,14 +293,14 @@ function LaporanContent() {
             </div>
 
             {/* Main Action Buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 w-full sm:w-auto">
               {/* Primary Action: Simpan PDF & Rekap (Opens Mode Preview) */}
               <button
                 onClick={() => setIsPreviewModalOpen(true)}
-                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition flex items-center gap-2 cursor-pointer"
+                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
                 title="Buka Mode Preview untuk menyimpan dalam PDF atau PNG High Quality"
               >
-                <Eye className="w-4 h-4" />
+                <Eye className="w-4 h-4 shrink-0" />
                 <span>Simpan PDF & Rekap</span>
                 <span className="hidden md:inline-block bg-rose-700/80 px-1.5 py-0.5 rounded text-[10px] font-semibold">
                   Mode Preview
@@ -310,10 +310,10 @@ function LaporanContent() {
               {/* Unduh Excel CSV */}
               <button
                 onClick={() => handleExportCsv('summary')}
-                className="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5 cursor-pointer"
+                className="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer w-full xs:w-auto"
                 title="Unduh Rekap Eksekutif format CSV / Excel"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-4 h-4 shrink-0" />
                 <span>Excel (CSV)</span>
               </button>
             </div>
@@ -442,42 +442,42 @@ function LaporanContent() {
 
           {/* View Switcher Tabs: Rekap Eksekutif vs Rincian Harian with Floating Glass Capsule */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">
-            <div className="inline-flex p-1.5 rounded-2xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-xs gap-1.5">
+            <div className="flex flex-col xs:flex-row p-1.5 rounded-2xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-xs gap-1.5 w-full sm:w-auto">
               <button
                 onClick={() => setActiveTab('recap')}
-                className={`py-2 px-4 rounded-xl font-extrabold text-xs flex items-center gap-2 transition-all cursor-pointer ${
+                className={`py-2 px-3 sm:px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
                   activeTab === 'recap'
                     ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-emerald-500/30 neon-glow-emerald scale-[1.01]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
                 }`}
               >
-                <Award className="w-4 h-4" />
-                <span>Rekapitulasi Kehadiran Pegawai</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                <Award className="w-4 h-4 shrink-0" />
+                <span className="truncate">Rekapitulasi Kehadiran</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 hidden xs:inline-block ${
                   activeTab === 'recap' ? 'bg-white/20 text-white' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                 }`}>
-                  Ringkasan Eksekutif
+                  Eksekutif
                 </span>
               </button>
 
               <button
                 onClick={() => setActiveTab('records')}
-                className={`py-2 px-4 rounded-xl font-extrabold text-xs flex items-center gap-2 transition-all cursor-pointer ${
+                className={`py-2 px-3 sm:px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
                   activeTab === 'records'
                     ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-emerald-500/30 neon-glow-emerald scale-[1.01]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
                 }`}
               >
-                <Clock className="w-4 h-4" />
-                <span>Rincian Harian Absensi ({records.length})</span>
+                <Clock className="w-4 h-4 shrink-0" />
+                <span className="truncate">Rincian Harian ({records.length})</span>
               </button>
             </div>
 
             <button
               onClick={() => setIsPreviewModalOpen(true)}
-              className="py-2.5 px-4 rounded-2xl text-xs font-extrabold bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-cyan-500/15 hover:from-emerald-500/25 hover:to-cyan-500/25 text-emerald-700 dark:text-emerald-300 transition flex items-center gap-2 border border-emerald-500/30 dark:border-emerald-500/40 shadow-xs hover:shadow-[0_0_20px_rgba(16,185,129,0.25)] active:scale-95 cursor-pointer"
+              className="py-2.5 px-4 rounded-2xl text-xs font-extrabold bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-cyan-500/15 hover:from-emerald-500/25 hover:to-cyan-500/25 text-emerald-700 dark:text-emerald-300 transition flex items-center justify-center gap-2 border border-emerald-500/30 dark:border-emerald-500/40 shadow-xs hover:shadow-[0_0_20px_rgba(16,185,129,0.25)] active:scale-95 cursor-pointer w-full sm:w-auto"
             >
-              <Eye className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <Eye className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>Buka Pratinjau Dokumen (Preview)</span>
             </button>
           </div>
