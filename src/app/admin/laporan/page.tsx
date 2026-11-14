@@ -84,13 +84,17 @@ function LaporanContent() {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   // Filters
-  // Default to August 2026 if requested or last 30 days
-  const [startDate, setStartDate] = useState(
-    searchParams.get('startDate') || '2026-08-01'
-  );
-  const [endDate, setEndDate] = useState(
-    searchParams.get('endDate') || '2026-08-25'
-  );
+  const [startDate, setStartDate] = useState(() => {
+    if (searchParams.get('startDate')) return searchParams.get('startDate')!;
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}-01`;
+  });
+  const [endDate, setEndDate] = useState(() => {
+    if (searchParams.get('endDate')) return searchParams.get('endDate')!;
+    return getWIBDateString();
+  });
   const [departmentId, setDepartmentId] = useState(searchParams.get('departmentId') || '');
   const [employeeId, setEmployeeId] = useState(searchParams.get('employeeId') || '');
 
@@ -151,11 +155,6 @@ function LaporanContent() {
     if (departmentId) url += `&departmentId=${departmentId}`;
     if (employeeId) url += `&employeeId=${employeeId}`;
     window.open(url, '_blank');
-  };
-
-  const handlePresetAugust2026 = () => {
-    setStartDate('2026-08-01');
-    setEndDate('2026-08-25');
   };
 
   const handlePresetThisMonth = () => {
@@ -285,16 +284,6 @@ function LaporanContent() {
                   className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
                 >
                   30 Hari Terakhir
-                </button>
-                <button
-                  onClick={handlePresetAugust2026}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    startDate === '2026-08-01' && endDate === '2026-08-25'
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  Agustus 2026
                 </button>
               </div>
             </div>
