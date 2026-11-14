@@ -179,7 +179,7 @@ export default function IzinPage() {
   };
 
   return (
-    <div className="min-h-screen pb-28 md:pb-12 bg-slate-50 dark:bg-[#090d16]">
+    <div className="min-h-screen pb-28 md:pb-12 bg-transparent">
       <Navbar user={user} />
 
       <main className="max-w-4xl mx-auto px-4 py-5 md:py-8 space-y-5">

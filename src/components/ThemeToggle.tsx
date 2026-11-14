@@ -33,22 +33,21 @@ export default function ThemeToggle() {
   };
 
   if (!mounted) {
-    return <div className="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 animate-pulse" />;
+    return <div className="w-10 h-10 rounded-2xl bg-slate-200 dark:bg-slate-800 animate-pulse" />;
   }
 
   return (
     <button
       onClick={toggle}
       title={isDark ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
-      className="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all border border-slate-200/60 dark:border-slate-700/60 shadow-sm"
+      className="relative p-2.5 rounded-2xl text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-slate-800/70 hover:bg-white dark:hover:bg-slate-800 backdrop-blur-xl transition-all duration-300 border border-white/80 dark:border-white/10 shadow-sm hover:shadow-[0_0_18px_rgba(16,185,129,0.3)] hover:border-emerald-500/50 active:scale-95 cursor-pointer group"
       aria-label="Toggle Theme"
     >
       {isDark ? (
-        <Sun className="w-5 h-5 text-amber-400 rotate-0 transition-transform duration-300" />
+        <Sun className="w-4.5 h-4.5 text-amber-400 group-hover:rotate-45 group-hover:drop-shadow-[0_0_8px_#f59e0b] transition-transform duration-300" />
       ) : (
-        <Moon className="w-5 h-5 text-indigo-500 rotate-0 transition-transform duration-300" />
+        <Moon className="w-4.5 h-4.5 text-indigo-500 group-hover:-rotate-12 group-hover:drop-shadow-[0_0_8px_#6366f1] transition-transform duration-300" />
       )}
     </button>
   );
 }
-

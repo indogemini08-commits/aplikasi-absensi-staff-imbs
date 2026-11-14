@@ -131,54 +131,57 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form Card */}
-        <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass dark:shadow-glass-dark border border-slate-200/80 dark:border-slate-800/80 transition-all">
-          <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+        <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/80 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)] relative overflow-hidden transition-all">
+          {/* Top Luminous Neon Line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_12px_#10b981]" />
+
+          <h2 className="text-base font-extrabold text-slate-900 dark:text-white mb-1 tracking-tight">
             Masuk ke Akun Anda
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 font-medium">
             Gunakan username NIP atau email yang telah didaftarkan.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Username / Email / NIP
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
+                  <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Contoh: pegawai atau admin"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-500 transition"
+                  className="w-full pl-10 pr-4 py-3 rounded-2xl glass-input text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm font-medium transition"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Kata Sandi
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
+                  <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan kata sandi"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-500 transition"
+                  className="w-full pl-10 pr-10 py-3 rounded-2xl glass-input text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm font-medium transition"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -188,7 +191,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-lg shadow-emerald-600/30 active:scale-98 transition flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full mt-2 py-3.5 px-4 rounded-2xl font-extrabold text-sm bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 text-white shadow-lg shadow-emerald-600/35 neon-glow-emerald active:scale-98 transition flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

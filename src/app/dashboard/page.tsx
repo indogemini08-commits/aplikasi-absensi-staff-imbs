@@ -140,13 +140,15 @@ export default function StaffDashboard() {
   const schedule = statusData?.schedule;
 
   return (
-    <div className="min-h-screen pb-24 md:pb-12 bg-slate-50 dark:bg-[#090d16]">
+    <div className="min-h-screen pb-24 md:pb-12 bg-transparent">
       <Navbar user={user} />
 
       <main className="max-w-4xl mx-auto px-4 py-5 md:py-8 space-y-5">
         {/* Employee Greeting Header */}
-        <div className="glass-card rounded-3xl p-5 md:p-6 shadow-glass dark:shadow-glass-dark border border-slate-200/80 dark:border-slate-800/80 relative overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="glass-card rounded-3xl p-5 md:p-6 border border-white/80 dark:border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
+          {/* Ambient corner light */}
+          <div className="absolute -top-16 -right-16 w-36 h-36 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold border border-emerald-200/60 dark:border-emerald-800/60 mb-2">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
@@ -211,15 +213,15 @@ export default function StaffDashboard() {
         )}
 
         {/* Big Main Clock-In/Out Quick Card */}
-        <div className="glass-card rounded-3xl p-5 md:p-6 shadow-glass dark:shadow-glass-dark border border-slate-200/80 dark:border-slate-800/80">
+        <div className="glass-card rounded-3xl p-5 md:p-6 border border-white/80 dark:border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-              <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">
+              <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
                 Jadwal Kerja Hari Ini
               </h3>
             </div>
-            <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
               {schedule?.shiftName || 'Reguler Pagi'}
             </span>
           </div>
@@ -276,12 +278,12 @@ export default function StaffDashboard() {
           {/* CTA Action Button to Clock In / Out Page */}
           <button
             onClick={() => router.push('/absensi')}
-            className={`w-full py-4 px-6 rounded-2xl font-black text-sm text-white shadow-lg active:scale-98 transition flex items-center justify-center gap-3 ${
+            className={`w-full py-4 px-6 rounded-2xl font-black text-sm text-white shadow-lg active:scale-98 transition flex items-center justify-center gap-3 cursor-pointer ${
               isClockedOut
                 ? 'bg-slate-700 hover:bg-slate-600'
                 : isClockedIn
-                ? 'bg-gradient-to-r from-teal-600 to-indigo-600 hover:from-teal-500 hover:to-indigo-500 shadow-teal-600/30'
-                : 'bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-emerald-600/30'
+                ? 'bg-gradient-to-r from-teal-600 via-cyan-600 to-indigo-600 hover:from-teal-500 hover:to-indigo-500 shadow-teal-600/35 neon-glow-cyan'
+                : 'bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 shadow-emerald-600/35 neon-glow-emerald'
             }`}
           >
             <MapPin className="w-5 h-5 animate-bounce" />
@@ -299,13 +301,13 @@ export default function StaffDashboard() {
         {/* Monthly Attendance Recap Counters */}
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               Ringkasan Kehadiran Bulan Ini
             </h3>
             <button
               onClick={() => router.push('/riwayat')}
-              className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5"
+              className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5"
             >
               Lihat Riwayat
               <ChevronRight className="w-3.5 h-3.5" />
@@ -313,17 +315,17 @@ export default function StaffDashboard() {
           </div>
 
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
-            <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            <div className="glass-card glass-card-hover p-3.5 rounded-2xl text-center border border-emerald-400/30 dark:border-emerald-500/30 shadow-xs">
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Hadir Tepat
               </div>
-              <div className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+              <div className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">
                 {historySummary?.totalHadir || 0}
               </div>
             </div>
 
-            <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            <div className="glass-card glass-card-hover p-3.5 rounded-2xl text-center border border-amber-400/30 dark:border-amber-500/30 shadow-xs">
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Terlambat
               </div>
               <div className="text-xl font-black text-amber-500 mt-1">

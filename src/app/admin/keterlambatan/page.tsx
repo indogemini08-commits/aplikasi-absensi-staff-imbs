@@ -159,7 +159,7 @@ export default function AdminKeterlambatanPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090d16]">
+    <div className="min-h-screen flex flex-col bg-transparent">
       <Navbar user={user} />
 
       <div className="flex flex-1">

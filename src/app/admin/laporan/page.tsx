@@ -269,7 +269,7 @@ function LaporanContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090d16] print:bg-white print:text-black">
+    <div className="min-h-screen flex flex-col bg-transparent print:bg-white print:text-black">
       <div className="print:hidden">
         <Navbar user={user} />
       </div>
