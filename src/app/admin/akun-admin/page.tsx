@@ -641,7 +641,7 @@ export default function PengaturanAkunAdminPage() {
 
             {/* Desktop Table View (Hidden on mobile/tablet screens < 768px) */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left text-xs whitespace-nowrap">
                 <thead>
                   <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                     <th className="py-3 px-4">Administrator</th>
@@ -1386,3 +1386,4 @@ export default function PengaturanAkunAdminPage() {
     </div>
   );
 }
+

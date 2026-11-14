@@ -170,27 +170,27 @@ export default function StaffDashboard() {
         <div className="glass-card rounded-3xl p-5 md:p-6 border border-white/80 dark:border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
           {/* Ambient corner light */}
           <div className="absolute -top-16 -right-16 w-36 h-36 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[11px] font-semibold border border-blue-200/60 dark:border-blue-800/60 mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-                <span>{statusData?.formattedDate}</span>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+            <div className="min-w-0">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[11px] font-semibold border border-blue-200/60 dark:border-blue-800/60 mb-2 whitespace-nowrap">
+                <Sparkles className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <span className="whitespace-nowrap">{statusData?.formattedDate}</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                 Assalamu’alaikum, {user?.name || 'Staff'}!
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 whitespace-nowrap">
                 {user?.position} • Divisi {user?.departmentName}
               </p>
             </div>
 
-            {/* Attendance Status Badge */}
-            <div className="flex items-center sm:flex-col sm:items-end justify-between sm:justify-center p-3 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-              <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            {/* Attendance Status Badge (Always single-line, no wrap) */}
+            <div className="flex items-center gap-2.5 p-3 px-4 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/60 shrink-0 self-start md:self-center shadow-xs">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Status Hari Ini:
               </span>
               <span
-                className={`text-xs font-bold px-3 py-1 rounded-full ${
+                className={`text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap shrink-0 ${
                   isClockedOut
                     ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'
                     : isClockedIn
@@ -338,7 +338,7 @@ export default function StaffDashboard() {
 
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
             <div className="glass-card glass-card-hover p-3.5 rounded-2xl text-center border border-blue-400/30 dark:border-blue-500/30 shadow-xs">
-              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Hadir Tepat
               </div>
               <div className="text-xl font-black text-blue-600 dark:text-blue-400 mt-1 tabular-nums drop-shadow-[0_0_8px_rgba(37, 99, 235,0.3)]">
@@ -347,7 +347,7 @@ export default function StaffDashboard() {
             </div>
 
             <div className="glass-card glass-card-hover p-3.5 rounded-2xl text-center border border-amber-400/30 dark:border-amber-500/30 shadow-xs">
-              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Terlambat
               </div>
               <div className="text-xl font-black text-amber-500 mt-1">
@@ -356,7 +356,7 @@ export default function StaffDashboard() {
             </div>
 
             <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Izin
               </div>
               <div className="text-xl font-black text-cyan-600 dark:text-cyan-400 mt-1">
@@ -365,7 +365,7 @@ export default function StaffDashboard() {
             </div>
 
             <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Sakit
               </div>
               <div className="text-xl font-black text-indigo-600 dark:text-indigo-400 mt-1">
@@ -374,7 +374,7 @@ export default function StaffDashboard() {
             </div>
 
             <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80 col-span-3 sm:col-span-1">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Cuti
               </div>
               <div className="text-xl font-black text-purple-600 dark:text-purple-400 mt-1">

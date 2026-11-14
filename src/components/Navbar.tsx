@@ -227,11 +227,11 @@ export default function Navbar({ user }: NavbarProps) {
       {/* Bottom glowing futuristic laser accent line */}
       <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/50 via-cyan-400/50 to-transparent shadow-[0_1px_8px_rgba(37, 99, 235,0.4)] pointer-events-none" />
 
-      <div className="w-full px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
-        {/* Left: Brand & Institution Identity */}
+      <div className="w-full px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative gap-2 sm:gap-4">
+        {/* Left: Brand & Institution Identity (No crop, no wrap) */}
         <div
           onClick={() => router.push(currentUser?.role === 'staff' ? '/dashboard' : '/admin')}
-          className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group select-none transition-transform active:scale-[0.99] min-w-0"
+          className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group select-none transition-transform active:scale-[0.99] shrink-0"
           title="Beranda Presensi IMBS"
         >
           {/* Futuristic Frosted Logo Frame with Holographic Reflection */}
@@ -247,34 +247,34 @@ export default function Navbar({ user }: NavbarProps) {
           </div>
 
           {/* Title & Organization Subtitle */}
-          <div className="flex flex-col justify-center min-w-0">
-            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-              <span className="font-extrabold text-xs sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans truncate max-w-[130px] xs:max-w-[180px] sm:max-w-xs md:max-w-md group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-extrabold text-xs sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
               </span>
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300/60 dark:border-blue-700/50 shadow-[0_0_12px_rgba(37, 99, 235,0.2)] backdrop-blur-md leading-none shrink-0">
+              <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300/60 dark:border-blue-700/50 shadow-[0_0_12px_rgba(37, 99, 235,0.2)] backdrop-blur-md leading-none shrink-0 whitespace-nowrap">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-neon-dot"></span>
                 Presensi Staff
               </span>
             </div>
             <div className="flex items-center gap-1.5 mt-0.5 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-              <span className="font-medium text-slate-500 dark:text-slate-400 truncate max-w-[130px] xs:max-w-[190px] sm:max-w-sm md:max-w-lg">
+              <span className="font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 {foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
               </span>
               <span className="hidden xl:inline text-slate-300 dark:text-slate-600">•</span>
-              <span className="hidden xl:inline text-slate-400 dark:text-slate-500 text-[10px] tracking-wide">
+              <span className="hidden xl:inline text-slate-400 dark:text-slate-500 text-[10px] tracking-wide whitespace-nowrap">
                 Portal Presensi Resmi Berbasis GPS
               </span>
             </div>
           </div>
         </div>
 
-        {/* Center: Live WIB Clock HUD Capsule (Desktop) */}
-        <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-blue-500/25 dark:border-blue-500/30 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-[0_0_15px_rgba(37, 99, 235,0.12)] hover:border-blue-500/50 transition-all">
-          <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 animate-pulse" />
-          <span>{wibDate}</span>
+        {/* Center: Live WIB Clock HUD Capsule (Desktop/XL - strictly no wrapping) */}
+        <div className="hidden xl:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-blue-500/25 dark:border-blue-500/30 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-[0_0_15px_rgba(37, 99, 235,0.12)] hover:border-blue-500/50 transition-all whitespace-nowrap shrink-0">
+          <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 animate-pulse shrink-0" />
+          <span className="whitespace-nowrap">{wibDate}</span>
           <span className="text-slate-300 dark:text-slate-600">•</span>
-          <span className="font-extrabold text-blue-600 dark:text-blue-400 tabular-nums tracking-wide">
+          <span className="font-extrabold text-blue-600 dark:text-blue-400 tabular-nums tracking-wide whitespace-nowrap">
             {wibTime || '07:30:00'} WIB
           </span>
         </div>
@@ -282,14 +282,25 @@ export default function Navbar({ user }: NavbarProps) {
         {/* Right: Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {!isInstalled && (
-            <button
-              onClick={installApp}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all active:scale-95 cursor-pointer"
-              title="Pasang Aplikasi Absensi IMBS di Perangkat Ini"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Install App</span>
-            </button>
+            <>
+              {/* Full button on XL */}
+              <button
+                onClick={installApp}
+                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
+                title="Pasang Aplikasi Absensi IMBS di Perangkat Ini"
+              >
+                <Download className="w-3.5 h-3.5 shrink-0" />
+                <span>Install App</span>
+              </button>
+              {/* Compact icon on tablet/laptop */}
+              <button
+                onClick={installApp}
+                className="hidden sm:inline-flex xl:hidden p-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 transition-all active:scale-95 cursor-pointer shrink-0"
+                title="Pasang Aplikasi Absensi IMBS (Install PWA)"
+              >
+                <Download className="w-4 h-4" />
+              </button>
+            </>
           )}
 
           <ThemeToggle />

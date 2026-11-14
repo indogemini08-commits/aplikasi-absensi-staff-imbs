@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, User, Eye, EyeOff, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useToast } from '@/components/ToastContext';
 import ThemeToggle from '@/components/ThemeToggle';
 import { invalidateMasterCache } from '@/lib/sync';
@@ -107,12 +107,6 @@ export default function LoginPage() {
       toast.error('Terjadi kesalahan koneksi');
       setLoading(false);
     }
-  };
-
-  // Quick Account Selector for testing
-  const selectQuickAccount = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
   };
 
   return (
@@ -222,51 +216,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Accounts Selection */}
-          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Akses Cepat Pengujian (1-Klik):</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <button
-                type="button"
-                onClick={() => selectQuickAccount('pegawai', 'password123')}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 text-left transition"
-              >
-                <div className="font-bold text-blue-700 dark:text-blue-400">Pegawai (Staff)</div>
-                <div className="text-slate-500 dark:text-slate-400">Budi Pratama (Guru)</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => selectQuickAccount('admin', 'password123')}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 text-left transition"
-              >
-                <div className="font-bold text-indigo-700 dark:text-indigo-400">Admin HRD</div>
-                <div className="text-slate-500 dark:text-slate-400">Siti Nurhaliza</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => selectQuickAccount('superadmin', 'password123')}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-purple-500 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 text-left transition"
-              >
-                <div className="font-bold text-purple-700 dark:text-purple-400">Super Admin</div>
-                <div className="text-slate-500 dark:text-slate-400">Dr. H. Ahmad Fauzi</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => selectQuickAccount('fajar', 'password123')}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-sky-500 hover:bg-sky-50/50 dark:hover:bg-sky-950/30 text-left transition"
-              >
-                <div className="font-bold text-sky-700 dark:text-sky-400">Staff IT</div>
-                <div className="text-slate-500 dark:text-slate-400">Fajar Hidayat</div>
-              </button>
-            </div>
-          </div>
         </div>
 
         <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-6">

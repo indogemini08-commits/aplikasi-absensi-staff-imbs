@@ -185,36 +185,36 @@ export default function AdminDashboardPage() {
             <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-cyan-500/20 dark:bg-cyan-500/25 blur-3xl pointer-events-none" />
 
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/90 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-300/60 dark:border-blue-700/50 mb-2.5 shadow-[0_0_15px_rgba(37, 99, 235,0.2)] backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/90 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-300/60 dark:border-blue-700/50 mb-2.5 shadow-[0_0_15px_rgba(37, 99, 235,0.2)] backdrop-blur-md whitespace-nowrap">
                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-neon-dot" />
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Panel Pemantauan Eksekutif HRD</span>
               </div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                 Dashboard Kehadiran Staff IMBS
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium flex flex-wrap items-center gap-1.5">
-                <span>Data real-time hari ini:</span>
-                <span className="font-bold text-slate-700 dark:text-slate-200">{boardData?.formattedDate}</span>
+                <span className="whitespace-nowrap">Data real-time hari ini:</span>
+                <span className="font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">{boardData?.formattedDate}</span>
                 <span>•</span>
-                <span className="text-blue-600 dark:text-blue-400 font-semibold">Asia/Jakarta (WIB)</span>
+                <span className="text-blue-600 dark:text-blue-400 font-semibold whitespace-nowrap">Asia/Jakarta (WIB)</span>
               </p>
             </div>
 
-            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 sm:gap-3 relative z-10 w-full sm:w-auto">
+            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 sm:gap-3 relative z-10 w-full sm:w-auto shrink-0">
               <button
                 onClick={() => router.push('/admin/papan-jadwal')}
-                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/30 neon-glow-blue transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
+                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/30 neon-glow-blue transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto whitespace-nowrap"
               >
                 <CalendarDays className="w-4 h-4 shrink-0" />
-                <span>Buka Papan Jadwal</span>
+                <span className="whitespace-nowrap">Buka Papan Jadwal</span>
               </button>
               <button
                 onClick={() => router.push('/admin/laporan')}
-                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs border border-blue-500/30 dark:border-blue-500/40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-100 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(37, 99, 235,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
+                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs border border-blue-500/30 dark:border-blue-500/40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-100 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(37, 99, 235,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto whitespace-nowrap"
               >
                 <FileSpreadsheet className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                <span>Rekap Laporan</span>
+                <span className="whitespace-nowrap">Rekap Laporan</span>
               </button>
             </div>
           </div>
@@ -228,15 +228,15 @@ export default function AdminDashboardPage() {
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-indigo-500 dark:text-indigo-400">
-                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Total Pegawai</span>
-                <div className="p-1.5 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 group-hover:scale-110 transition-transform">
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide whitespace-nowrap">Total Pegawai</span>
+                <div className="p-1.5 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 group-hover:scale-110 transition-transform shrink-0">
                   <Users className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
               <div className="text-xl xs:text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1.5 sm:mt-2 tabular-nums">
                 {stats.totalEmployees}
               </div>
-              <span className="text-[10px] xs:text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block">Aktif Bertugas</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block whitespace-nowrap">Aktif Bertugas</span>
             </div>
 
             {/* 2. Sudah Hadir (Neon Sapphire Blue Aura) */}
@@ -246,15 +246,15 @@ export default function AdminDashboardPage() {
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-blue-600 dark:text-blue-400">
-                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Sudah Hadir</span>
-                <div className="p-1.5 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 group-hover:scale-110 transition-transform">
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide whitespace-nowrap">Sudah Hadir</span>
+                <div className="p-1.5 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 group-hover:scale-110 transition-transform shrink-0">
                   <CalendarCheck className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
               <div className="text-xl xs:text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(37, 99, 235,0.3)]">
                 {stats.hadir}
               </div>
-              <span className="text-[10px] xs:text-[10.5px] font-semibold text-blue-600/80 dark:text-blue-400/80 mt-1 block">Tercatat di Lokasi</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-blue-600/80 dark:text-blue-400/80 mt-1 block whitespace-nowrap">Tercatat di Lokasi</span>
             </div>
 
             {/* 3. Terlambat (Golden Amber Aura) */}
@@ -264,15 +264,15 @@ export default function AdminDashboardPage() {
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-amber-500">
-                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Terlambat</span>
-                <div className="p-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 group-hover:scale-110 transition-transform">
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide whitespace-nowrap">Terlambat</span>
+                <div className="p-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 group-hover:scale-110 transition-transform shrink-0">
                   <AlertTriangle className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
               <div className="text-xl xs:text-2xl sm:text-3xl font-black text-amber-500 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]">
                 {stats.terlambat}
               </div>
-              <span className="text-[10px] xs:text-[10.5px] font-semibold text-amber-500/80 mt-1 block">Lewat Grace Period</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-amber-500/80 mt-1 block whitespace-nowrap">Lewat Grace Period</span>
             </div>
 
             {/* 4. Belum Absen (Neon Cyan Aura) */}
@@ -282,15 +282,15 @@ export default function AdminDashboardPage() {
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-cyan-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400">
-                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Belum Absen</span>
-                <div className="p-1.5 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 group-hover:scale-110 transition-transform">
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide whitespace-nowrap">Belum Absen</span>
+                <div className="p-1.5 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 group-hover:scale-110 transition-transform shrink-0">
                   <Clock className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
               <div className="text-xl xs:text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(6,182,212,0.3)]">
                 {stats.belumAbsen}
               </div>
-              <span className="text-[10px] xs:text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block">Menunggu Clock-In</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block whitespace-nowrap">Menunggu Clock-In</span>
             </div>
 
             {/* 5. Cuti / Izin (Cosmic Violet Aura) */}
@@ -300,15 +300,15 @@ export default function AdminDashboardPage() {
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-violet-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-violet-600 dark:text-violet-400">
-                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Cuti / Izin</span>
-                <div className="p-1.5 rounded-xl bg-violet-500/10 dark:bg-violet-500/20 group-hover:scale-110 transition-transform">
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide whitespace-nowrap">Cuti / Izin</span>
+                <div className="p-1.5 rounded-xl bg-violet-500/10 dark:bg-violet-500/20 group-hover:scale-110 transition-transform shrink-0">
                   <FileCheck className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
               <div className="text-xl xs:text-2xl sm:text-3xl font-black text-violet-600 dark:text-violet-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(139,92,246,0.3)]">
                 {stats.cuti + stats.izin}
               </div>
-              <span className="text-[10px] xs:text-[10.5px] font-semibold text-violet-500/80 dark:text-violet-400/80 mt-1 block">Disetujui HRD</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-violet-500/80 dark:text-violet-400/80 mt-1 block whitespace-nowrap">Disetujui HRD</span>
             </div>
 
             {/* 6. Sakit (Rose / Coral Aura) */}
@@ -318,15 +318,15 @@ export default function AdminDashboardPage() {
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-rose-500/15 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center justify-between text-rose-500 dark:text-rose-400">
-                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Sakit</span>
-                <div className="p-1.5 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 group-hover:scale-110 transition-transform">
+                <span className="text-[10px] xs:text-[11px] font-bold tracking-wide whitespace-nowrap">Sakit</span>
+                <div className="p-1.5 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 group-hover:scale-110 transition-transform shrink-0">
                   <TrendingUp className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
               <div className="text-xl xs:text-2xl sm:text-3xl font-black text-rose-500 dark:text-rose-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(244,63,94,0.3)]">
                 {stats.sakit}
               </div>
-              <span className="text-[10px] xs:text-[10.5px] font-semibold text-rose-500/80 dark:text-rose-400/80 mt-1 block">Dengan Surat SKD</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-rose-500/80 dark:text-rose-400/80 mt-1 block whitespace-nowrap">Dengan Surat SKD</span>
             </div>
           </div>
 

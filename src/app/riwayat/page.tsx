@@ -194,31 +194,31 @@ export default function RiwayatPage() {
         {summary && (
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center text-xs">
             <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold">Hadir Tepat</span>
+              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Hadir Tepat</span>
               <div className="text-lg font-black text-blue-600 dark:text-blue-400">
                 {summary.totalHadir}
               </div>
             </div>
             <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold">Terlambat</span>
+              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Terlambat</span>
               <div className="text-lg font-black text-amber-500">
                 {summary.totalTerlambat}
               </div>
             </div>
             <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold">Izin</span>
+              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Izin</span>
               <div className="text-lg font-black text-cyan-600">
                 {summary.totalIzin}
               </div>
             </div>
             <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold">Sakit</span>
+              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Sakit</span>
               <div className="text-lg font-black text-indigo-600">
                 {summary.totalSakit}
               </div>
             </div>
             <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 col-span-3 sm:col-span-1">
-              <span className="text-[10px] text-slate-500 font-semibold">Cuti</span>
+              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Cuti</span>
               <div className="text-lg font-black text-purple-600">
                 {summary.totalCuti}
               </div>

@@ -226,28 +226,28 @@ export default function IzinPage() {
 
             <div className="grid grid-cols-4 gap-2 text-center text-xs">
               <div className="p-3 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-                <div className="text-[10px] text-slate-500 font-semibold">Alokasi Awal</div>
-                <div className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5">
+                <div className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Alokasi Awal</div>
+                <div className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5 whitespace-nowrap">
                   {balance.allocated_days} <span className="text-xs font-normal text-slate-400">hari</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-                <div className="text-[10px] text-slate-500 font-semibold">Terpakai</div>
-                <div className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5">
+                <div className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Terpakai</div>
+                <div className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5 whitespace-nowrap">
                   {balance.used_days} <span className="text-xs font-normal text-slate-400">hari</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-                <div className="text-[10px] text-amber-600 font-semibold">Menunggu</div>
-                <div className="text-lg font-black text-amber-600 mt-0.5">
+                <div className="text-[10px] text-amber-600 font-semibold whitespace-nowrap">Menunggu</div>
+                <div className="text-lg font-black text-amber-600 mt-0.5 whitespace-nowrap">
                   {balance.pending_days} <span className="text-xs font-normal text-slate-400">hari</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60">
-                <div className="text-[10px] text-blue-700 dark:text-blue-400 font-semibold">Sisa Saldo</div>
+                <div className="text-[10px] text-blue-700 dark:text-blue-400 font-semibold whitespace-nowrap">Sisa Saldo</div>
                 <div className="text-lg font-black text-blue-600 dark:text-blue-400 mt-0.5">
                   {balance.remaining_days} <span className="text-xs font-normal text-blue-600/70">hari</span>
                 </div>
