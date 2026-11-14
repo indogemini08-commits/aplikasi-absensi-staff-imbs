@@ -126,7 +126,9 @@ export default function ReportPreviewModal({
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: orientation === 'landscape' ? 1400 : 1100,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: element.offsetWidth || 1240,
       });
 
       const dataUrl = canvas.toDataURL('image/png', 1.0);
@@ -163,7 +165,9 @@ export default function ReportPreviewModal({
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: orientation === 'landscape' ? 1400 : 1100,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: element.offsetWidth || 1240,
       });
 
       const imgData = canvas.toDataURL('image/png', 1.0);
@@ -252,13 +256,13 @@ export default function ReportPreviewModal({
             visibility: visible;
           }
           #official-recap-document {
-            position: absolute !important;
+            position: fixed !important;
             left: 0 !important;
             top: 0 !important;
-            width: 100% !important;
+            width: 100vw !important;
             max-width: 100% !important;
             margin: 0 !important;
-            padding: 8mm 12mm !important;
+            padding: 8mm 10mm !important;
             box-shadow: none !important;
             border: none !important;
             border-radius: 0 !important;
@@ -297,7 +301,8 @@ export default function ReportPreviewModal({
         }
       `}</style>
 
-      <div className="bg-white dark:bg-slate-900 w-full max-w-6xl rounded-3xl shadow-2xl flex flex-col max-h-[96vh] overflow-hidden border border-slate-200/90 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+      {/* Expanded Modal Box for Ultra-Wide Full Frame Preview */}
+      <div className="bg-white dark:bg-slate-900 w-full max-w-[96vw] 2xl:max-w-[1400px] rounded-3xl shadow-2xl flex flex-col max-h-[96vh] overflow-hidden border border-slate-200/90 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
         {/* Top Header Bar - Harmonized with App Aesthetic */}
         <div className="px-6 py-4 bg-white/95 dark:bg-slate-900/95 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -310,11 +315,11 @@ export default function ReportPreviewModal({
                   Pratinjau Dokumen Rekap Kehadiran
                 </h3>
                 <span className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold px-2.5 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800 text-[10.5px]">
-                  Format Cetak Resmi IMBS
+                  Format Cetak Resmi IMBS (Full Frame)
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Standar administrasi resmi lembaga dengan efisiensi tata letak A4 Landscape & Glassmorphism halus.
+                Layout Full Frame presisi menyesuaikan ukuran kertas A4 Landscape tanpa pemotongan tabel.
               </p>
             </div>
           </div>
@@ -489,7 +494,7 @@ export default function ReportPreviewModal({
         )}
 
         {/* Document Viewer Body (Scrollable paper desk) */}
-        <div className="flex-1 overflow-auto bg-slate-100/90 dark:bg-[#080c14] p-6 sm:p-8 flex justify-center">
+        <div className="flex-1 overflow-auto bg-slate-100/90 dark:bg-[#080c14] p-4 sm:p-6 lg:p-8 flex justify-center">
           <div
             style={{
               transform: `scale(${zoomLevel / 100})`,
@@ -498,15 +503,15 @@ export default function ReportPreviewModal({
             }}
             className="w-full flex justify-center"
           >
-            {/* The Official Document Paper Sheet (Refined Official Glassmorphic Layout) */}
+            {/* The Official Document Paper Sheet (Full Frame Layout - Zero Cropping) */}
             <div
               ref={documentRef}
               id="official-recap-document"
-              className={`bg-white text-slate-900 w-full p-8 sm:p-10 shadow-2xl border border-slate-200/90 rounded-2xl font-sans relative ${
+              className={`bg-white text-slate-900 w-full p-6 sm:p-8 shadow-2xl border border-slate-200/90 rounded-2xl font-sans relative box-border ${
                 orientation === 'landscape'
                   ? paperSize === 'A3'
                     ? 'max-w-[1380px]'
-                    : 'max-w-[1200px]'
+                    : 'max-w-[1240px]'
                   : paperSize === 'A3'
                   ? 'max-w-[1000px]'
                   : 'max-w-[850px]'
@@ -519,10 +524,10 @@ export default function ReportPreviewModal({
               }}
             >
               {/* 1. Header Laporan: Logo, Nama Lembaga, Kontak, & Badge Dokumen */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5 pb-4 border-b border-slate-200/80">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-200/80">
                 {/* Left: Logo & Identity */}
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200/90 p-1.5 flex items-center justify-center shrink-0 shadow-xs">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-xs">
                     <img
                       src={institution.logoInstitution || institution.logoApp || "/logo-imbs-left.png"}
                       alt="Logo Lembaga"
@@ -530,16 +535,16 @@ export default function ReportPreviewModal({
                     />
                   </div>
                   <div>
-                    <h1 className="text-lg sm:text-xl font-black text-[#0c2340] tracking-tight uppercase leading-snug whitespace-nowrap">
+                    <h1 className="text-base sm:text-lg font-black text-[#0c2340] tracking-tight uppercase leading-tight whitespace-nowrap">
                       {institution.schoolName || 'IMAM MUZANI BOARDING SCHOOL'}
                     </h1>
-                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5 whitespace-nowrap">
+                    <div className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wider mt-0.5 whitespace-nowrap">
                       {institution.foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
                     </div>
-                    <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-0.5 max-w-xl">
+                    <p className="text-[10.5px] text-slate-500 font-medium leading-tight mt-0.5">
                       {institution.address || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610'}
                     </p>
-                    <div className="text-[10.5px] text-slate-600 font-semibold leading-tight mt-1 flex flex-wrap items-center gap-1.5 whitespace-nowrap">
+                    <div className="text-[10px] text-slate-600 font-semibold leading-tight mt-1 flex flex-wrap items-center gap-1.5 whitespace-nowrap">
                       <span>E-Mail: <span className="text-slate-800">{orgEmail}</span></span>
                       <span className="text-slate-300">•</span>
                       <span>No Telepon: <span className="text-slate-800">{orgPhone}</span></span>
@@ -547,83 +552,83 @@ export default function ReportPreviewModal({
                   </div>
                 </div>
 
-                {/* Right: Badge & Dokumen Meta (Proporsional, Seimbang & Bebas Wrap) */}
+                {/* Right: Badge & Dokumen Meta */}
                 <div className="flex flex-col sm:items-end shrink-0 pt-0.5 whitespace-nowrap">
-                  <div className="bg-[#edf4fb] text-[#1c4974] font-black text-xs px-4 py-1.5 rounded-xl border border-[#cfe1f3] uppercase tracking-wider shadow-2xs flex items-center gap-1.5 whitespace-nowrap">
+                  <div className="bg-[#edf4fb] text-[#1c4974] font-black text-xs px-3.5 py-1.5 rounded-xl border border-[#cfe1f3] uppercase tracking-wider shadow-2xs flex items-center gap-1.5 whitespace-nowrap">
                     <FileSpreadsheet className="w-3.5 h-3.5 text-[#1c4974]" />
                     <span>REKAPITULASI KEHADIRAN</span>
                   </div>
-                  <div className="flex items-center gap-1 text-[11px] font-mono font-bold text-slate-800 mt-2 whitespace-nowrap">
-                    <span className="text-slate-400 font-sans text-[10.5px] font-medium">No. Dok:</span>
+                  <div className="flex items-center gap-1 text-[10.5px] font-mono font-bold text-slate-800 mt-1.5 whitespace-nowrap">
+                    <span className="text-slate-400 font-sans text-[10px] font-medium">No. Dok:</span>
                     <span>IMBS/ABS/{cleanPeriodForFilename.toUpperCase()}</span>
                   </div>
-                  <div className="text-[10.5px] text-slate-500 font-medium mt-0.5 whitespace-nowrap">
+                  <div className="text-[10px] text-slate-500 font-medium mt-0.5 whitespace-nowrap">
                     Tgl Cetak: <span className="font-semibold text-slate-700">{formattedEndDate}</span>
                   </div>
                 </div>
               </div>
 
               {/* 2. Informasi Pelaporan: Layout 2 Kolom Sejajar Simetris & Bebas Wrap */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 py-4 text-xs border-b border-slate-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1.5 py-3 text-xs border-b border-slate-100">
                 {/* Kolom Kiri */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex items-center whitespace-nowrap">
-                    <span className="w-36 text-slate-500 font-medium text-[11.5px] shrink-0 whitespace-nowrap">Nama Lembaga</span>
-                    <span className="w-4 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-slate-900 text-[11.5px] whitespace-nowrap truncate">{institution.schoolName}</span>
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Nama Lembaga</span>
+                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                    <span className="font-bold text-slate-900 text-[11px] whitespace-nowrap truncate">{institution.schoolName}</span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
-                    <span className="w-36 text-slate-500 font-medium text-[11.5px] shrink-0 whitespace-nowrap">Yayasan Naungan</span>
-                    <span className="w-4 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-semibold text-slate-800 text-[11.5px] whitespace-nowrap truncate">{institution.foundationName}</span>
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Yayasan Naungan</span>
+                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                    <span className="font-semibold text-slate-800 text-[11px] whitespace-nowrap truncate">{institution.foundationName}</span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
-                    <span className="w-36 text-slate-500 font-medium text-[11.5px] shrink-0 whitespace-nowrap">Periode Absensi</span>
-                    <span className="w-4 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-[#0c2340] text-[11.5px] bg-slate-100/80 px-2 py-0.5 rounded border border-slate-200/70 whitespace-nowrap">{periodFormatted}</span>
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Periode Absensi</span>
+                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                    <span className="font-bold text-[#0c2340] text-[11px] bg-slate-100/80 px-2 py-0.5 rounded border border-slate-200/70 whitespace-nowrap">{periodFormatted}</span>
                   </div>
                 </div>
 
                 {/* Kolom Kanan */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex items-center whitespace-nowrap">
-                    <span className="w-36 text-slate-500 font-medium text-[11.5px] shrink-0 whitespace-nowrap">Bulan Pelaporan</span>
-                    <span className="w-4 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-[#0c2340] text-[11.5px] uppercase tracking-wide whitespace-nowrap">{monthName}</span>
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Bulan Pelaporan</span>
+                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                    <span className="font-bold text-[#0c2340] text-[11px] uppercase tracking-wide whitespace-nowrap">{monthName}</span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
-                    <span className="w-36 text-slate-500 font-medium text-[11.5px] shrink-0 whitespace-nowrap">Petugas Tata Usaha</span>
-                    <span className="w-4 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-semibold text-slate-900 text-[11.5px] whitespace-nowrap">{institution.tuStaff || 'ALDRI WAHYUDI CHANDRA'}</span>
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Petugas Tata Usaha</span>
+                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                    <span className="font-semibold text-slate-900 text-[11px] whitespace-nowrap">{institution.tuStaff || 'ALDRI WAHYUDI CHANDRA'}</span>
                   </div>
                   <div className="flex items-center whitespace-nowrap">
-                    <span className="w-36 text-slate-500 font-medium text-[11.5px] shrink-0 whitespace-nowrap">Penanggung Jawab</span>
-                    <span className="w-4 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-semibold text-slate-900 text-[11.5px] whitespace-nowrap">
-                      {institution.headmaster || 'Fauzan Azhiimaa, Lc'} <span className="text-slate-400 text-[10.5px] font-normal">(Kepala Sekolah)</span>
+                    <span className="w-32 text-slate-500 font-medium text-[11px] shrink-0 whitespace-nowrap">Penanggung Jawab</span>
+                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                    <span className="font-semibold text-slate-900 text-[11px] whitespace-nowrap">
+                      {institution.headmaster || 'Fauzan Azhiimaa, Lc'} <span className="text-slate-400 text-[10px] font-normal">(Kepala Sekolah)</span>
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* 3. Tabel Rekapitulasi Kehadiran dengan Header Dark Navy & Seluruh Kolom Bebas Wrap */}
-              <div className="overflow-x-auto rounded-2xl border border-slate-200/80 shadow-xs backdrop-blur-md bg-white/80 my-5">
-                <table className="w-full text-left text-xs border-collapse whitespace-nowrap">
+              {/* 3. Tabel Rekapitulasi Kehadiran (Full Frame - Menyesuaikan Lebar Kertas Tanpa Scroll/Crop) */}
+              <div className="w-full rounded-2xl border border-slate-200/80 shadow-xs backdrop-blur-md bg-white/80 my-4 overflow-hidden">
+                <table className="w-full text-left border-collapse table-auto whitespace-nowrap">
                   <thead>
-                    <tr className="bg-[#0c2340] text-white text-[11px] font-bold tracking-wider uppercase whitespace-nowrap">
-                      <th className="py-3 px-3 text-center whitespace-nowrap">No</th>
-                      <th className="py-3 px-4 text-left whitespace-nowrap">Nama Pegawai</th>
-                      <th className="py-3 px-4 text-left whitespace-nowrap">Departemen</th>
-                      <th className="py-3 px-3 text-center whitespace-nowrap">Absen Masuk</th>
-                      <th className="py-3 px-3 text-center whitespace-nowrap">Absen Pulang</th>
-                      <th className="py-3 px-3 text-center whitespace-nowrap">Telat</th>
-                      <th className="py-3 px-3 text-center whitespace-nowrap">Pulang Cepat</th>
-                      <th className="py-3 px-3 text-center whitespace-nowrap">Lupa Pulang</th>
-                      <th className="py-3 px-3 text-center whitespace-nowrap">Tidak Hadir</th>
-                      <th className="py-3 px-4 text-center whitespace-nowrap">Predikat</th>
+                    <tr className="bg-[#0c2340] text-white text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap">
+                      <th className="py-2.5 px-1.5 text-center w-[3.5%] whitespace-nowrap">No</th>
+                      <th className="py-2.5 px-3 text-left w-[22%] whitespace-nowrap">Nama Pegawai</th>
+                      <th className="py-2.5 px-3 text-left w-[17%] whitespace-nowrap">Departemen</th>
+                      <th className="py-2.5 px-2 text-center w-[8%] whitespace-nowrap">Absen Masuk</th>
+                      <th className="py-2.5 px-2 text-center w-[8%] whitespace-nowrap">Absen Pulang</th>
+                      <th className="py-2.5 px-1.5 text-center w-[6.5%] whitespace-nowrap">Telat</th>
+                      <th className="py-2.5 px-1.5 text-center w-[8.5%] whitespace-nowrap">Pulang Cepat</th>
+                      <th className="py-2.5 px-1.5 text-center w-[8.5%] whitespace-nowrap">Lupa Pulang</th>
+                      <th className="py-2.5 px-1.5 text-center w-[8%] whitespace-nowrap">Tidak Hadir</th>
+                      <th className="py-2.5 px-2.5 text-center w-[10%] whitespace-nowrap">Predikat</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 whitespace-nowrap">
+                  <tbody className="divide-y divide-slate-100 whitespace-nowrap text-[10.5px] sm:text-[11px]">
                     {recapSummary.length === 0 ? (
                       <tr>
                         <td colSpan={10} className="py-10 text-center text-slate-400 italic whitespace-nowrap">
@@ -640,73 +645,73 @@ export default function ReportPreviewModal({
                               isEven ? 'bg-white/95 backdrop-blur-xs' : 'bg-slate-50/70 backdrop-blur-xs'
                             }`}
                           >
-                            <td className="py-2.5 px-3 text-center text-slate-500 font-medium text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-1.5 text-center text-slate-500 font-medium whitespace-nowrap">
                               {item.no}
                             </td>
-                            <td className="py-2.5 px-4 whitespace-nowrap">
+                            <td className="py-2 px-3 whitespace-nowrap">
                               <div className="font-bold text-slate-900 leading-tight whitespace-nowrap">
                                 {item.name}
                               </div>
                               {item.nip && (
-                                <div className="text-[9.5px] font-mono text-slate-400 mt-0.5 whitespace-nowrap">
+                                <div className="text-[9px] font-mono text-slate-400 mt-0.5 whitespace-nowrap">
                                   {item.nip}
                                 </div>
                               )}
                             </td>
-                            <td className="py-2.5 px-4 text-slate-700 font-medium text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-3 text-slate-700 font-medium whitespace-nowrap">
                               <div className="whitespace-nowrap">{item.department_name}</div>
                               {item.position && (
-                                <div className="text-[9.5px] text-slate-400 mt-0.5 whitespace-nowrap">
+                                <div className="text-[9px] text-slate-400 mt-0.5 whitespace-nowrap">
                                   {item.position}
                                 </div>
                               )}
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-slate-800 text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-2 text-center font-bold text-slate-800 whitespace-nowrap">
                               {item.total_masuk} Kali
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-slate-800 text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-2 text-center font-bold text-slate-800 whitespace-nowrap">
                               {item.total_pulang} Kali
                             </td>
-                            <td className="py-2.5 px-3 text-center text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-1.5 text-center whitespace-nowrap">
                               {item.total_telat > 0 ? (
-                                <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200/70 inline-block whitespace-nowrap">
+                                <span className="text-amber-700 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/70 inline-block whitespace-nowrap">
                                   {item.total_telat} Kali
                                 </span>
                               ) : (
                                 <span className="text-slate-400 font-normal whitespace-nowrap">0 Kali</span>
                               )}
                             </td>
-                            <td className="py-2.5 px-3 text-center text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-1.5 text-center whitespace-nowrap">
                               {item.total_pulang_cepat > 0 ? (
-                                <span className="text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200/70 inline-block whitespace-nowrap">
+                                <span className="text-blue-700 font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/70 inline-block whitespace-nowrap">
                                   {item.total_pulang_cepat} Kali
                                 </span>
                               ) : (
                                 <span className="text-slate-400 font-normal whitespace-nowrap">0 Kali</span>
                               )}
                             </td>
-                            <td className="py-2.5 px-3 text-center text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-1.5 text-center whitespace-nowrap">
                               {item.total_lupa_pulang > 0 ? (
-                                <span className="text-orange-700 font-bold bg-orange-50 px-2 py-0.5 rounded border border-orange-200/70 inline-block whitespace-nowrap">
+                                <span className="text-orange-700 font-bold bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200/70 inline-block whitespace-nowrap">
                                   {item.total_lupa_pulang} Kali
                                 </span>
                               ) : (
                                 <span className="text-slate-400 font-normal whitespace-nowrap">0 Kali</span>
                               )}
                             </td>
-                            <td className="py-2.5 px-3 text-center text-[11px] whitespace-nowrap">
+                            <td className="py-2 px-1.5 text-center whitespace-nowrap">
                               {item.total_tidak_hadir > 0 ? (
-                                <span className="text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200/70 inline-block whitespace-nowrap">
+                                <span className="text-rose-700 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200/70 inline-block whitespace-nowrap">
                                   {item.total_tidak_hadir} Kali
                                 </span>
                               ) : (
                                 <span className="text-slate-400 font-normal whitespace-nowrap">0 Kali</span>
                               )}
                             </td>
-                            <td className="py-2.5 px-4 text-center whitespace-nowrap">
+                            <td className="py-2 px-2.5 text-center whitespace-nowrap">
                               {/* Pill Badge Predikat Minimalis & Konsisten */}
                               <span
-                                className={`inline-block px-3 py-0.5 rounded-full text-[10.5px] font-bold border shadow-2xs whitespace-nowrap ${
+                                className={`inline-block px-2.5 py-0.5 rounded-full text-[9.5px] font-bold border shadow-2xs whitespace-nowrap ${
                                   item.predikat === 'Sangat Baik'
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                                     : item.predikat === 'Baik'
@@ -725,34 +730,34 @@ export default function ReportPreviewModal({
                     )}
                   </tbody>
                   {recapSummary.length > 0 && (
-                    <tfoot className="border-t-2 border-slate-200/90 bg-[#f8fafc]/95 font-bold text-slate-800 text-[11px] whitespace-nowrap">
+                    <tfoot className="border-t-2 border-slate-200/90 bg-[#f8fafc]/95 font-bold text-slate-800 text-[10.5px] whitespace-nowrap">
                       <tr>
-                        <td colSpan={3} className="py-2.5 px-4 text-right uppercase tracking-wider text-slate-600 whitespace-nowrap">
+                        <td colSpan={3} className="py-2.5 px-3 text-right uppercase tracking-wider text-slate-600 whitespace-nowrap">
                           Total Akumulasi Keseluruhan:
                         </td>
-                        <td className="py-2.5 px-3 text-center text-slate-900 whitespace-nowrap">{totalMasukAll} Kali</td>
-                        <td className="py-2.5 px-3 text-center text-slate-900 whitespace-nowrap">{totalPulangAll} Kali</td>
-                        <td className="py-2.5 px-3 text-center text-amber-700 whitespace-nowrap">{totalTelatAll} Kali</td>
-                        <td className="py-2.5 px-3 text-center text-blue-700 whitespace-nowrap">{totalPulangCepatAll} Kali</td>
-                        <td className="py-2.5 px-3 text-center text-orange-700 whitespace-nowrap">{totalLupaPulangAll} Kali</td>
-                        <td className="py-2.5 px-3 text-center text-rose-700 whitespace-nowrap">{totalTidakHadirAll} Kali</td>
-                        <td className="py-2.5 px-4 text-center text-slate-600 font-medium whitespace-nowrap">Terverifikasi</td>
+                        <td className="py-2.5 px-2 text-center text-slate-900 whitespace-nowrap">{totalMasukAll} Kali</td>
+                        <td className="py-2.5 px-2 text-center text-slate-900 whitespace-nowrap">{totalPulangAll} Kali</td>
+                        <td className="py-2.5 px-1.5 text-center text-amber-700 whitespace-nowrap">{totalTelatAll} Kali</td>
+                        <td className="py-2.5 px-1.5 text-center text-blue-700 whitespace-nowrap">{totalPulangCepatAll} Kali</td>
+                        <td className="py-2.5 px-1.5 text-center text-orange-700 whitespace-nowrap">{totalLupaPulangAll} Kali</td>
+                        <td className="py-2.5 px-1.5 text-center text-rose-700 whitespace-nowrap">{totalTidakHadirAll} Kali</td>
+                        <td className="py-2.5 px-2.5 text-center text-slate-600 font-medium whitespace-nowrap">Terverifikasi</td>
                       </tr>
                     </tfoot>
                   )}
                 </table>
               </div>
 
-              {/* 4. Area Verifikasi dan Tanda Tangan (QR di Kiri, TTD Kepala Sekolah di Posisi Tengah/Geser, TTD Tata Usaha di Kanan) */}
-              <div className="flex flex-col sm:flex-row items-end justify-between gap-6 pt-5 mt-4 border-t border-slate-200/80 print-avoid-break">
+              {/* 4. Area Verifikasi dan Tanda Tangan (Full Frame - 3 Pilar Proporsional) */}
+              <div className="flex flex-row items-end justify-between gap-4 pt-4 mt-3 border-t border-slate-200/80 print-avoid-break">
                 {/* Pilar 1: Card VERIFIKASI KEASLIAN (QR Code & Serial) */}
-                <div className="bg-[#f8fafc]/90 backdrop-blur-xs rounded-2xl border border-slate-200/90 p-3.5 w-56 text-center shadow-2xs shrink-0 whitespace-nowrap">
-                  <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">
+                <div className="bg-[#f8fafc]/90 backdrop-blur-xs rounded-2xl border border-slate-200/90 p-3 w-52 text-center shadow-2xs shrink-0 whitespace-nowrap">
+                  <div className="flex items-center justify-center gap-1.5 text-[9.5px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">
                     <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
                     <span>VERIFIKASI KEASLIAN</span>
                   </div>
-                  <div className="my-2 flex justify-center">
-                    <svg className="w-16 h-16 text-[#0c2340]" viewBox="0 0 100 100" fill="currentColor">
+                  <div className="my-1.5 flex justify-center">
+                    <svg className="w-14 h-14 text-[#0c2340]" viewBox="0 0 100 100" fill="currentColor">
                       <rect x="8" y="8" width="26" height="26" rx="4" fill="#0c2340" />
                       <rect x="13" y="13" width="16" height="16" rx="2" fill="white" />
                       <rect x="17" y="17" width="8" height="8" rx="1" fill="#1c4974" />
@@ -776,22 +781,22 @@ export default function ReportPreviewModal({
                       <rect x="72" y="72" width="16" height="16" rx="3" fill="#0c2340" />
                     </svg>
                   </div>
-                  <div className="font-mono text-[9px] font-bold text-slate-700 tracking-wider whitespace-nowrap">
+                  <div className="font-mono text-[8.5px] font-bold text-slate-700 tracking-wider whitespace-nowrap">
                     |||||| IMBS/ABS/{cleanPeriodForFilename.slice(0, 10).toUpperCase()} ||||||
                   </div>
-                  <div className="text-[8px] text-slate-400 mt-1 whitespace-nowrap">
+                  <div className="text-[7.5px] text-slate-400 mt-0.5 whitespace-nowrap">
                     Scan untuk Bukti Verifikasi Resmi Sistem
                   </div>
-                  <div className="text-[8.5px] font-bold text-slate-700 mt-0.5 whitespace-nowrap">
+                  <div className="text-[8px] font-bold text-slate-700 mt-0.5 whitespace-nowrap">
                     IMAM MUZANI BOARDING SCHOOL
                   </div>
                 </div>
 
-                {/* Pilar 2: Tanda Tangan Kepala Sekolah (Menggantikan & Menggeser Posisi SAH / TERVALIDASI) */}
+                {/* Pilar 2: Tanda Tangan Kepala Sekolah (Tengah) */}
                 <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
-                  <div className="text-slate-500 text-[11px] whitespace-nowrap">Mengetahui,</div>
+                  <div className="text-slate-500 text-[10.5px] whitespace-nowrap">Mengetahui,</div>
                   <div className="font-bold text-slate-900 text-xs whitespace-nowrap">Kepala Sekolah</div>
-                  <div className="h-14 flex items-center justify-center text-[10.5px] text-slate-400 italic whitespace-nowrap">
+                  <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap">
                     [ Tanda Tangan & Cap Sah ]
                   </div>
                   <div className="font-extrabold text-slate-950 underline text-xs tracking-tight whitespace-nowrap">
@@ -802,13 +807,13 @@ export default function ReportPreviewModal({
                   </div>
                 </div>
 
-                {/* Pilar 3: Tanggal Cetak & Tanda Tangan Tata Usaha */}
+                {/* Pilar 3: Tanggal Cetak & Tanda Tangan Tata Usaha (Kanan) */}
                 <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
-                  <div className="text-slate-600 text-[11px] font-medium mb-0.5 whitespace-nowrap">
+                  <div className="text-slate-600 text-[10.5px] font-medium mb-0.5 whitespace-nowrap">
                     Bogor, <span className="font-semibold text-slate-800">{formattedEndDate}</span>
                   </div>
                   <div className="font-bold text-slate-900 text-xs whitespace-nowrap">Petugas Tata Usaha</div>
-                  <div className="h-14 flex items-center justify-center text-[10.5px] text-slate-400 italic whitespace-nowrap">
+                  <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap">
                     [ Tanda Tangan Sah ]
                   </div>
                   <div className="font-extrabold text-slate-950 underline text-xs tracking-tight whitespace-nowrap">
