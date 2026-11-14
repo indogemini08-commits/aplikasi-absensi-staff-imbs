@@ -4,9 +4,14 @@
   "description": "Aplikasi Absensi dan Pengelolaan Kehadiran Pegawai IMBS",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#090d16",
-  "theme_color": "#059669",
+  "background_color": "#060913",
+  "theme_color": "#2563eb",
   "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
