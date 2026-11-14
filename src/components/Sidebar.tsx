@@ -96,18 +96,18 @@ export default function Sidebar({ userRole }: SidebarProps) {
 
   return (
     <aside
-      className={`hidden md:flex flex-col border-r border-white/50 dark:border-white/10 glass-card transition-all duration-300 select-none z-30 sticky top-16 h-[calc(100vh-4rem)] ${
+      className={`hidden md:flex flex-col shrink-0 border-r border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#070b14]/75 backdrop-blur-2xl transition-all duration-300 select-none z-30 sticky top-16 h-[calc(100vh-4rem)] print:hidden ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
-      {/* Sidebar Header / Collapse Toggle */}
-      <div className="p-4 flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60">
+      {/* Sidebar Header / Brand Bar */}
+      <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 shrink-0">
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
-              <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/10 dark:from-emerald-500/25 dark:to-teal-500/20 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+              <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <span className="font-extrabold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+            <span className="font-black text-xs uppercase tracking-wider text-slate-900 dark:text-white">
               Panel Admin IMBS
             </span>
           </div>
@@ -121,13 +121,13 @@ export default function Sidebar({ userRole }: SidebarProps) {
         </button>
       </div>
 
-      {/* Menu links list */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-5">
+      {/* Menu links list with smooth scrolling */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-4">
         {menuGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
             {!collapsed && (
               <h5 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-3 py-1 flex items-center gap-1.5">
-                <span className="w-1 h-1 rounded-full bg-emerald-500/50" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/60 shadow-[0_0_6px_#10b981]" />
                 <span>{group.group}</span>
               </h5>
             )}
@@ -142,7 +142,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
                   title={collapsed ? item.label : undefined}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 group relative ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white shadow-[0_0_24px_rgba(16,185,129,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-emerald-400/50 scale-[1.02]'
+                      ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-emerald-400/50 scale-[1.01]'
                       : item.highlight
                       ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100/90 dark:hover:bg-emerald-900/50 border border-emerald-200/60 dark:border-emerald-800/40 hover:border-emerald-500/40 shadow-xs'
                       : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-slate-800/80 border border-transparent hover:border-slate-200/80 dark:hover:border-slate-700/80 hover:shadow-xs'
@@ -168,11 +168,11 @@ export default function Sidebar({ userRole }: SidebarProps) {
         ))}
       </div>
 
-      {/* Footer / Logout */}
-      <div className="p-3 border-t border-slate-200/60 dark:border-slate-800/60">
+      {/* Footer / Logout Button */}
+      <div className="p-3 border-t border-slate-200/60 dark:border-white/10 shrink-0 bg-white/30 dark:bg-black/20">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 transition group border border-transparent hover:border-rose-400/30 hover:shadow-xs cursor-pointer"
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 transition group border border-transparent hover:border-rose-400/30 hover:shadow-xs cursor-pointer"
           title={collapsed ? 'Keluar' : undefined}
         >
           <LogOut className="w-4 h-4 shrink-0 text-rose-500 group-hover:scale-110 transition-transform" />
@@ -182,4 +182,3 @@ export default function Sidebar({ userRole }: SidebarProps) {
     </aside>
   );
 }
-
