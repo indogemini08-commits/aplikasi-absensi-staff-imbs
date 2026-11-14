@@ -22,6 +22,7 @@ import {
   LogOut,
   Shield,
   Layers,
+  UserCog,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -75,6 +76,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
       items: [
         { label: 'Rekap & Ekspor Laporan', href: '/admin/laporan', icon: FileSpreadsheet },
         { label: 'Histori Audit Log', href: '/admin/audit-log', icon: History },
+        { label: 'Pengaturan Akun Admin', href: '/admin/akun-admin', icon: UserCog },
         { label: 'Pengaturan Sistem', href: '/admin/pengaturan', icon: Settings },
       ],
     },

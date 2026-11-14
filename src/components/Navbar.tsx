@@ -25,8 +25,11 @@ import {
   Settings,
   Layers,
   Shield,
+  UserCog,
+  Download,
 } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import { usePWA } from './PWAProvider';
 import { getWIBTimeString, formatIndonesianDateShort } from '@/lib/date';
 
 interface NavbarProps {
@@ -41,6 +44,7 @@ interface NavbarProps {
 export default function Navbar({ user }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { canInstall, isInstalled, installApp } = usePWA();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [wibTime, setWibTime] = useState('');
   const [wibDate, setWibDate] = useState('');
@@ -212,6 +216,7 @@ export default function Navbar({ user }: NavbarProps) {
       items: [
         { label: 'Rekap & Ekspor Laporan', href: '/admin/laporan', icon: FileSpreadsheet },
         { label: 'Histori Audit Log', href: '/admin/audit-log', icon: History },
+        { label: 'Pengaturan Akun Admin', href: '/admin/akun-admin', icon: UserCog },
         { label: 'Pengaturan Sistem', href: '/admin/pengaturan', icon: Settings },
       ],
     },
@@ -276,6 +281,17 @@ export default function Navbar({ user }: NavbarProps) {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {!isInstalled && (
+            <button
+              onClick={installApp}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all active:scale-95 cursor-pointer"
+              title="Pasang Aplikasi Absensi IMBS di Perangkat Ini"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Install App</span>
+            </button>
+          )}
+
           <ThemeToggle />
 
           {/* Notifications Button */}
@@ -411,7 +427,20 @@ export default function Navbar({ user }: NavbarProps) {
               </div>
             ))}
 
-            <div className="pt-3 border-t border-slate-200/60 dark:border-white/10">
+            <div className="pt-3 border-t border-slate-200/60 dark:border-white/10 space-y-2">
+              {!isInstalled && (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    installApp();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 p-3 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white text-xs font-extrabold shadow-md shadow-blue-500/25 active:scale-95 transition-all cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Pasang Aplikasi (Install PWA)</span>
+                </button>
+              )}
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);

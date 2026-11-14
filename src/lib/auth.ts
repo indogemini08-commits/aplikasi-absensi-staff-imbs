@@ -9,7 +9,8 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'imbs-presensi-secret-key-2
 export interface UserSession {
   userId: string;
   username: string;
-  role: 'superadmin' | 'admin' | 'staff';
+  email?: string;
+  role: 'superadmin' | 'admin' | 'staff' | 'hrd' | 'tu' | string;
   employeeId?: string;
   name?: string;
   nip?: string;
@@ -97,7 +98,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
     try {
       const db = getDb();
       const userRow = (await db.prepare(`
-        SELECT u.id as user_id, u.username, u.role, u.is_active,
+        SELECT u.id as user_id, u.username, u.email, u.role, u.is_active, u.full_name,
                e.id as employee_id, e.nip, e.name, e.department_id, e.position,
                d.name as department_name
         FROM users u
@@ -115,9 +116,10 @@ export async function getCurrentUser(): Promise<UserSession | null> {
       const userSession: UserSession = {
         userId: userRow.user_id,
         username: userRow.username,
+        email: userRow.email,
         role: userRow.role,
         employeeId: userRow.employee_id,
-        name: userRow.name || userRow.username,
+        name: userRow.name || userRow.full_name || userRow.username,
         nip: userRow.nip,
         departmentId: userRow.department_id,
         departmentName: userRow.department_name,

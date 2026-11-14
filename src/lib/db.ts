@@ -1,6 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 import path from 'path';
 import fs from 'fs';
+import { createRequire } from 'module';
+
+const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
 
 // Helper to resolve DATABASE_URL from process.env or .env.local
 function getDatabaseUrl(): string | undefined {
@@ -60,7 +63,7 @@ let sqliteInstance: any = null;
 function getSqlite() {
   if (!sqliteInstance) {
     try {
-      const { DatabaseSync } = require('node:sqlite');
+      const { DatabaseSync } = req('node:sqlite');
       const isVercel = !!process.env.VERCEL;
       const dbDir = isVercel ? '/tmp' : path.join(process.cwd(), 'data');
       if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });

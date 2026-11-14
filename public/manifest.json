@@ -1,27 +1,81 @@
 {
-  "name": "Absensi Staff IMBS",
+  "name": "Aplikasi Absensi Staff IMBS",
   "short_name": "Absensi IMBS",
-  "description": "Aplikasi Absensi dan Pengelolaan Kehadiran Pegawai IMBS",
+  "description": "Portal Presensi dan Pengelolaan Kehadiran Digital Pegawai IMBS Berbasis GPS & Face Detection",
   "start_url": "/dashboard",
+  "scope": "/",
+  "id": "/imbs-absensi-app",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#060913",
   "theme_color": "#2563eb",
+  "categories": ["productivity", "education", "utilities"],
   "icons": [
     {
       "src": "/icon.png",
       "sizes": "64x64",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/app-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Presensi Mandiri",
+      "short_name": "Presensi",
+      "description": "Buka kamera presensi kehadiran masuk/pulang",
+      "url": "/absensi",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard Utama",
+      "short_name": "Dashboard",
+      "description": "Lihat ringkasan statistik kehadiran",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Panel Admin",
+      "short_name": "Admin",
+      "description": "Kelola data pegawai, jadwal, dan laporan",
+      "url": "/admin",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": []
 }
-

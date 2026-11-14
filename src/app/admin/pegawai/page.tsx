@@ -535,154 +535,281 @@ export default function PegawaiPage() {
                 description="Belum ada data pegawai atau pencarian tidak menghasilkan data."
               />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                      <th className="py-3.5 px-3 w-10 text-center">
-                        <button
-                          type="button"
-                          onClick={toggleSelectAll}
-                          className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
-                          title={isAllSelected ? 'Batalkan Semua Pilihan' : 'Pilih Semua Pegawai'}
-                        >
-                          {isAllSelected ? (
-                            <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                          ) : (
-                            <Square className="w-4 h-4 text-slate-400" />
-                          )}
-                        </button>
-                      </th>
-                      <th className="py-3.5 px-4">Pegawai & NIP</th>
-                      <th className="py-3.5 px-4">Divisi & Jabatan</th>
-                      <th className="py-3.5 px-4">Akun & Role</th>
-                      <th className="py-3.5 px-4">Jadwal Kerja Departemen</th>
-                      <th className="py-3.5 px-4">Sisa Cuti</th>
-                      <th className="py-3.5 px-4">Status</th>
-                      <th className="py-3.5 px-4 text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {filteredEmployees.map((emp) => {
-                      const isSelected = selectedIds.includes(emp.id);
-                      return (
-                      <tr
-                        key={emp.id}
-                        className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors ${
-                          isSelected ? 'bg-blue-50/40 dark:bg-blue-950/20 ' : ''
-                        }${emp.is_active === 0 ? 'opacity-60 bg-slate-100/40 dark:bg-slate-900/40' : ''}`}
-                      >
-                        <td className="py-3.5 px-3 text-center">
+              <>
+                {/* Desktop View: Full Responsive Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                        <th className="py-3.5 px-3 w-10 text-center">
                           <button
                             type="button"
-                            onClick={() => toggleSelect(emp.id)}
+                            onClick={toggleSelectAll}
                             className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                            title={isAllSelected ? 'Batalkan Semua Pilihan' : 'Pilih Semua Pegawai'}
                           >
-                            {isSelected ? (
+                            {isAllSelected ? (
                               <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                             ) : (
                               <Square className="w-4 h-4 text-slate-400" />
                             )}
                           </button>
-                        </td>
+                        </th>
+                        <th className="py-3.5 px-4">Pegawai & NIP</th>
+                        <th className="py-3.5 px-4">Divisi & Jabatan</th>
+                        <th className="py-3.5 px-4">Akun & Role</th>
+                        <th className="py-3.5 px-4">Jadwal Kerja Departemen</th>
+                        <th className="py-3.5 px-4">Sisa Cuti</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {filteredEmployees.map((emp) => {
+                        const isSelected = selectedIds.includes(emp.id);
+                        return (
+                        <tr
+                          key={emp.id}
+                          className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors ${
+                            isSelected ? 'bg-blue-50/40 dark:bg-blue-950/20 ' : ''
+                          }${emp.is_active === 0 ? 'opacity-60 bg-slate-100/40 dark:bg-slate-900/40' : ''}`}
+                        >
+                          <td className="py-3.5 px-3 text-center">
+                            <button
+                              type="button"
+                              onClick={() => toggleSelect(emp.id)}
+                              className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+                            >
+                              {isSelected ? (
+                                <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              ) : (
+                                <Square className="w-4 h-4 text-slate-400" />
+                              )}
+                            </button>
+                          </td>
 
-                        <td className="py-3.5 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-600/10 dark:bg-indigo-400/20 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0">
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-indigo-600/10 dark:bg-indigo-400/20 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0">
+                                {emp.name.charAt(0)}
+                              </div>
+                              <div>
+                                <div className="font-bold text-slate-800 dark:text-slate-100">
+                                  {emp.name}
+                                </div>
+                                <div className="text-[10px] text-slate-400 font-mono">
+                                  {emp.nip}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <div className="font-semibold text-slate-700 dark:text-slate-200">
+                              {emp.department_name}
+                            </div>
+                            <div className="text-[10px] text-slate-500">{emp.position}</div>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <div className="font-medium text-slate-800 dark:text-slate-200">
+                              {emp.username}
+                            </div>
+                            <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">
+                              {emp.role}
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <div className="font-bold text-slate-800 dark:text-slate-100 font-mono text-xs">
+                              {emp.dept_start_time || '07:30'} - {emp.dept_end_time || '16:00'} WIB
+                            </div>
+                            <div className="text-[10px] text-slate-500 flex items-center gap-1.5 mt-0.5">
+                              <span className="px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold text-[9px]">
+                                {Array.isArray(emp.dept_work_days) ? emp.dept_work_days.length : 5} Hari Kerja
+                              </span>
+                              <span className="text-amber-600 dark:text-amber-400 font-medium">
+                                +{emp.dept_grace_period ?? 10}m
+                              </span>
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <span className="font-bold text-blue-600 dark:text-blue-400">
+                              {emp.leave_remaining ?? 12} Hari
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${emp.is_active === 1
+                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                                  : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                                }`}
+                            >
+                              {emp.is_active === 1 ? 'Aktif' : 'Nonaktif'}
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                onClick={() => openEditModal(emp)}
+                                className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
+                                title="Edit Profil"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleToggleActive(emp)}
+                                className={`p-1.5 rounded-lg transition ${emp.is_active === 1
+                                    ? 'text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40'
+                                    : 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40'
+                                  }`}
+                                title={emp.is_active === 1 ? 'Nonaktifkan Akun' : 'Aktifkan Akun'}
+                              >
+                                {emp.is_active === 1 ? <X className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}
+                              </button>
+                              <button
+                                onClick={() => confirmDeleteSingle(emp)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                                title="Hapus Akun Pegawai"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile View: High Performance Card Stream */}
+                <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800 p-2.5 space-y-3">
+                  {filteredEmployees.map((emp) => {
+                    const isSelected = selectedIds.includes(emp.id);
+                    return (
+                      <div
+                        key={emp.id}
+                        className={`p-3.5 rounded-2xl border transition-all ${
+                          isSelected
+                            ? 'bg-blue-50/50 dark:bg-blue-950/30 border-blue-500/50 shadow-xs ring-1 ring-blue-500/30'
+                            : 'bg-white/80 dark:bg-slate-900/60 border-slate-200/80 dark:border-white/10 shadow-xs'
+                        } ${emp.is_active === 0 ? 'opacity-60' : ''}`}
+                      >
+                        {/* Header: Checkbox + Avatar + Name + Status */}
+                        <div className="flex items-start justify-between gap-2.5">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <button
+                              type="button"
+                              onClick={() => toggleSelect(emp.id)}
+                              className="p-1 -ml-1 text-slate-400 hover:text-blue-600 transition shrink-0"
+                            >
+                              {isSelected ? (
+                                <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              ) : (
+                                <Square className="w-4 h-4" />
+                              )}
+                            </button>
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 text-blue-600 dark:text-blue-400 font-black text-xs flex items-center justify-center shrink-0 border border-blue-500/20">
                               {emp.name.charAt(0)}
                             </div>
-                            <div>
-                              <div className="font-bold text-slate-800 dark:text-slate-100">
+                            <div className="min-w-0">
+                              <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
                                 {emp.name}
-                              </div>
+                              </h4>
                               <div className="text-[10px] text-slate-400 font-mono">
-                                {emp.nip}
+                                NIP: {emp.nip}
                               </div>
                             </div>
                           </div>
-                        </td>
 
-                        <td className="py-3.5 px-4">
-                          <div className="font-semibold text-slate-700 dark:text-slate-200">
-                            {emp.department_name}
-                          </div>
-                          <div className="text-[10px] text-slate-500">{emp.position}</div>
-                        </td>
-
-                        <td className="py-3.5 px-4">
-                          <div className="font-medium text-slate-800 dark:text-slate-200">
-                            {emp.username}
-                          </div>
-                          <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">
-                            {emp.role}
-                          </span>
-                        </td>
-
-                        <td className="py-3.5 px-4">
-                          <div className="font-bold text-slate-800 dark:text-slate-100 font-mono text-xs">
-                            {emp.dept_start_time || '07:30'} - {emp.dept_end_time || '16:00'} WIB
-                          </div>
-                          <div className="text-[10px] text-slate-500 flex items-center gap-1.5 mt-0.5">
-                            <span className="px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold text-[9px]">
-                              {Array.isArray(emp.dept_work_days) ? emp.dept_work_days.length : 5} Hari Kerja
-                            </span>
-                            <span className="text-amber-600 dark:text-amber-400 font-medium">
-                              +{emp.dept_grace_period ?? 10}m
-                            </span>
-                          </div>
-                        </td>
-
-                        <td className="py-3.5 px-4">
-                          <span className="font-bold text-blue-600 dark:text-blue-400">
-                            {emp.leave_remaining ?? 12} Hari
-                          </span>
-                        </td>
-
-                        <td className="py-3.5 px-4">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${emp.is_active === 1
+                            className={`px-2 py-0.5 rounded-full text-[9.5px] font-extrabold shrink-0 ${
+                              emp.is_active === 1
                                 ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                 : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-                              }`}
+                            }`}
                           >
                             {emp.is_active === 1 ? 'Aktif' : 'Nonaktif'}
                           </span>
-                        </td>
+                        </div>
 
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              onClick={() => openEditModal(emp)}
-                              className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
-                              title="Edit Profil"
-                            >
-                              <Edit className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleToggleActive(emp)}
-                              className={`p-1.5 rounded-lg transition ${emp.is_active === 1
-                                  ? 'text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40'
-                                  : 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40'
-                                }`}
-                              title={emp.is_active === 1 ? 'Nonaktifkan Akun' : 'Aktifkan Akun'}
-                            >
-                              {emp.is_active === 1 ? <X className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}
-                            </button>
-                            <button
-                              onClick={() => confirmDeleteSingle(emp)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                              title="Hapus Akun Pegawai"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                        {/* Details grid */}
+                        <div className="grid grid-cols-2 gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 text-[11px]">
+                          <div>
+                            <span className="text-[10px] font-semibold text-slate-400 block">Divisi & Jabatan</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200 truncate block">
+                              {emp.department_name}
+                            </span>
+                            <span className="text-[10px] text-slate-500 block truncate">{emp.position}</span>
                           </div>
-                        </td>
-                      </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+
+                          <div>
+                            <span className="text-[10px] font-semibold text-slate-400 block">Akun & Role</span>
+                            <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">
+                              @{emp.username}
+                            </span>
+                            <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase">
+                              {emp.role}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] font-semibold text-slate-400 block">Jadwal Departemen</span>
+                            <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
+                              {emp.dept_start_time || '07:30'} - {emp.dept_end_time || '16:00'}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] font-semibold text-slate-400 block">Sisa Cuti</span>
+                            <span className="font-black text-blue-600 dark:text-blue-400">
+                              {emp.leave_remaining ?? 12} Hari
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Mobile Actions Toolbar */}
+                        <div className="flex items-center justify-end gap-1.5 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(emp)}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition cursor-pointer"
+                          >
+                            <Edit className="w-3.5 h-3.5 text-blue-600" />
+                            <span>Edit</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleToggleActive(emp)}
+                            className={`py-1.5 px-3 rounded-xl text-[11px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                              emp.is_active === 1
+                                ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
+                                : 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
+                            }`}
+                          >
+                            {emp.is_active === 1 ? <X className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}
+                            <span>{emp.is_active === 1 ? 'Nonaktif' : 'Aktif'}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => confirmDeleteSingle(emp)}
+                            className="p-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition cursor-pointer"
+                            title="Hapus Akun"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         </main>
