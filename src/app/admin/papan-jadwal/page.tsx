@@ -172,7 +172,7 @@ function PapanJadwalContent() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <CalendarDays className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <CalendarDays className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Papan Jadwal Kehadiran
                 </h1>
@@ -193,7 +193,7 @@ function PapanJadwalContent() {
 
               <button
                 onClick={() => router.push(`/admin/laporan?startDate=${selectedDate}&endDate=${selectedDate}&format=csv`)}
-                className="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5"
+                className="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition flex items-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Ekspor Hari Ini</span>
@@ -206,7 +206,7 @@ function PapanJadwalContent() {
             <button
               onClick={() => setSelectedStatus('')}
               className={`glass-card p-3 rounded-2xl border transition ${
-                !selectedStatus ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200/80 dark:border-slate-800/80'
+                !selectedStatus ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200/80 dark:border-slate-800/80'
               }`}
             >
               <div className="text-[10px] text-slate-500 font-semibold">Total Staff</div>
@@ -218,11 +218,11 @@ function PapanJadwalContent() {
             <button
               onClick={() => setSelectedStatus('Hadir')}
               className={`glass-card p-3 rounded-2xl border transition ${
-                selectedStatus === 'Hadir' ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200/80 dark:border-slate-800/80'
+                selectedStatus === 'Hadir' ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200/80 dark:border-slate-800/80'
               }`}
             >
-              <div className="text-[10px] text-emerald-600 font-semibold">Hadir</div>
-              <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+              <div className="text-[10px] text-blue-600 font-semibold">Hadir</div>
+              <div className="text-lg font-black text-blue-600 dark:text-blue-400 mt-0.5">
                 {stats.hadir}
               </div>
             </button>
@@ -296,7 +296,7 @@ function PapanJadwalContent() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -305,7 +305,7 @@ function PapanJadwalContent() {
               <select
                 value={selectedDept}
                 onChange={(e) => setSelectedDept(e.target.value)}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Semua Divisi</option>
                 {departments.map((d) => (
@@ -321,7 +321,7 @@ function PapanJadwalContent() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Semua Status</option>
                 <option value="Hadir">Hadir</option>
@@ -342,7 +342,7 @@ function PapanJadwalContent() {
                 placeholder="Cari nama atau NIP pegawai..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-emerald-500"
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -382,7 +382,7 @@ function PapanJadwalContent() {
                         >
                           <td className="py-3.5 px-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-emerald-600/10 dark:bg-emerald-400/20 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-blue-600/10 dark:bg-blue-400/20 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center shrink-0">
                                 {item.name.charAt(0)}
                               </div>
                               <div>
@@ -439,7 +439,7 @@ function PapanJadwalContent() {
                                 +{item.minutesLate} Menit
                               </span>
                             ) : isPresent ? (
-                              <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">
                                 Tepat Waktu
                               </span>
                             ) : (
@@ -451,7 +451,7 @@ function PapanJadwalContent() {
                             <span
                               className={`px-3 py-1 rounded-full text-[11px] font-bold inline-block ${
                                 item.status === 'Hadir'
-                                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                   : item.status === 'Pulang'
                                   ? 'bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300'
                                   : item.status === 'Terlambat'

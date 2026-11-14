@@ -100,7 +100,7 @@ export default function ProfilPage() {
       <main className="max-w-md mx-auto px-4 py-5 space-y-4">
         {/* Profile Card */}
         <div className="glass-card rounded-3xl p-6 text-center border border-slate-200/80 dark:border-slate-800/80 relative overflow-hidden">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-400 text-white font-extrabold text-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/25 ring-4 ring-emerald-500/20">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-teal-400 text-white font-extrabold text-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/25 ring-4 ring-blue-500/20">
             {user?.name ? user.name.charAt(0) : 'U'}
           </div>
           <h2 className="text-lg font-black text-slate-900 dark:text-white">
@@ -109,7 +109,7 @@ export default function ProfilPage() {
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             NIP: {user?.nip || '-'}
           </p>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold border border-emerald-200/60 dark:border-emerald-800/60 mt-2.5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[11px] font-bold border border-blue-200/60 dark:border-blue-800/60 mt-2.5">
             {user?.position}
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function ProfilPage() {
 
           <div className="flex items-center justify-between text-xs">
             <span className="text-slate-500 dark:text-slate-400 flex items-center gap-2">
-              <Building className="w-4 h-4 text-emerald-600" />
+              <Building className="w-4 h-4 text-blue-600" />
               Divisi / Unit
             </span>
             <span className="font-semibold text-slate-800 dark:text-slate-200">
@@ -132,7 +132,7 @@ export default function ProfilPage() {
 
           <div className="flex items-center justify-between text-xs">
             <span className="text-slate-500 dark:text-slate-400 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-emerald-600" />
+              <Shield className="w-4 h-4 text-blue-600" />
               Hak Akses Role
             </span>
             <span className="font-semibold text-slate-800 dark:text-slate-200 uppercase">
@@ -142,7 +142,7 @@ export default function ProfilPage() {
 
           <div className="flex items-center justify-between text-xs">
             <span className="text-slate-500 dark:text-slate-400 flex items-center gap-2">
-              <Mail className="w-4 h-4 text-emerald-600" />
+              <Mail className="w-4 h-4 text-blue-600" />
               Username Akun
             </span>
             <span className="font-semibold text-slate-800 dark:text-slate-200">

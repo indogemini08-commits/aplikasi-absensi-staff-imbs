@@ -288,7 +288,7 @@ function LaporanContent() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
             <div>
               <div className="flex items-center gap-2">
-                <FileSpreadsheet className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <FileSpreadsheet className="w-6 h-6 text-blue-600 dark:text-blue-400 shrink-0" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Rekapitulasi & Laporan Kehadiran
                 </h1>
@@ -316,7 +316,7 @@ function LaporanContent() {
               {/* Unduh Excel CSV */}
               <button
                 onClick={() => handleExportCsv('summary')}
-                className="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer w-full xs:w-auto"
+                className="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer w-full xs:w-auto"
                 title="Unduh Rekap Eksekutif format CSV / Excel"
               >
                 <Download className="w-4 h-4 shrink-0" />
@@ -330,7 +330,7 @@ function LaporanContent() {
             {/* Presets */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-                <Calendar className="w-4 h-4 text-emerald-600" />
+                <Calendar className="w-4 h-4 text-blue-600" />
                 <span>Preset Periode:</span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -363,7 +363,7 @@ function LaporanContent() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500 text-xs"
+                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs"
                 />
               </div>
 
@@ -373,7 +373,7 @@ function LaporanContent() {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500 text-xs"
+                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs"
                 />
               </div>
 
@@ -382,7 +382,7 @@ function LaporanContent() {
                 <select
                   value={departmentId}
                   onChange={(e) => setDepartmentId(e.target.value)}
-                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500 text-xs"
+                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs"
                 >
                   <option value="">Semua Divisi ({departments.length})</option>
                   {departments.map((d) => (
@@ -398,7 +398,7 @@ function LaporanContent() {
                 <select
                   value={employeeId}
                   onChange={(e) => setEmployeeId(e.target.value)}
-                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500 text-xs max-w-xs"
+                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs max-w-xs"
                 >
                   <option value="">Semua Pegawai ({employees.length})</option>
                   {employees.map((e) => (
@@ -421,11 +421,11 @@ function LaporanContent() {
               </div>
             </div>
 
-            <div className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-emerald-400/30 dark:border-emerald-500/30 shadow-xs relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/15 rounded-full blur-xl pointer-events-none" />
-              <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Total Absen Masuk</div>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1.5 tabular-nums drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-                {stats.totalHadir} <span className="text-xs font-semibold text-emerald-500/80">Transaksi</span>
+            <div className="glass-card glass-card-hover p-4 sm:p-5 rounded-3xl border border-blue-400/30 dark:border-blue-500/30 shadow-xs relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/15 rounded-full blur-xl pointer-events-none" />
+              <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400">Total Absen Masuk</div>
+              <div className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 mt-1.5 tabular-nums drop-shadow-[0_0_12px_rgba(37, 99, 235,0.3)]">
+                {stats.totalHadir} <span className="text-xs font-semibold text-blue-500/80">Transaksi</span>
               </div>
             </div>
 
@@ -453,14 +453,14 @@ function LaporanContent() {
                 onClick={() => setActiveTab('recap')}
                 className={`py-2 px-3 sm:px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
                   activeTab === 'recap'
-                    ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-emerald-500/30 neon-glow-emerald scale-[1.01]'
+                    ? 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-blue-500/30 neon-glow-blue scale-[1.01]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <Award className="w-4 h-4 shrink-0" />
                 <span className="truncate">Rekapitulasi Kehadiran</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 hidden xs:inline-block ${
-                  activeTab === 'recap' ? 'bg-white/20 text-white' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  activeTab === 'recap' ? 'bg-white/20 text-white' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                 }`}>
                   Eksekutif
                 </span>
@@ -470,7 +470,7 @@ function LaporanContent() {
                 onClick={() => setActiveTab('records')}
                 className={`py-2 px-3 sm:px-4 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
                   activeTab === 'records'
-                    ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-emerald-500/30 neon-glow-emerald scale-[1.01]'
+                    ? 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-blue-500/30 neon-glow-blue scale-[1.01]'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
                 }`}
               >
@@ -481,9 +481,9 @@ function LaporanContent() {
 
             <button
               onClick={() => setIsPreviewModalOpen(true)}
-              className="py-2.5 px-4 rounded-2xl text-xs font-extrabold bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-cyan-500/15 hover:from-emerald-500/25 hover:to-cyan-500/25 text-emerald-700 dark:text-emerald-300 transition flex items-center justify-center gap-2 border border-emerald-500/30 dark:border-emerald-500/40 shadow-xs hover:shadow-[0_0_20px_rgba(16,185,129,0.25)] active:scale-95 cursor-pointer w-full sm:w-auto"
+              className="py-2.5 px-4 rounded-2xl text-xs font-extrabold bg-gradient-to-r from-blue-500/15 via-teal-500/15 to-cyan-500/15 hover:from-blue-500/25 hover:to-cyan-500/25 text-blue-700 dark:text-blue-300 transition flex items-center justify-center gap-2 border border-blue-500/30 dark:border-blue-500/40 shadow-xs hover:shadow-[0_0_20px_rgba(37, 99, 235,0.25)] active:scale-95 cursor-pointer w-full sm:w-auto"
             >
-              <Eye className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <Eye className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
               <span>Buka Pratinjau Dokumen (Preview)</span>
             </button>
           </div>
@@ -522,7 +522,7 @@ function LaporanContent() {
                         return (
                           <tr
                             key={item.employee_id}
-                            className={`hover:bg-emerald-50/40 dark:hover:bg-slate-800/50 transition ${
+                            className={`hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition ${
                               isEven ? 'bg-white/70 dark:bg-slate-900/40' : 'bg-slate-50/50 dark:bg-slate-800/25'
                             }`}
                           >
@@ -562,7 +562,7 @@ function LaporanContent() {
                               <span
                                 className={`px-3 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wide border shadow-xs ${
                                   item.predikat === 'Sangat Baik'
-                                    ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                                    ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30'
                                     : item.predikat === 'Baik'
                                     ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30'
                                     : item.predikat === 'Kurang Baik'
@@ -604,7 +604,7 @@ function LaporanContent() {
                     </thead>
                     <tbody className="divide-y divide-slate-100/70 dark:divide-slate-800/70">
                       {records.map((r: any, rIdx: number) => (
-                        <tr key={r.id} className={`hover:bg-emerald-50/40 dark:hover:bg-slate-800/50 transition ${rIdx % 2 === 0 ? 'bg-white/70 dark:bg-slate-900/40' : 'bg-slate-50/50 dark:bg-slate-800/25'}`}>
+                        <tr key={r.id} className={`hover:bg-blue-50/40 dark:hover:bg-slate-800/50 transition ${rIdx % 2 === 0 ? 'bg-white/70 dark:bg-slate-900/40' : 'bg-slate-50/50 dark:bg-slate-800/25'}`}>
                           <td className="py-3 px-4 font-mono font-medium">{r.date}</td>
                           <td className="py-3 px-4">
                             <div className="font-extrabold text-slate-900 dark:text-white">
@@ -620,7 +620,7 @@ function LaporanContent() {
                             <span
                               className={`px-2.5 py-1 rounded-full text-[10px] font-bold border shadow-xs ${
                                 r.clock_in_status === 'hadir'
-                                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                                  ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30'
                                   : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30'
                               }`}
                             >

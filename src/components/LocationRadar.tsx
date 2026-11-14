@@ -54,7 +54,7 @@ export default function LocationRadar({
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Navigation className="w-4 h-4 animate-spin-slow" />
           </div>
           <div>
@@ -78,7 +78,7 @@ export default function LocationRadar({
             onClick={onRefreshGps}
             disabled={isLoadingGps}
             title="Refresh Koordinat GPS"
-            className="p-1.5 rounded-lg text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition disabled:opacity-50"
+            className="p-1.5 rounded-lg text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${isLoadingGps ? 'animate-spin' : ''}`} />
           </button>
@@ -99,13 +99,13 @@ export default function LocationRadar({
         /* Radar Graphic Visualization */
         <div className="relative w-full h-44 bg-gradient-to-b from-slate-50 to-slate-100/60 dark:from-slate-900/80 dark:to-slate-950/90 rounded-xl overflow-hidden border border-slate-200/60 dark:border-slate-800/60 flex items-center justify-center mb-3">
           {/* Concentric radar rings */}
-          <div className="absolute w-36 h-36 rounded-full border border-emerald-500/20 dark:border-emerald-400/20" />
-          <div className="absolute w-28 h-28 rounded-full border border-dashed border-emerald-500/30 dark:border-emerald-400/30" />
-          <div className={`absolute w-20 h-20 rounded-full ${isWithinRadius ? 'bg-emerald-500/10 border border-emerald-500/40' : 'bg-rose-500/10 border border-rose-500/40'} animate-radar`} />
+          <div className="absolute w-36 h-36 rounded-full border border-blue-500/20 dark:border-blue-400/20" />
+          <div className="absolute w-28 h-28 rounded-full border border-dashed border-blue-500/30 dark:border-blue-400/30" />
+          <div className={`absolute w-20 h-20 rounded-full ${isWithinRadius ? 'bg-blue-500/10 border border-blue-500/40' : 'bg-rose-500/10 border border-rose-500/40'} animate-radar`} />
 
           {/* Center: Work Location Marker */}
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-emerald-600 text-white shadow-md flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white shadow-md flex items-center justify-center">
               <MapPin className="w-4 h-4" />
             </div>
             <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 mt-1 bg-white/80 dark:bg-slate-800/80 px-1.5 py-0.5 rounded shadow-xs">
@@ -137,13 +137,13 @@ export default function LocationRadar({
       <div
         className={`p-3 rounded-xl border flex items-start gap-3 transition-colors ${
           isWithinRadius
-            ? 'bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200'
+            ? 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/60 text-blue-900 dark:text-blue-200'
             : 'bg-rose-50/80 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/60 text-rose-900 dark:text-rose-200'
         }`}
       >
         <div className="shrink-0 mt-0.5">
           {isWithinRadius ? (
-            <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           ) : (
             <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
           )}
@@ -167,7 +167,7 @@ export default function LocationRadar({
       {/* Accuracy & Security Footer */}
       <div className="mt-2.5 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 px-1">
         <span className="flex items-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+          <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
           Validasi Geofence Server-Side
         </span>
         <span>

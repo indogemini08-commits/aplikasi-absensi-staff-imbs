@@ -104,8 +104,8 @@ export default function Sidebar({ userRole }: SidebarProps) {
       <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 shrink-0">
         {!collapsed && (
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/10 dark:from-emerald-500/25 dark:to-teal-500/20 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-              <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-500/20 to-teal-500/10 dark:from-blue-500/25 dark:to-teal-500/20 flex items-center justify-center border border-blue-500/30 shadow-[0_0_12px_rgba(37, 99, 235,0.25)]">
+              <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
             <span className="font-black text-xs uppercase tracking-wider text-slate-900 dark:text-white">
               Panel Admin IMBS
@@ -114,7 +114,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 rounded-xl text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/80 dark:hover:bg-slate-800/80 transition mx-auto border border-transparent hover:border-emerald-500/20 hover:shadow-xs cursor-pointer"
+          className="p-1.5 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/80 dark:hover:bg-slate-800/80 transition mx-auto border border-transparent hover:border-blue-500/20 hover:shadow-xs cursor-pointer"
           title={collapsed ? 'Buka Sidebar' : 'Ciutkan Sidebar'}
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -127,7 +127,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
           <div key={gIdx} className="space-y-1">
             {!collapsed && (
               <h5 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-3 py-1 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/60 shadow-[0_0_6px_#10b981]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500/60 shadow-[0_0_6px_#2563eb]" />
                 <span>{group.group}</span>
               </h5>
             )}
@@ -142,9 +142,9 @@ export default function Sidebar({ userRole }: SidebarProps) {
                   title={collapsed ? item.label : undefined}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 group relative ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-emerald-400/50 scale-[1.01]'
+                      ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-teal-500 text-white shadow-[0_0_20px_rgba(37, 99, 235,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-blue-400/50 scale-[1.01]'
                       : item.highlight
-                      ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100/90 dark:hover:bg-emerald-900/50 border border-emerald-200/60 dark:border-emerald-800/40 hover:border-emerald-500/40 shadow-xs'
+                      ? 'text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100/90 dark:hover:bg-blue-900/50 border border-blue-200/60 dark:border-blue-800/40 hover:border-blue-500/40 shadow-xs'
                       : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-slate-800/80 border border-transparent hover:border-slate-200/80 dark:hover:border-slate-700/80 hover:shadow-xs'
                   }`}
                 >
@@ -153,8 +153,8 @@ export default function Sidebar({ userRole }: SidebarProps) {
                       isActive
                         ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
                         : item.highlight
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-slate-400 dark:text-slate-400 group-hover:text-emerald-500'
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-slate-400 dark:text-slate-400 group-hover:text-blue-500'
                     }`}
                   />
                   {!collapsed && <span className="truncate">{item.label}</span>}

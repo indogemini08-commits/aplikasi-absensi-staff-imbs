@@ -146,7 +146,7 @@ export default function NotifikasiPage() {
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
             >
               <CheckCheck className="w-3.5 h-3.5" />
               Tandai Dibaca
@@ -172,7 +172,7 @@ export default function NotifikasiPage() {
                 onClick={() => markSingle(n.id)}
                 className={`p-3.5 rounded-2xl border transition cursor-pointer ${
                   n.is_read === 0
-                    ? 'bg-white dark:bg-slate-900 border-emerald-500/40 shadow-sm'
+                    ? 'bg-white dark:bg-slate-900 border-blue-500/40 shadow-sm'
                     : 'glass-card border-slate-200/60 dark:border-slate-800/60 opacity-80'
                 }`}
               >
@@ -190,7 +190,7 @@ export default function NotifikasiPage() {
                         {n.title}
                       </h4>
                       {n.is_read === 0 && (
-                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <span className="w-2 h-2 rounded-full bg-blue-500" />
                       )}
                     </div>
                     <p className="text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">

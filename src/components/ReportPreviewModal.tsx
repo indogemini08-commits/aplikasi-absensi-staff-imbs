@@ -410,7 +410,7 @@ export default function ReportPreviewModal({
         {/* Top Header Bar - Harmonized with App Aesthetic */}
         <div className="px-5 sm:px-6 py-4 bg-white/95 dark:bg-slate-900/95 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20 shadow-xs shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-500/20 shadow-xs shrink-0">
               <FileSpreadsheet className="w-5 h-5" />
             </div>
             <div>
@@ -418,7 +418,7 @@ export default function ReportPreviewModal({
                 <h3 className="font-black text-slate-900 dark:text-white text-sm sm:text-base tracking-tight">
                   Pratinjau Dokumen Rekap Kehadiran
                 </h3>
-                <span className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold px-2.5 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800 text-[10px] sm:text-[10.5px]">
+                <span className="bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 font-bold px-2.5 py-0.5 rounded-full border border-blue-200/70 dark:border-blue-800 text-[10px] sm:text-[10.5px]">
                   Format Otomatis (Auto-Fit Bebas Crop)
                 </span>
               </div>
@@ -481,7 +481,7 @@ export default function ReportPreviewModal({
               <button
                 onClick={handleDownloadPng}
                 disabled={isGeneratingPdf || isGeneratingPng}
-                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/20 transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {isGeneratingPng ? (
                   <>
@@ -518,14 +518,14 @@ export default function ReportPreviewModal({
 
         {/* Download Success Banner */}
         {downloadSuccess && (
-          <div className="bg-emerald-50 dark:bg-emerald-950/60 border-b border-emerald-200 dark:border-emerald-800 px-6 py-2.5 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-200 animate-in slide-in-from-top-2">
+          <div className="bg-blue-50 dark:bg-blue-950/60 border-b border-blue-200 dark:border-blue-800 px-6 py-2.5 flex items-center justify-between text-xs text-blue-800 dark:text-blue-200 animate-in slide-in-from-top-2">
             <div className="flex items-center gap-2 font-bold">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               <span>{downloadSuccess}</span>
             </div>
             <button
               onClick={() => setDownloadSuccess(null)}
-              className="text-emerald-700 dark:text-emerald-300 hover:text-emerald-950 font-bold cursor-pointer"
+              className="text-blue-700 dark:text-blue-300 hover:text-blue-950 font-bold cursor-pointer"
             >
               Tutup
             </button>
@@ -749,7 +749,7 @@ export default function ReportPreviewModal({
                               <span
                                 className={`recap-badge-pill inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold border shadow-2xs leading-none whitespace-nowrap align-middle ${
                                   item.predikat === 'Sangat Baik'
-                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                                    ? 'bg-blue-50 text-blue-700 border-blue-300'
                                     : item.predikat === 'Baik'
                                     ? 'bg-[#edf4fb] text-[#1c4974] border-[#cfe1f3]'
                                     : item.predikat === 'Kurang Baik'
@@ -871,7 +871,7 @@ export default function ReportPreviewModal({
         {/* Modal Footer Controls */}
         <div className="px-6 py-3.5 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 whitespace-nowrap">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>Dokumen resmi hasil kalkulasi real-time SIM-Presensi Imam Muzani Boarding School (Layout Otomatis Bebas Crop).</span>
           </div>
 
@@ -892,7 +892,7 @@ export default function ReportPreviewModal({
             <button
               onClick={handleDownloadPng}
               disabled={isGeneratingPdf || isGeneratingPng}
-              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isGeneratingPng ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

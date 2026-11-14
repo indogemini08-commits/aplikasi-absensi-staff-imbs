@@ -163,7 +163,7 @@ export default function AdminIzinCutiPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <FileCheck2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <FileCheck2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Persetujuan Izin & Cuti Staff
                 </h1>
@@ -188,7 +188,7 @@ export default function AdminIzinCutiPage() {
                 onClick={() => setStatusFilter('approved')}
                 className={`py-2 px-3 rounded-xl text-xs font-bold transition ${
                   statusFilter === 'approved'
-                    ? 'bg-emerald-600 text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm'
                     : 'glass-card text-slate-600 dark:text-slate-300'
                 }`}
               >
@@ -259,7 +259,7 @@ export default function AdminIzinCutiPage() {
                           </div>
                         </td>
 
-                        <td className="py-3.5 px-4 font-bold text-emerald-600 dark:text-emerald-400">
+                        <td className="py-3.5 px-4 font-bold text-blue-600 dark:text-blue-400">
                           {r.total_days} Hari
                         </td>
 
@@ -278,7 +278,7 @@ export default function AdminIzinCutiPage() {
                           <span
                             className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                               r.status === 'approved'
-                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                 : r.status === 'rejected'
                                 ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                                 : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
@@ -293,7 +293,7 @@ export default function AdminIzinCutiPage() {
                             <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => openDecisionModal(r, 'approve')}
-                                className="py-1 px-2.5 rounded-lg font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition"
+                                className="py-1 px-2.5 rounded-lg font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition"
                               >
                                 Setujui
                               </button>
@@ -343,7 +343,7 @@ export default function AdminIzinCutiPage() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={decisionAction === 'approve' ? 'Disetujui sesuai ketentuan lembaga...' : 'Jelaskan alasan penolakan...'}
-              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500"
               required={decisionAction === 'reject'}
             />
           </div>
@@ -361,7 +361,7 @@ export default function AdminIzinCutiPage() {
               disabled={isSubmitting}
               className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50 ${
                 decisionAction === 'approve'
-                  ? 'bg-emerald-600 hover:bg-emerald-500'
+                  ? 'bg-blue-600 hover:bg-blue-500'
                   : 'bg-rose-600 hover:bg-rose-500'
               }`}
             >

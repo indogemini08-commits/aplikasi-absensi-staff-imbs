@@ -154,7 +154,7 @@ export default function KoreksiPage() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="py-2 px-3 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md flex items-center gap-1.5 transition"
+            className="py-2 px-3 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md flex items-center gap-1.5 transition"
           >
             <Plus className="w-4 h-4" />
             <span>Ajukan</span>
@@ -191,7 +191,7 @@ export default function KoreksiPage() {
                   <span
                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                       c.status === 'approved'
-                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                         : c.status === 'rejected'
                         ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                         : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
@@ -232,7 +232,7 @@ export default function KoreksiPage() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -244,7 +244,7 @@ export default function KoreksiPage() {
             <select
               value={correctionType}
               onChange={(e: any) => setCorrectionType(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
             >
               <option value="clock_in">Jam Masuk Saja</option>
               <option value="clock_out">Jam Pulang Saja</option>
@@ -262,7 +262,7 @@ export default function KoreksiPage() {
                   type="time"
                   value={correctedIn}
                   onChange={(e) => setCorrectedIn(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             )}
@@ -276,7 +276,7 @@ export default function KoreksiPage() {
                   type="time"
                   value={correctedOut}
                   onChange={(e) => setCorrectedOut(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             )}
@@ -291,7 +291,7 @@ export default function KoreksiPage() {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Contoh: Lupa melakukan tap absen pulang karena menghadiri rapat koordinasi hingga larut sore..."
-              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -307,7 +307,7 @@ export default function KoreksiPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
               Kirim Koreksi

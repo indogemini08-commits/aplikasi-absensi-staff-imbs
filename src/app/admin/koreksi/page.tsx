@@ -158,7 +158,7 @@ export default function AdminKoreksiPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <Layers className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <Layers className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Persetujuan Koreksi Absensi
                 </h1>
@@ -234,7 +234,7 @@ export default function AdminKoreksiPage() {
                           <span
                             className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                               c.status === 'approved'
-                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                 : c.status === 'rejected'
                                 ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                                 : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
@@ -249,7 +249,7 @@ export default function AdminKoreksiPage() {
                             <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => openDecisionModal(c, 'approve')}
-                                className="py-1 px-2.5 rounded-lg font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition"
+                                className="py-1 px-2.5 rounded-lg font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition"
                               >
                                 Setujui
                               </button>
@@ -299,7 +299,7 @@ export default function AdminKoreksiPage() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Tambahkan catatan untuk pegawai..."
-              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -315,7 +315,7 @@ export default function AdminKoreksiPage() {
               type="submit"
               disabled={isSubmitting}
               className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50 ${
-                actionType === 'approve' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-rose-600 hover:bg-rose-500'
+                actionType === 'approve' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-rose-600 hover:bg-rose-500'
               }`}
             >
               {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}

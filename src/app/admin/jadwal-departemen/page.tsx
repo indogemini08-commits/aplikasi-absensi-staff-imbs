@@ -32,6 +32,16 @@ import { broadcastDataChange, useDataSync } from '@/lib/sync';
 
 const ALL_DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
+const DAY_SHORT: Record<string, string> = {
+  Senin: 'Sen',
+  Selasa: 'Sel',
+  Rabu: 'Rab',
+  Kamis: 'Kam',
+  Jumat: 'Jum',
+  Sabtu: 'Sab',
+  Minggu: 'Min',
+};
+
 interface DayConfig {
   isActive: boolean;
   startTime: string;
@@ -49,6 +59,42 @@ function getDefaultDailySchedule(type: '5days' | '6days' = '5days'): DailySchedu
     Jumat: { isActive: true, startTime: '07:30', endTime: '11:30' },
     Sabtu: { isActive: type === '6days', startTime: '08:00', endTime: '12:00' },
     Minggu: { isActive: false, startTime: '08:00', endTime: '16:00' },
+  };
+}
+
+function getScheduleSummary(dailySchedules: DailySchedules) {
+  const activeDays = ALL_DAYS.filter((d) => dailySchedules[d]?.isActive);
+  const offDays = ALL_DAYS.filter((d) => !dailySchedules[d]?.isActive);
+
+  const mon = dailySchedules['Senin'];
+  const fri = dailySchedules['Jumat'];
+  const sat = dailySchedules['Sabtu'];
+
+  let primaryHours = 'Belum Dikonfigurasi';
+  let specialNote = '';
+
+  if (mon?.isActive) {
+    primaryHours = `${mon.startTime} – ${mon.endTime} WIB`;
+    const notes: string[] = [];
+    if (fri?.isActive && fri.endTime !== mon.endTime) {
+      notes.push(`Jum: s.d ${fri.endTime}`);
+    }
+    if (sat?.isActive) {
+      notes.push(`Sab: ${sat.startTime}–${sat.endTime}`);
+    }
+    if (notes.length > 0) {
+      specialNote = `(${notes.join(' • ')})`;
+    }
+  } else if (activeDays.length > 0) {
+    const first = dailySchedules[activeDays[0]];
+    primaryHours = `${first.startTime} – ${first.endTime} WIB`;
+  }
+
+  return {
+    activeDaysCount: activeDays.length,
+    offDaysCount: offDays.length,
+    primaryHours,
+    specialNote,
   };
 }
 
@@ -90,6 +136,14 @@ export default function JadwalDepartemenPage() {
     return true;
   });
   const [selectedDeptFilter, setSelectedDeptFilter] = useState('ALL');
+  const [expandedCardIds, setExpandedCardIds] = useState<string[]>([]);
+  const [showStaffTable, setShowStaffTable] = useState(false);
+
+  const toggleExpandCard = (id: string) => {
+    setExpandedCardIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
   // Selection state for deletion
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -426,7 +480,7 @@ export default function JadwalDepartemenPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="p-2.5 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                <div className="p-2.5 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                   <Clock className="w-6 h-6" />
                 </div>
                 <div>
@@ -455,7 +509,7 @@ export default function JadwalDepartemenPage() {
               {/* Add Department Button */}
               <button
                 onClick={openAddModal}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-md shadow-emerald-600/20"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-md shadow-blue-600/20"
               >
                 <Plus className="w-4 h-4" />
                 Tambah Departemen Baru
@@ -472,54 +526,41 @@ export default function JadwalDepartemenPage() {
             </div>
           </div>
 
-          {/* Dynamic Schedule Info Banner */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 shrink-0">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-              <span className="font-bold text-emerald-800 dark:text-emerald-200">
-                Jadwal Harian Mandiri (Real-Time):
-              </span>{' '}
-              Setiap hari (Senin s.d. Minggu) dapat dikonfigurasi jam masuk, jam pulang, dan status liburnya secara terpisah
-              (misalnya: Senin-Kamis 07:30–16:00, Jumat 07:30–11:30, Sabtu 08:00–12:00). Sistem absensi otomatis mencocokkan jam kerja
-              pada hari aktual pegawai melakukan absensi.
-            </div>
-          </div>
-
           {/* Selection Control Bar */}
-          <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 px-1">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleSelectAll}
-                className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition"
-              >
-                {selectedIds.length === departments.length && departments.length > 0 ? (
-                  <CheckSquare className="w-4 h-4 text-emerald-600" />
-                ) : (
-                  <Square className="w-4 h-4 text-slate-400" />
+          {departments.length > 0 && (
+            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 px-1">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleSelectAll}
+                  className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition"
+                >
+                  {selectedIds.length === departments.length && departments.length > 0 ? (
+                    <CheckSquare className="w-4 h-4 text-blue-600" />
+                  ) : (
+                    <Square className="w-4 h-4 text-slate-400" />
+                  )}
+                  <span>Pilih Semua ({departments.length} Departemen)</span>
+                </button>
+                {selectedIds.length > 0 && (
+                  <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-full">
+                    {selectedIds.length} dipilih
+                  </span>
                 )}
-                <span>Pilih Semua Departemen ({departments.length})</span>
-              </button>
-              {selectedIds.length > 0 && (
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full">
-                  {selectedIds.length} dipilih
-                </span>
-              )}
-            </div>
+              </div>
 
-            <div className="text-[11px] text-slate-400">
-              * Centang kotak untuk menghapus divisi yang sudah tidak diperlukan
+              <div className="text-[11px] text-slate-400 hidden sm:block">
+                Centang untuk menghapus divisi yang tidak diperlukan
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Department Cards Grid */}
+          {/* Department Cards Grid (Simplified & Clean) */}
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+              {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-72 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 animate-pulse p-5"
+                  className="h-48 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 animate-pulse p-5"
                 />
               ))}
             </div>
@@ -528,44 +569,45 @@ export default function JadwalDepartemenPage() {
               {departments.map((dept) => {
                 const dailySchedules: DailySchedules = dept.daily_schedules || getDefaultDailySchedule('5days');
                 const isSelected = selectedIds.includes(dept.id);
-                const activeDaysCount = Object.values(dailySchedules).filter((d) => d.isActive).length;
+                const isExpanded = expandedCardIds.includes(dept.id);
+                const summary = getScheduleSummary(dailySchedules);
 
                 return (
                   <div
                     key={dept.id}
-                    className={`glass-card rounded-2xl border p-5 flex flex-col justify-between transition-all duration-200 shadow-sm hover:shadow-md relative group ${
+                    className={`glass-card rounded-2xl border p-4 sm:p-5 flex flex-col justify-between transition-all duration-200 shadow-sm hover:shadow-md relative group ${
                       isSelected
-                        ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20 dark:bg-emerald-950/20'
-                        : 'border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-500/50'
+                        ? 'border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/20 dark:bg-blue-950/20'
+                        : 'border-slate-200/80 dark:border-slate-800/80 hover:border-blue-500/50'
                     }`}
                   >
                     <div>
                       {/* Top Header & Selection Checkbox */}
-                      <div className="flex items-start justify-between gap-3 mb-3">
-                        <div className="flex items-start gap-2.5">
+                      <div className="flex items-start justify-between gap-3 mb-2.5">
+                        <div className="flex items-start gap-2.5 min-w-0">
                           <button
                             type="button"
                             onClick={() => toggleSelectOne(dept.id)}
-                            className="mt-0.5 text-slate-400 hover:text-emerald-600 transition"
+                            className="mt-1 text-slate-400 hover:text-blue-600 transition shrink-0"
                             title={isSelected ? 'Batalkan pilihan' : 'Pilih departemen ini'}
                           >
                             {isSelected ? (
-                              <CheckSquare className="w-4 h-4 text-emerald-600" />
+                              <CheckSquare className="w-4 h-4 text-blue-600" />
                             ) : (
                               <Square className="w-4 h-4" />
                             )}
                           </button>
-                          <div>
-                            <div className="flex items-center gap-2">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                                 {dept.code}
                               </span>
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-full">
                                 <Users className="w-3 h-3" />
                                 {dept.employee_count ?? 0} Staf
                               </span>
                             </div>
-                            <h3 className="font-bold text-base text-slate-800 dark:text-slate-100 mt-1 leading-snug">
+                            <h3 className="font-bold text-base text-slate-800 dark:text-slate-100 mt-1 leading-snug truncate" title={dept.name}>
                               {dept.name}
                             </h3>
                           </div>
@@ -575,78 +617,104 @@ export default function JadwalDepartemenPage() {
                         <button
                           type="button"
                           onClick={() => confirmDeleteSingle(dept)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition opacity-80 hover:opacity-100"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition opacity-70 hover:opacity-100 shrink-0"
                           title="Hapus Departemen Ini"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
-                      {/* Tolerance & Stats Bar */}
-                      <div className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-slate-100/70 dark:bg-slate-800/60 mb-3">
-                        <span className="text-[11px] text-slate-500 font-medium">Toleransi Masuk:</span>
-                        <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 font-mono">
-                          +{dept.grace_period_minutes ?? 10} Menit
-                        </span>
-                        <span className="text-slate-300 dark:text-slate-700">|</span>
-                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-                          {activeDaysCount} Hari Kerja / {7 - activeDaysCount} Libur
-                        </span>
+                      {/* Primary Work Hours & Tolerance (Simple Clean Summary) */}
+                      <div className="my-3 p-3 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                            Jam Kerja Utama
+                          </div>
+                          <div className="text-sm font-bold font-mono text-blue-600 dark:text-blue-400 mt-0.5">
+                            {summary.primaryHours}
+                          </div>
+                          {summary.specialNote && (
+                            <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                              {summary.specialNote}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                            Toleransi
+                          </div>
+                          <div className="text-xs font-bold font-mono text-amber-600 dark:text-amber-400 mt-0.5">
+                            +{dept.grace_period_minutes ?? 10} mnt
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Daily Schedule Breakdown List (Senin s.d. Minggu) */}
-                      <div className="space-y-1 mb-4 bg-slate-50/50 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/60">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 px-1">
-                          Jadwal Jam Kerja Harian:
+                      {/* 7-Day Status Chips (Horizontal Bar) */}
+                      <div className="space-y-1.5 mb-3.5">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-semibold text-slate-700 dark:text-slate-300">
+                            Hari Kerja ({summary.activeDaysCount} Aktif / {summary.offDaysCount} Libur)
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => toggleExpandCard(dept.id)}
+                            className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-0.5 transition"
+                          >
+                            <span>{isExpanded ? 'Tutup Detail' : 'Detail Hari'}</span>
+                            {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                          </button>
                         </div>
-                        {ALL_DAYS.map((day) => {
-                          const config = dailySchedules[day];
-                          const isActive = config?.isActive;
-
-                          return (
-                            <div
-                              key={day}
-                              className={`flex items-center justify-between text-[11px] py-1 px-2 rounded-lg transition-colors ${
-                                isActive
-                                  ? 'hover:bg-emerald-500/5 text-slate-700 dark:text-slate-200'
-                                  : 'text-slate-400 dark:text-slate-500 bg-slate-100/50 dark:bg-slate-800/30'
-                              }`}
-                            >
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-semibold w-12 text-slate-800 dark:text-slate-300">
-                                  {day}:
-                                </span>
+                        <div className="grid grid-cols-7 gap-1">
+                          {ALL_DAYS.map((day) => {
+                            const cfg = dailySchedules[day];
+                            const isActive = cfg?.isActive;
+                            const short = DAY_SHORT[day];
+                            return (
+                              <div
+                                key={day}
+                                title={`${day}: ${isActive ? `${cfg.startTime} - ${cfg.endTime} WIB` : 'Libur Rutin'}`}
+                                className={`py-1.5 rounded-lg text-[10px] text-center font-bold transition select-none ${
+                                  isActive
+                                    ? 'bg-blue-600 text-white shadow-xs'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-normal line-through opacity-60'
+                                }`}
+                              >
+                                {short}
                               </div>
+                            );
+                          })}
+                        </div>
 
-                              {isActive ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">
-                                    {config.startTime} – {config.endTime} WIB
-                                  </span>
-                                  {day === 'Jumat' && config.endTime <= '12:00' && (
-                                    <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 font-semibold">
-                                      ½ Hari
+                        {/* Collapsible 7-day breakdown if toggled */}
+                        {isExpanded && (
+                          <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1 text-[11px] animate-in fade-in">
+                            {ALL_DAYS.map((day) => {
+                              const cfg = dailySchedules[day];
+                              return (
+                                <div key={day} className="flex items-center justify-between py-0.5 px-1 rounded text-slate-600 dark:text-slate-300">
+                                  <span className="font-medium">{day}:</span>
+                                  {cfg?.isActive ? (
+                                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+                                      {cfg.startTime} – {cfg.endTime} WIB
                                     </span>
+                                  ) : (
+                                    <span className="text-slate-400 italic text-[10px]">Libur Rutin</span>
                                   )}
                                 </div>
-                              ) : (
-                                <span className="text-[10px] font-medium text-slate-400 italic">
-                                  Libur Rutin
-                                </span>
-                              )}
-                            </div>
-                          );
-                        })}
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     {/* Action Button */}
                     <button
                       onClick={() => openEditSchedule(dept)}
-                      className="w-full py-2.5 px-3 rounded-xl border border-emerald-600/30 hover:border-emerald-500 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-700 hover:text-white dark:text-emerald-300 dark:hover:text-white font-semibold text-xs flex items-center justify-center gap-2 transition duration-200"
+                      className="w-full py-2 px-3 rounded-xl border border-blue-600/30 hover:border-blue-500 bg-blue-500/10 hover:bg-blue-600 text-blue-700 hover:text-white dark:text-blue-300 dark:hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition duration-200 mt-1"
                     >
                       <Sliders className="w-3.5 h-3.5" />
-                      Atur Jam Kerja Harian (Senin–Minggu)
+                      Atur Jam Kerja Harian
                     </button>
                   </div>
                 );
@@ -654,118 +722,131 @@ export default function JadwalDepartemenPage() {
             </div>
           )}
 
-          {/* Section: Live Staff Schedule Inheritance View */}
+          {/* Collapsible Section: Live Staff Schedule Integration View */}
           <div className="glass-card rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden shadow-sm">
-            <div className="p-4 md:p-5 border-b border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h2 className="font-bold text-sm md:text-base text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  Jadwal Harian Otomatis yang Diterapkan ke Pegawai
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Seluruh staf otomatis terhubung dengan jadwal kerja harian departemen masing-masing
-                </p>
+            <div className="p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-sm md:text-base text-slate-800 dark:text-slate-100">
+                    Jadwal Staf Otomatis Terhubung ({filteredEmployees.length} Pegawai)
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Staf otomatis mengikuti jam kerja departemen masing-masing
+                  </p>
+                </div>
               </div>
 
-              {/* Filter by Department */}
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500 whitespace-nowrap">Filter Divisi:</span>
-                <select
-                  value={selectedDeptFilter}
-                  onChange={(e) => setSelectedDeptFilter(e.target.value)}
-                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold text-slate-700 dark:text-slate-200"
+                {showStaffTable && (
+                  <select
+                    value={selectedDeptFilter}
+                    onChange={(e) => setSelectedDeptFilter(e.target.value)}
+                    className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold text-slate-700 dark:text-slate-200"
+                  >
+                    <option value="ALL">Semua Divisi ({employees.length})</option>
+                    {departments.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <button
+                  onClick={() => setShowStaffTable(!showStaffTable)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
                 >
-                  <option value="ALL">Semua Divisi ({employees.length} Pegawai)</option>
-                  {departments.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
+                  <span>{showStaffTable ? 'Sembunyikan Tabel' : 'Buka Tabel Staf'}</span>
+                  {showStaffTable ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                    <th className="py-3 px-4">Pegawai & NIP</th>
-                    <th className="py-3 px-4">Departemen / Divisi</th>
-                    <th className="py-3 px-4">Jabatan</th>
-                    <th className="py-3 px-4">Ringkasan Jam Harian (Sen-Jum/Sab)</th>
-                    <th className="py-3 px-4">Toleransi</th>
-                    <th className="py-3 px-4">Status Integrasi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {filteredEmployees.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="text-center py-8 text-slate-400">
-                        Tidak ada data pegawai pada divisi ini.
-                      </td>
+            {showStaffTable && (
+              <div className="overflow-x-auto border-t border-slate-200/80 dark:border-slate-800/80 animate-in fade-in">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <th className="py-3 px-4">Pegawai & NIP</th>
+                      <th className="py-3 px-4">Departemen / Divisi</th>
+                      <th className="py-3 px-4">Jabatan</th>
+                      <th className="py-3 px-4">Ringkasan Jam Harian (Sen-Jum/Sab)</th>
+                      <th className="py-3 px-4">Toleransi</th>
+                      <th className="py-3 px-4">Status Integrasi</th>
                     </tr>
-                  ) : (
-                    filteredEmployees.map((emp) => {
-                      const dept = departments.find((d) => d.id === emp.department_id);
-                      const daily: DailySchedules = dept?.daily_schedules || getDefaultDailySchedule('5days');
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {filteredEmployees.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="text-center py-8 text-slate-400">
+                          Tidak ada data pegawai pada divisi ini.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredEmployees.map((emp) => {
+                        const dept = departments.find((d) => d.id === emp.department_id);
+                        const daily: DailySchedules = dept?.daily_schedules || getDefaultDailySchedule('5days');
 
-                      return (
-                        <tr
-                          key={emp.id}
-                          className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors"
-                        >
-                          <td className="py-3 px-4">
-                            <div className="font-bold text-slate-800 dark:text-slate-100">
-                              {emp.name}
-                            </div>
-                            <div className="text-[10px] text-slate-400 font-mono">{emp.nip}</div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">
-                              {emp.department_name}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
-                            {emp.position}
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="space-y-0.5 text-[11px]">
-                              <div>
-                                <span className="text-slate-400">Sen–Kam: </span>
-                                <span className="font-mono font-bold text-slate-700 dark:text-slate-200">
-                                  {daily['Senin']?.isActive ? `${daily['Senin'].startTime}–${daily['Senin'].endTime}` : 'Libur'}
-                                </span>
+                        return (
+                          <tr
+                            key={emp.id}
+                            className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors"
+                          >
+                            <td className="py-3 px-4">
+                              <div className="font-bold text-slate-800 dark:text-slate-100">
+                                {emp.name}
                               </div>
-                              <div>
-                                <span className="text-slate-400">Jum: </span>
-                                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                                  {daily['Jumat']?.isActive ? `${daily['Jumat'].startTime}–${daily['Jumat'].endTime}` : 'Libur'}
-                                </span>
-                                <span className="text-slate-400 ml-2">Sab: </span>
-                                <span className="font-mono text-slate-600 dark:text-slate-400">
-                                  {daily['Sabtu']?.isActive ? `${daily['Sabtu'].startTime}–${daily['Sabtu'].endTime}` : 'Libur'}
-                                </span>
+                              <div className="text-[10px] text-slate-400 font-mono">{emp.nip}</div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="font-semibold text-slate-700 dark:text-slate-200">
+                                {emp.department_name}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
+                              {emp.position}
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="space-y-0.5 text-[11px]">
+                                <div>
+                                  <span className="text-slate-400">Sen–Kam: </span>
+                                  <span className="font-mono font-bold text-slate-700 dark:text-slate-200">
+                                    {daily['Senin']?.isActive ? `${daily['Senin'].startTime}–${daily['Senin'].endTime}` : 'Libur'}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-400">Jum: </span>
+                                  <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+                                    {daily['Jumat']?.isActive ? `${daily['Jumat'].startTime}–${daily['Jumat'].endTime}` : 'Libur'}
+                                  </span>
+                                  <span className="text-slate-400 ml-2">Sab: </span>
+                                  <span className="font-mono text-slate-600 dark:text-slate-400">
+                                    {daily['Sabtu']?.isActive ? `${daily['Sabtu'].startTime}–${daily['Sabtu'].endTime}` : 'Libur'}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="text-amber-600 dark:text-amber-400 font-semibold">
-                              +{dept?.grace_period_minutes ?? 10} mnt
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              Otomatis Aktif
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-amber-600 dark:text-amber-400 font-semibold">
+                                +{dept?.grace_period_minutes ?? 10} mnt
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                                <CheckCircle2 className="w-3 h-3 text-blue-600" />
+                                Otomatis Aktif
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </main>
       </div>
@@ -791,7 +872,7 @@ export default function JadwalDepartemenPage() {
             <button
               type="button"
               onClick={copyMondayToAllEdit}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-200 transition"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-semibold hover:bg-blue-200 transition"
               title="Salin jam Senin ke hari kerja lainnya"
             >
               <Copy className="w-3 h-3" />
@@ -853,7 +934,7 @@ export default function JadwalDepartemenPage() {
                         onClick={() => updateEditDay(day, 'isActive', !dayCfg.isActive)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${
                           dayCfg.isActive
-                            ? 'bg-emerald-600 text-white shadow-sm'
+                            ? 'bg-blue-600 text-white shadow-sm'
                             : 'bg-slate-200 dark:bg-slate-800 text-slate-500 hover:bg-slate-300'
                         }`}
                       >
@@ -880,7 +961,7 @@ export default function JadwalDepartemenPage() {
                             type="time"
                             value={dayCfg.startTime}
                             onChange={(e) => updateEditDay(day, 'startTime', e.target.value)}
-                            className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono font-bold text-xs focus:ring-2 focus:ring-emerald-500"
+                            className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono font-bold text-xs focus:ring-2 focus:ring-blue-500"
                             required={dayCfg.isActive}
                           />
                         </div>
@@ -891,7 +972,7 @@ export default function JadwalDepartemenPage() {
                             type="time"
                             value={dayCfg.endTime}
                             onChange={(e) => updateEditDay(day, 'endTime', e.target.value)}
-                            className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono font-bold text-xs focus:ring-2 focus:ring-emerald-500"
+                            className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono font-bold text-xs focus:ring-2 focus:ring-blue-500"
                             required={dayCfg.isActive}
                           />
                         </div>
@@ -918,7 +999,7 @@ export default function JadwalDepartemenPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isSubmitting ? 'Menyimpan...' : 'Simpan Konfigurasi Jadwal Harian'}
             </button>
@@ -944,7 +1025,7 @@ export default function JadwalDepartemenPage() {
                 value={addName}
                 onChange={(e) => setAddName(e.target.value)}
                 placeholder="Contoh: Hubungan Masyarakat & Syiar"
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -959,7 +1040,7 @@ export default function JadwalDepartemenPage() {
                 onChange={(e) => setAddCode(e.target.value.toUpperCase())}
                 placeholder="Contoh: HUMAS"
                 maxLength={8}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold focus:ring-2 focus:ring-emerald-500 uppercase"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold focus:ring-2 focus:ring-blue-500 uppercase"
                 required
               />
             </div>
@@ -975,7 +1056,7 @@ export default function JadwalDepartemenPage() {
                 value={addManager}
                 onChange={(e) => setAddManager(e.target.value)}
                 placeholder="Nama penanggung jawab..."
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -990,7 +1071,7 @@ export default function JadwalDepartemenPage() {
                   max="60"
                   value={addGracePeriod}
                   onChange={(e) => setAddGracePeriod(Number(e.target.value))}
-                  className="w-full p-2.5 pr-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold focus:ring-2 focus:ring-emerald-500 font-mono"
+                  className="w-full p-2.5 pr-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold focus:ring-2 focus:ring-blue-500 font-mono"
                   required
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-slate-400">Menit</span>
@@ -1032,7 +1113,7 @@ export default function JadwalDepartemenPage() {
                         onClick={() => updateAddDay(day, 'isActive', !dayCfg.isActive)}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 ${
                           dayCfg.isActive
-                            ? 'bg-emerald-600 text-white'
+                            ? 'bg-blue-600 text-white'
                             : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
                         }`}
                       >
@@ -1082,7 +1163,7 @@ export default function JadwalDepartemenPage() {
             <button
               type="submit"
               disabled={isAdding}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isAdding ? 'Menambahkan...' : 'Tambah Departemen & Terapkan'}
             </button>

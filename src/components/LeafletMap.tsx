@@ -63,7 +63,7 @@ export default function LeafletMap({
     };
 
     // Location center pin
-    const locIcon = createCustomIcon('#059669', '🏢');
+    const locIcon = createCustomIcon('#1d4ed8', '🏢');
     L.marker([locationCoord.latitude, locationCoord.longitude], { icon: locIcon })
       .addTo(map)
       .bindPopup(`<b>${locationName}</b><br>Radius: ${radiusMeters} meter`)
@@ -71,8 +71,8 @@ export default function LeafletMap({
 
     // Radius circle
     L.circle([locationCoord.latitude, locationCoord.longitude], {
-      color: isWithinRadius ? '#10b981' : '#f43f5e',
-      fillColor: isWithinRadius ? '#10b981' : '#f43f5e',
+      color: isWithinRadius ? '#2563eb' : '#f43f5e',
+      fillColor: isWithinRadius ? '#2563eb' : '#f43f5e',
       fillOpacity: 0.15,
       radius: radiusMeters,
     }).addTo(map);

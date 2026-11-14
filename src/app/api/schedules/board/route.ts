@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
       } else if (att) {
         if (att.clock_out_time) {
           status = 'Pulang';
-          statusColor = 'emerald';
+          statusColor = 'sky';
           statPulang++;
         } else if (att.clock_in_status === 'terlambat') {
           status = 'Terlambat';
@@ -146,7 +146,7 @@ export async function GET(req: NextRequest) {
           statTerlambat++;
         } else {
           status = 'Hadir';
-          statusColor = 'green';
+          statusColor = 'blue';
           statHadir++;
         }
       } else if (!isWorkDay) {

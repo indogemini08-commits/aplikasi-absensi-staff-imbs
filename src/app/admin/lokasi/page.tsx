@@ -368,7 +368,7 @@ export default function LokasiPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Lokasi & Radius Geofencing GPS
                 </h1>
@@ -381,7 +381,7 @@ export default function LokasiPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={openAddModal}
-                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5 self-start sm:self-auto"
+                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition flex items-center gap-1.5 self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
                 <span>Tambah Lokasi Baru</span>
@@ -399,15 +399,15 @@ export default function LokasiPage() {
           </div>
 
           {/* Quick Guide Banner */}
-          <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <div className="flex items-start sm:items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 shrink-0">
+              <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 shrink-0">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div className="text-slate-700 dark:text-slate-300">
                 <strong className="text-slate-900 dark:text-white">Ambil Titik Koordinat dari Google Maps:</strong>{' '}
                 Saat menambah/mengedit lokasi, Anda dapat langsung menempelkan tautan Google Maps atau angka koordinat (contoh:{' '}
-                <code className="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 font-mono text-emerald-800 dark:text-emerald-300 font-bold">
+                <code className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/60 font-mono text-blue-800 dark:text-blue-300 font-bold">
                   -6.3685, 106.8920
                 </code>
                 ) untuk menetapkan titik geofence secara presisi.
@@ -416,7 +416,7 @@ export default function LokasiPage() {
 
             <button
               onClick={() => window.open('https://www.google.com/maps', '_blank')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 font-bold hover:bg-emerald-50 transition shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 font-bold hover:bg-blue-50 transition shrink-0"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Buka Google Maps ↗
@@ -428,19 +428,19 @@ export default function LokasiPage() {
             {locations.map((loc) => (
               <div
                 key={loc.id}
-                className="glass-card rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-glass flex flex-col justify-between space-y-4 hover:border-emerald-500/50 transition"
+                className="glass-card rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-glass flex flex-col justify-between space-y-4 hover:border-blue-500/50 transition"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                      <div className="w-9 h-9 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                         <Building className="w-5 h-5" />
                       </div>
                       <div>
                         <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">
                           {loc.name}
                         </h3>
-                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                        <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold">
                           Radius: {loc.radius_meters} Meter
                         </span>
                       </div>
@@ -451,14 +451,14 @@ export default function LokasiPage() {
                         href={`https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                         title="Buka Titik di Google Maps"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
                       <button
                         onClick={() => openEditModal(loc)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                         title="Ubah Titik Koordinat & Radius"
                       >
                         <Edit className="w-4 h-4" />
@@ -486,7 +486,7 @@ export default function LokasiPage() {
                       href={`https://www.google.com/maps?q=${loc.latitude},${loc.longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10px] text-emerald-600 dark:text-emerald-400 font-sans font-bold hover:underline flex items-center gap-1"
+                      className="text-[10px] text-blue-600 dark:text-blue-400 font-sans font-bold hover:underline flex items-center gap-1"
                     >
                       Google Maps ↗
                     </a>
@@ -518,17 +518,17 @@ export default function LokasiPage() {
       >
         <form onSubmit={handleSaveLocation} className="space-y-4">
           {/* 1. Feature Box: Ambil Koordinat dari Google Maps */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 space-y-2.5">
+          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border border-blue-500/30 space-y-2.5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-900 dark:text-emerald-200">
-                <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex items-center gap-1.5 font-bold text-xs text-blue-900 dark:text-blue-200">
+                <Compass className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <span>Ambil Titik Koordinat dari Google Maps</span>
               </div>
 
               <button
                 type="button"
                 onClick={openGoogleMapsInNewTab}
-                className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1"
+                className="text-[11px] font-bold text-blue-700 dark:text-blue-300 hover:underline flex items-center gap-1"
               >
                 <span>Buka Google Maps</span>
                 <ExternalLink className="w-3 h-3" />
@@ -544,16 +544,16 @@ export default function LokasiPage() {
                   onChange={(e) => setGmapsInput(e.target.value)}
                   onPaste={handlePasteGmapsInput}
                   placeholder="Tempel link Google Maps atau koordinat (contoh: -6.3685, 106.8920)..."
-                  className="w-full p-2.5 pl-8 rounded-xl border border-emerald-300 dark:border-emerald-700/80 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500 font-mono"
+                  className="w-full p-2.5 pl-8 rounded-xl border border-blue-300 dark:border-blue-700/80 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 font-mono"
                 />
-                <MapPin className="w-4 h-4 text-emerald-500 absolute left-2.5 top-3" />
+                <MapPin className="w-4 h-4 text-blue-500 absolute left-2.5 top-3" />
               </div>
 
               <button
                 type="button"
                 onClick={() => handleExtractFromGmaps()}
                 disabled={isExtracting}
-                className="py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5 shrink-0 disabled:opacity-50"
+                className="py-2.5 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5 shrink-0 disabled:opacity-50"
               >
                 {isExtracting ? (
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -565,14 +565,14 @@ export default function LokasiPage() {
             </div>
 
             {extractSuccessMsg && (
-              <div className="text-[11px] text-emerald-700 dark:text-emerald-300 font-semibold flex items-center gap-1.5 animate-in fade-in">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="text-[11px] text-blue-700 dark:text-blue-300 font-semibold flex items-center gap-1.5 animate-in fade-in">
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
                 <span>{extractSuccessMsg}</span>
               </div>
             )}
 
             {/* Guide Steps */}
-            <div className="p-2.5 rounded-xl bg-white/70 dark:bg-slate-900/60 border border-emerald-200/50 dark:border-emerald-800/40 text-[11px] text-slate-600 dark:text-slate-300 space-y-1">
+            <div className="p-2.5 rounded-xl bg-white/70 dark:bg-slate-900/60 border border-blue-200/50 dark:border-blue-800/40 text-[11px] text-slate-600 dark:text-slate-300 space-y-1">
               <div className="font-bold text-slate-800 dark:text-slate-200">Cara Mengambil Koordinat dari Google Maps:</div>
               <ol className="list-decimal pl-4 space-y-0.5 text-[10.5px] leading-relaxed">
                 <li>Buka <strong>Google Maps</strong> melalui tombol di atas atau aplikasi ponsel Anda.</li>
@@ -594,7 +594,7 @@ export default function LokasiPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Contoh: Kampus Utama IMBS / Gedung Asrama"
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -608,7 +608,7 @@ export default function LokasiPage() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Jl. Raya Cendekia No. 88, Cibubur..."
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -622,7 +622,7 @@ export default function LokasiPage() {
               <button
                 type="button"
                 onClick={pickCurrentGps}
-                className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
               >
                 <Compass className="w-3.5 h-3.5" />
                 Gunakan GPS Perangkat Saat Ini
@@ -653,7 +653,7 @@ export default function LokasiPage() {
                 step="any"
                 value={latitude}
                 onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 font-mono"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500 font-mono"
                 required
               />
             </div>
@@ -667,7 +667,7 @@ export default function LokasiPage() {
                 step="any"
                 value={longitude}
                 onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 font-mono"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500 font-mono"
                 required
               />
             </div>
@@ -686,7 +686,7 @@ export default function LokasiPage() {
                   onClick={() => setRadiusMeters(preset)}
                   className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition border ${
                     radiusMeters === preset
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                       : 'border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
                   }`}
                 >
@@ -699,7 +699,7 @@ export default function LokasiPage() {
               value={radiusMeters}
               onChange={(e) => setRadiusMeters(parseInt(e.target.value, 10) || 100)}
               placeholder="Nilai radius khusus..."
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 font-mono"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500 font-mono"
               required
             />
           </div>
@@ -715,7 +715,7 @@ export default function LokasiPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               {editLoc ? 'Simpan Perubahan Lokasi' : 'Tambahkan Lokasi'}

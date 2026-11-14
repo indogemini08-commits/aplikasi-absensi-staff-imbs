@@ -30,7 +30,7 @@ export default function ErrorPage({
       <div className="flex items-center gap-3">
         <button
           onClick={() => reset()}
-          className="py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition flex items-center gap-1.5"
+          className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md transition flex items-center gap-1.5"
         >
           <RefreshCw className="w-4 h-4" />
           <span>Muat Ulang Halaman</span>

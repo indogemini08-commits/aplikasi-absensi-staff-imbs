@@ -395,7 +395,7 @@ export default function PengaturanPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <Settings className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <Settings className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Pengaturan Sistem & Identitas Lembaga
                 </h1>
@@ -412,7 +412,7 @@ export default function PengaturanPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <ImageIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     Konfigurasi 3 Logo Resmi (Aplikasi, Lembaga & Yayasan)
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -450,7 +450,7 @@ export default function PengaturanPage() {
                       onClick={() => logoAppInputRef.current?.click()}
                       className="flex-1 py-1.5 px-2.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition flex items-center justify-center gap-1 cursor-pointer"
                     >
-                      <Upload className="w-3 h-3 text-emerald-600" />
+                      <Upload className="w-3 h-3 text-blue-600" />
                       <span>Pilih File</span>
                     </button>
                     {logoApp && (
@@ -492,7 +492,7 @@ export default function PengaturanPage() {
                       onClick={() => logoInstitutionInputRef.current?.click()}
                       className="flex-1 py-1.5 px-2.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition flex items-center justify-center gap-1 cursor-pointer"
                     >
-                      <Upload className="w-3 h-3 text-emerald-600" />
+                      <Upload className="w-3 h-3 text-blue-600" />
                       <span>Pilih File</span>
                     </button>
                     {logoInstitution && (
@@ -534,7 +534,7 @@ export default function PengaturanPage() {
                       onClick={() => logoFoundationInputRef.current?.click()}
                       className="flex-1 py-1.5 px-2.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition flex items-center justify-center gap-1 cursor-pointer"
                     >
-                      <Upload className="w-3 h-3 text-emerald-600" />
+                      <Upload className="w-3 h-3 text-blue-600" />
                       <span>Pilih File</span>
                     </button>
                     {logoFoundation && (
@@ -556,7 +556,7 @@ export default function PengaturanPage() {
             {/* 2. Institutional Identity & Kop Dokumen */}
             <div className="glass-card rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800/80 shadow-glass space-y-4">
               <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <Building className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <Building className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 Identitas Lembaga, Yayasan & Kop Dokumen Resmi
               </h3>
 
@@ -569,7 +569,7 @@ export default function PengaturanPage() {
                     type="text"
                     value={govName}
                     onChange={(e) => setGovName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                     placeholder="Contoh: PEMERINTAH DAERAH KABUPATEN BOGOR"
                     required
                   />
@@ -586,7 +586,7 @@ export default function PengaturanPage() {
                     type="text"
                     value={foundationName}
                     onChange={(e) => setFoundationName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                     placeholder="Contoh: YAYASAN SABILUL HUDA NAMBO"
                     required
                   />
@@ -603,7 +603,7 @@ export default function PengaturanPage() {
                     type="text"
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                     placeholder="Contoh: IMAM MUZANI BOARDING SCHOOL"
                     required
                   />
@@ -620,7 +620,7 @@ export default function PengaturanPage() {
                     type="text"
                     value={orgPhone}
                     onChange={(e) => setOrgPhone(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                     placeholder="Contoh: 0852 8242 4628"
                   />
                 </div>
@@ -634,7 +634,7 @@ export default function PengaturanPage() {
                   rows={2}
                   value={orgAddress}
                   onChange={(e) => setOrgAddress(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-blue-500"
                   placeholder="Contoh: Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya..."
                 />
               </div>
@@ -647,7 +647,7 @@ export default function PengaturanPage() {
                   type="email"
                   value={orgEmail}
                   onChange={(e) => setOrgEmail(e.target.value)}
-                  className="w-full sm:w-1/2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                  className="w-full sm:w-1/2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                   placeholder="imammuzanibs@gmail.com"
                 />
               </div>
@@ -655,7 +655,7 @@ export default function PengaturanPage() {
               {/* Sub-section: Konfigurasi Penandatangan Dokumen Resmi */}
               <div className="border-t border-slate-200/80 dark:border-slate-800 pt-4 mt-2">
                 <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                  <FileSpreadsheet className="w-4 h-4 text-blue-600" />
                   Konfigurasi Kolom Tanda Tangan & Pejabat Dokumen Rekap Kehadiran
                 </h4>
 
@@ -664,7 +664,7 @@ export default function PengaturanPage() {
                   <div className="space-y-3">
                     <div className="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center justify-between">
                       <span>Penandatangan 1 (Kolom Tengah / Pimpinan)</span>
-                      <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">Mengetahui</span>
+                      <span className="text-[10px] text-blue-600 font-semibold bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded">Mengetahui</span>
                     </div>
 
                     <div>
@@ -675,7 +675,7 @@ export default function PengaturanPage() {
                         type="text"
                         value={headmasterTitle}
                         onChange={(e) => setHeadmasterTitle(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                         placeholder="Contoh: Kepala Sekolah / Mudir / Pimpinan"
                         required
                       />
@@ -689,7 +689,7 @@ export default function PengaturanPage() {
                         type="text"
                         value={headmasterName}
                         onChange={(e) => setHeadmasterName(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                         placeholder="Contoh: Fauzan Azhiimaa, Lc"
                         required
                       />
@@ -703,7 +703,7 @@ export default function PengaturanPage() {
                         type="text"
                         value={headmasterNip}
                         onChange={(e) => setHeadmasterNip(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                         placeholder="Kosongkan atau beri — jika belum ada"
                       />
                     </div>
@@ -724,7 +724,7 @@ export default function PengaturanPage() {
                         type="text"
                         value={tuTitle}
                         onChange={(e) => setTuTitle(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                         placeholder="Contoh: Petugas Tata Usaha / Tata Usaha / Bendahara"
                         required
                       />
@@ -741,7 +741,7 @@ export default function PengaturanPage() {
                         type="text"
                         value={tuName}
                         onChange={(e) => setTuName(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                         placeholder="Contoh: ALDRI WAHYUDI CHANDRA"
                         required
                       />
@@ -755,7 +755,7 @@ export default function PengaturanPage() {
                         type="text"
                         value={tuNip}
                         onChange={(e) => setTuNip(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                         placeholder="Kosongkan atau beri — jika belum ada"
                       />
                     </div>
@@ -767,7 +767,7 @@ export default function PengaturanPage() {
             {/* 3. Attendance & Geofencing Rules */}
             <div className="glass-card rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800/80 shadow-glass space-y-4">
               <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 Aturan Kebijakan & Parameter Presensi GPS
               </h3>
 
@@ -780,7 +780,7 @@ export default function PengaturanPage() {
                     type="number"
                     value={gracePeriod}
                     onChange={(e) => setGracePeriod(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <span className="text-[10px] text-slate-400 mt-0.5 block">
@@ -796,7 +796,7 @@ export default function PengaturanPage() {
                     type="number"
                     value={defaultRadius}
                     onChange={(e) => setDefaultRadius(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <span className="text-[10px] text-slate-400 mt-0.5 block">
@@ -812,7 +812,7 @@ export default function PengaturanPage() {
                     type="number"
                     value={maxGpsAccuracy}
                     onChange={(e) => setMaxGpsAccuracy(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <span className="text-[10px] text-slate-400 mt-0.5 block">
@@ -842,12 +842,12 @@ export default function PengaturanPage() {
                     onChange={(e) => setRequireSelfie(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </label>
               </div>
 
               {/* Timezone Info */}
-              <div className="p-3 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 text-xs text-emerald-900 dark:text-emerald-200">
+              <div className="p-3 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60 text-xs text-blue-900 dark:text-blue-200">
                 <strong>Zona Waktu Resmi Aplikasi:</strong> Asia/Jakarta (WIB, UTC+7). Seluruh jam transaksi, toleransi, dan pelaporan selalu dihitung menggunakan zona waktu ini.
               </div>
             </div>
@@ -856,7 +856,7 @@ export default function PengaturanPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="py-3 px-8 rounded-2xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition flex items-center gap-2 active:scale-98 disabled:opacity-50 cursor-pointer"
+                className="py-3 px-8 rounded-2xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 transition flex items-center gap-2 active:scale-98 disabled:opacity-50 cursor-pointer"
               >
                 {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>Simpan Seluruh Pengaturan</span>

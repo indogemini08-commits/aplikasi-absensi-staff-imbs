@@ -40,7 +40,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       title={isDark ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
-      className="relative p-2.5 rounded-2xl text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-slate-800/70 hover:bg-white dark:hover:bg-slate-800 backdrop-blur-xl transition-all duration-300 border border-white/80 dark:border-white/10 shadow-sm hover:shadow-[0_0_18px_rgba(16,185,129,0.3)] hover:border-emerald-500/50 active:scale-95 cursor-pointer group"
+      className="relative p-2.5 rounded-2xl text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-slate-800/70 hover:bg-white dark:hover:bg-slate-800 backdrop-blur-xl transition-all duration-300 border border-white/80 dark:border-white/10 shadow-sm hover:shadow-[0_0_18px_rgba(37, 99, 235,0.3)] hover:border-blue-500/50 active:scale-95 cursor-pointer group"
       aria-label="Toggle Theme"
     >
       {isDark ? (

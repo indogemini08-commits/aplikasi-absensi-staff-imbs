@@ -125,7 +125,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo and Institution Title */}
         <div className="text-center mb-6">
-          <div className="inline-flex h-16 min-w-[3.5rem] max-w-[140px] px-3.5 py-1.5 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700/80 items-center justify-center mb-3 ring-4 ring-emerald-500/10">
+          <div className="inline-flex h-16 min-w-[3.5rem] max-w-[140px] px-3.5 py-1.5 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700/80 items-center justify-center mb-3 ring-4 ring-blue-500/10">
             <img
               src={appLogo || '/logo-imbs-left.png'}
               alt={orgName || 'Logo IMBS'}
@@ -141,7 +141,7 @@ export default function LoginPage() {
           <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 uppercase tracking-wider">
             {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
           </p>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50/90 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-[10px] sm:text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 mt-2.5 max-w-[92vw] truncate shadow-xs">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50/90 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-[10px] sm:text-[11px] font-semibold text-blue-700 dark:text-blue-300 mt-2.5 max-w-[92vw] truncate shadow-xs">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate">
               {foundationName ? `${foundationName} • Portal Presensi GPS` : 'Portal Presensi Resmi Berbasis GPS'}
@@ -152,7 +152,7 @@ export default function LoginPage() {
         {/* Login Form Card */}
         <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/80 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)] relative overflow-hidden transition-all">
           {/* Top Luminous Neon Line */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_12px_#10b981]" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_12px_#2563eb]" />
 
           <h2 className="text-base font-extrabold text-slate-900 dark:text-white mb-1 tracking-tight">
             Masuk ke Akun Anda
@@ -168,7 +168,7 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <input
                   type="text"
@@ -187,7 +187,7 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <Lock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -210,7 +210,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 rounded-2xl font-extrabold text-sm bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 text-white shadow-lg shadow-emerald-600/35 neon-glow-emerald active:scale-98 transition flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+              className="w-full mt-2 py-3.5 px-4 rounded-2xl font-extrabold text-sm bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-lg shadow-blue-600/35 neon-glow-blue active:scale-98 transition flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -233,9 +233,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => selectQuickAccount('pegawai', 'password123')}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30 text-left transition"
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 text-left transition"
               >
-                <div className="font-bold text-emerald-700 dark:text-emerald-400">Pegawai (Staff)</div>
+                <div className="font-bold text-blue-700 dark:text-blue-400">Pegawai (Staff)</div>
                 <div className="text-slate-500 dark:text-slate-400">Budi Pratama (Guru)</div>
               </button>
 

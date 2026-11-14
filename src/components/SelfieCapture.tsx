@@ -83,7 +83,7 @@ export default function SelfieCapture({ onCapture, onCancel }: SelfieCaptureProp
         {/* Header */}
         <div className="p-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <Camera className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <Camera className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <h3 className="font-semibold text-sm text-slate-800 dark:text-slate-100">
               Verifikasi Foto Selfie
             </h3>
@@ -101,7 +101,7 @@ export default function SelfieCapture({ onCapture, onCancel }: SelfieCaptureProp
               <p className="text-xs text-rose-300 mb-3">{cameraError}</p>
               <button
                 onClick={startCamera}
-                className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-500"
+                className="text-xs px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500"
               >
                 Coba Lagi
               </button>
@@ -137,7 +137,7 @@ export default function SelfieCapture({ onCapture, onCancel }: SelfieCaptureProp
               </button>
               <button
                 onClick={confirm}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition"
+                className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5 transition"
               >
                 <Check className="w-4 h-4" />
                 Gunakan Foto
@@ -147,7 +147,7 @@ export default function SelfieCapture({ onCapture, onCancel }: SelfieCaptureProp
             <button
               onClick={takePhoto}
               disabled={!!cameraError}
-              className="w-16 h-16 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center transition active:scale-95 disabled:opacity-50"
+              className="w-16 h-16 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 flex items-center justify-center transition active:scale-95 disabled:opacity-50"
             >
               <Camera className="w-7 h-7" />
             </button>

@@ -110,7 +110,7 @@ export default function AdminAuditLogPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <History className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <History className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Histori Audit Log Sistem
                 </h1>
@@ -174,7 +174,7 @@ export default function AdminAuditLogPage() {
                         </td>
 
                         <td className="py-3.5 px-4">
-                          <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">
+                          <span className="font-mono font-bold text-blue-600 dark:text-blue-400 text-[11px]">
                             {log.action}
                           </span>
                         </td>

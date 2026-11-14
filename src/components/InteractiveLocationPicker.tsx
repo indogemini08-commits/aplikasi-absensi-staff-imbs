@@ -52,7 +52,7 @@ export default function InteractiveLocationPicker({
     const icon = L.divIcon({
       className: 'custom-picker-pin',
       html: `
-        <div style="background-color: #059669; width: 34px; height: 34px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold; cursor: grab;">
+        <div style="background-color: #1d4ed8; width: 34px; height: 34px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold; cursor: grab;">
           📍
         </div>
       `,
@@ -82,8 +82,8 @@ export default function InteractiveLocationPicker({
     // Update or create geofence radius circle
     if (!circleRef.current) {
       const circle = L.circle([latitude, longitude], {
-        color: '#10b981',
-        fillColor: '#10b981',
+        color: '#2563eb',
+        fillColor: '#2563eb',
         fillOpacity: 0.18,
         radius: radiusMeters,
       }).addTo(map);
@@ -101,7 +101,7 @@ export default function InteractiveLocationPicker({
       <div ref={mapContainerRef} className="w-full h-64 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 z-0" />
       <div className="absolute bottom-2 left-2 right-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg text-[10px] text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between z-[400] shadow-sm pointer-events-none">
         <span>💡 <strong>Klik peta</strong> atau <strong>geser pin</strong> untuk mengubah titik koordinat</span>
-        <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+        <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
           {latitude.toFixed(6)}, {longitude.toFixed(6)}
         </span>
       </div>

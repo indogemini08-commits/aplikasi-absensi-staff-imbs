@@ -185,7 +185,7 @@ export default function RiwayatPage() {
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -195,7 +195,7 @@ export default function RiwayatPage() {
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center text-xs">
             <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
               <span className="text-[10px] text-slate-500 font-semibold">Hadir Tepat</span>
-              <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+              <div className="text-lg font-black text-blue-600 dark:text-blue-400">
                 {summary.totalHadir}
               </div>
             </div>
@@ -242,7 +242,7 @@ export default function RiwayatPage() {
               return (
                 <div
                   key={r.id}
-                  className="glass-card rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 transition-all hover:border-emerald-500/50 space-y-3"
+                  className="glass-card rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 transition-all hover:border-blue-500/50 space-y-3"
                 >
                   <div className="flex items-center justify-between">
                     <div>
@@ -258,7 +258,7 @@ export default function RiwayatPage() {
                       className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
                         isLate
                           ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
-                          : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                          : 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'
                       }`}
                     >
                       {isLate ? `Terlambat (+${r.minutesLate}m)` : 'Hadir Tepat'}

@@ -204,13 +204,13 @@ export default function AdminSaldoCutiPage() {
                         <td className="py-3.5 px-4 font-semibold text-amber-500">
                           {b.pending_days} Hari
                         </td>
-                        <td className="py-3.5 px-4 font-black text-emerald-600 dark:text-emerald-400 text-sm">
+                        <td className="py-3.5 px-4 font-black text-blue-600 dark:text-blue-400 text-sm">
                           {b.remaining_days} Hari
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => openEditModal(b)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
@@ -237,7 +237,7 @@ export default function AdminSaldoCutiPage() {
               max={30}
               value={newAllocated}
               onChange={(e) => setNewAllocated(parseInt(e.target.value, 10))}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -253,7 +253,7 @@ export default function AdminSaldoCutiPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               Simpan Perubahan

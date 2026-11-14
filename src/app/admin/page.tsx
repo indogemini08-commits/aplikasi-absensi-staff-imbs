@@ -179,15 +179,15 @@ export default function AdminDashboardPage() {
 
         <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
           {/* Executive Header Banner with Futuristic Glass & Holographic Accent */}
-          <div className="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-white/80 dark:border-white/10 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden">
+          <div className="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-white/80 dark:border-white/10 shadow-[0_20px_50px_-10px_rgba(37, 99, 235,0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden">
             {/* Subtle corner light refraction */}
-            <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-emerald-500/20 dark:bg-emerald-500/25 blur-3xl pointer-events-none" />
+            <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-blue-500/20 dark:bg-blue-500/25 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-cyan-500/20 dark:bg-cyan-500/25 blur-3xl pointer-events-none" />
 
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/90 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-300/60 dark:border-emerald-700/50 mb-2.5 shadow-[0_0_15px_rgba(16,185,129,0.2)] backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-neon-dot" />
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/90 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-300/60 dark:border-blue-700/50 mb-2.5 shadow-[0_0_15px_rgba(37, 99, 235,0.2)] backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-neon-dot" />
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 <span>Panel Pemantauan Eksekutif HRD</span>
               </div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -197,23 +197,23 @@ export default function AdminDashboardPage() {
                 <span>Data real-time hari ini:</span>
                 <span className="font-bold text-slate-700 dark:text-slate-200">{boardData?.formattedDate}</span>
                 <span>•</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Asia/Jakarta (WIB)</span>
+                <span className="text-blue-600 dark:text-blue-400 font-semibold">Asia/Jakarta (WIB)</span>
               </p>
             </div>
 
             <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 sm:gap-3 relative z-10 w-full sm:w-auto">
               <button
                 onClick={() => router.push('/admin/papan-jadwal')}
-                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 text-white shadow-lg shadow-emerald-600/30 neon-glow-emerald transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
+                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-lg shadow-blue-600/30 neon-glow-blue transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
               >
                 <CalendarDays className="w-4 h-4 shrink-0" />
                 <span>Buka Papan Jadwal</span>
               </button>
               <button
                 onClick={() => router.push('/admin/laporan')}
-                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs border border-emerald-500/30 dark:border-emerald-500/40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-100 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
+                className="py-3 px-4 sm:px-5 rounded-2xl font-extrabold text-xs border border-blue-500/30 dark:border-blue-500/40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl text-slate-800 dark:text-slate-100 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(37, 99, 235,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full xs:w-auto"
               >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <FileSpreadsheet className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Rekap Laporan</span>
               </button>
             </div>
@@ -239,22 +239,22 @@ export default function AdminDashboardPage() {
               <span className="text-[10px] xs:text-[10.5px] font-semibold text-slate-400 dark:text-slate-400 mt-1 block">Aktif Bertugas</span>
             </div>
 
-            {/* 2. Sudah Hadir (Neon Emerald Aura) */}
+            {/* 2. Sudah Hadir (Neon Sapphire Blue Aura) */}
             <div
               onClick={() => router.push('/admin/papan-jadwal?status=hadir')}
-              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-emerald-400/30 dark:border-emerald-500/35 hover:border-emerald-400/80 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] cursor-pointer transition-all group relative overflow-hidden"
+              className="glass-card glass-card-hover p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-blue-400/30 dark:border-blue-500/35 hover:border-blue-400/80 hover:shadow-[0_0_25px_rgba(37, 99, 235,0.35)] cursor-pointer transition-all group relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/15 rounded-full blur-xl pointer-events-none" />
-              <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/15 rounded-full blur-xl pointer-events-none" />
+              <div className="flex items-center justify-between text-blue-600 dark:text-blue-400">
                 <span className="text-[10px] xs:text-[11px] font-bold tracking-wide">Sudah Hadir</span>
-                <div className="p-1.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 group-hover:scale-110 transition-transform">
+                <div className="p-1.5 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 group-hover:scale-110 transition-transform">
                   <CalendarCheck className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                 </div>
               </div>
-              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+              <div className="text-xl xs:text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 mt-1.5 sm:mt-2 tabular-nums drop-shadow-[0_0_12px_rgba(37, 99, 235,0.3)]">
                 {stats.hadir}
               </div>
-              <span className="text-[10px] xs:text-[10.5px] font-semibold text-emerald-600/80 dark:text-emerald-400/80 mt-1 block">Tercatat di Lokasi</span>
+              <span className="text-[10px] xs:text-[10.5px] font-semibold text-blue-600/80 dark:text-blue-400/80 mt-1 block">Tercatat di Lokasi</span>
             </div>
 
             {/* 3. Terlambat (Golden Amber Aura) */}
@@ -363,7 +363,7 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                    <CalendarDays className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    <CalendarDays className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     Papan Jadwal Hari Ini
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -372,7 +372,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <button
                   onClick={() => router.push('/admin/papan-jadwal')}
-                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   Lihat Selengkapnya
                   <ChevronRight className="w-4 h-4" />
@@ -392,7 +392,7 @@ export default function AdminDashboardPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100/60 dark:divide-slate-800/60">
                     {boardData?.board?.slice(0, 6).map((item: any) => (
-                      <tr key={item.employeeId} className="hover:bg-emerald-50/30 dark:hover:bg-slate-800/40 transition-colors">
+                      <tr key={item.employeeId} className="hover:bg-blue-50/30 dark:hover:bg-slate-800/40 transition-colors">
                         <td className="py-3 px-3">
                           <div className="font-bold text-slate-900 dark:text-slate-100">
                             {item.name}
@@ -410,7 +410,7 @@ export default function AdminDashboardPage() {
                           <span
                             className={`px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wide border shadow-xs ${
                               item.status === 'Hadir'
-                                ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                                ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30'
                                 : item.status === 'Terlambat'
                                 ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30'
                                 : item.status === 'Pulang'
@@ -436,7 +436,7 @@ export default function AdminDashboardPage() {
                 </h3>
                 <button
                   onClick={() => router.push('/admin/audit-log')}
-                  className="text-xs font-bold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+                  className="text-xs font-bold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition"
                 >
                   Semua
                 </button>
@@ -444,7 +444,7 @@ export default function AdminDashboardPage() {
 
               <div className="space-y-3">
                 {auditLogs.map((log) => (
-                  <div key={log.id} className="p-3.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-white/80 dark:border-white/10 text-xs hover:border-emerald-500/40 transition">
+                  <div key={log.id} className="p-3.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-white/80 dark:border-white/10 text-xs hover:border-blue-500/40 transition">
                     <div className="flex items-center justify-between">
                       <span className="font-extrabold text-slate-900 dark:text-slate-100">
                         {log.user_name}
@@ -453,7 +453,7 @@ export default function AdminDashboardPage() {
                         {log.created_at?.substring(11, 16)} WIB
                       </span>
                     </div>
-                    <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                    <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-0.5">
                       {log.action}
                     </div>
                     <div className="text-[10.5px] text-slate-500 dark:text-slate-400 truncate mt-1">

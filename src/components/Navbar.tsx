@@ -220,7 +220,7 @@ export default function Navbar({ user }: NavbarProps) {
   return (
     <header className="sticky top-0 z-40 w-full glass-nav relative transition-all">
       {/* Bottom glowing futuristic laser accent line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-500/50 via-cyan-400/50 to-transparent shadow-[0_1px_8px_rgba(16,185,129,0.4)] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/50 via-cyan-400/50 to-transparent shadow-[0_1px_8px_rgba(37, 99, 235,0.4)] pointer-events-none" />
 
       <div className="w-full px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
         {/* Left: Brand & Institution Identity */}
@@ -230,7 +230,7 @@ export default function Navbar({ user }: NavbarProps) {
           title="Beranda Presensi IMBS"
         >
           {/* Futuristic Frosted Logo Frame with Holographic Reflection */}
-          <div className="h-10 sm:h-11 min-w-[2.75rem] max-w-[5.5rem] px-2 py-1 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-emerald-500/20 group-hover:ring-emerald-500/50 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all">
+          <div className="h-10 sm:h-11 min-w-[2.75rem] max-w-[5.5rem] px-2 py-1 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-blue-500/20 group-hover:ring-blue-500/50 group-hover:shadow-[0_0_20px_rgba(37, 99, 235,0.3)] transition-all">
             <img
               src={appLogo || '/logo-imbs-left.png'}
               alt={orgName || 'Logo IMBS'}
@@ -244,11 +244,11 @@ export default function Navbar({ user }: NavbarProps) {
           {/* Title & Organization Subtitle */}
           <div className="flex flex-col justify-center min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-              <span className="font-extrabold text-xs sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans truncate max-w-[130px] xs:max-w-[180px] sm:max-w-xs md:max-w-md group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              <span className="font-extrabold text-xs sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans truncate max-w-[130px] xs:max-w-[180px] sm:max-w-xs md:max-w-md group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
               </span>
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50/80 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-700/50 shadow-[0_0_12px_rgba(16,185,129,0.2)] backdrop-blur-md leading-none shrink-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-neon-dot"></span>
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300/60 dark:border-blue-700/50 shadow-[0_0_12px_rgba(37, 99, 235,0.2)] backdrop-blur-md leading-none shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-neon-dot"></span>
                 Presensi Staff
               </span>
             </div>
@@ -265,11 +265,11 @@ export default function Navbar({ user }: NavbarProps) {
         </div>
 
         {/* Center: Live WIB Clock HUD Capsule (Desktop) */}
-        <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-emerald-500/25 dark:border-emerald-500/30 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-[0_0_15px_rgba(16,185,129,0.12)] hover:border-emerald-500/50 transition-all">
-          <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+        <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-blue-500/25 dark:border-blue-500/30 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-[0_0_15px_rgba(37, 99, 235,0.12)] hover:border-blue-500/50 transition-all">
+          <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 animate-pulse" />
           <span>{wibDate}</span>
           <span className="text-slate-300 dark:text-slate-600">•</span>
-          <span className="font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums tracking-wide">
+          <span className="font-extrabold text-blue-600 dark:text-blue-400 tabular-nums tracking-wide">
             {wibTime || '07:30:00'} WIB
           </span>
         </div>
@@ -281,7 +281,7 @@ export default function Navbar({ user }: NavbarProps) {
           {/* Notifications Button */}
           <button
             onClick={() => router.push('/notifikasi')}
-            className="relative p-2 sm:p-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30 transition-all border border-slate-200/80 dark:border-slate-700/80 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.25)]"
+            className="relative p-2 sm:p-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 transition-all border border-slate-200/80 dark:border-slate-700/80 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(37, 99, 235,0.25)]"
             title="Pusat Notifikasi"
           >
             <Bell className="w-4 h-4" />
@@ -296,10 +296,10 @@ export default function Navbar({ user }: NavbarProps) {
           {currentUser && currentUser.role !== 'staff' && (
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200/80 dark:border-slate-700/80 transition cursor-pointer"
+              className="md:hidden p-2 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-700/80 transition cursor-pointer"
               title="Menu Navigasi Admin"
             >
-              {mobileMenuOpen ? <X className="w-4 h-4 text-emerald-500" /> : <Menu className="w-4 h-4" />}
+              {mobileMenuOpen ? <X className="w-4 h-4 text-blue-500" /> : <Menu className="w-4 h-4" />}
             </button>
           )}
 
@@ -308,13 +308,13 @@ export default function Navbar({ user }: NavbarProps) {
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200/80 dark:border-slate-800/80">
               <div
                 onClick={() => router.push(currentUser.role === 'staff' ? '/profil' : '/admin')}
-                className="cursor-pointer flex items-center gap-2 p-1.5 pr-2.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/70 dark:border-slate-700/70 hover:border-emerald-500/40 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all group"
+                className="cursor-pointer flex items-center gap-2 p-1.5 pr-2.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/70 dark:border-slate-700/70 hover:border-blue-500/40 hover:shadow-[0_0_15px_rgba(37, 99, 235,0.2)] transition-all group"
               >
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-500 text-white flex items-center justify-center font-bold text-xs shadow-xs neon-glow-emerald">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-teal-500 to-cyan-500 text-white flex items-center justify-center font-bold text-xs shadow-xs neon-glow-blue">
                   {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div className="hidden lg:block text-left text-xs">
-                  <div className="font-bold text-slate-800 dark:text-slate-100 truncate max-w-[120px] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                  <div className="font-bold text-slate-800 dark:text-slate-100 truncate max-w-[120px] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {currentUser.name}
                   </div>
                   <div className="text-[10px] text-slate-400 dark:text-slate-400 uppercase tracking-wider font-semibold">
@@ -343,7 +343,7 @@ export default function Navbar({ user }: NavbarProps) {
           ) : (
             <button
               onClick={() => router.push('/login')}
-              className="text-xs px-4 py-2 rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-md shadow-emerald-600/30 neon-glow-emerald transition cursor-pointer"
+              className="text-xs px-4 py-2 rounded-xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 text-white shadow-md shadow-blue-600/30 neon-glow-blue transition cursor-pointer"
             >
               Masuk
             </button>
@@ -357,8 +357,8 @@ export default function Navbar({ user }: NavbarProps) {
           <div className="bg-white/95 dark:bg-[#070b14]/95 backdrop-blur-2xl border-b border-slate-200/80 dark:border-white/10 max-h-[85vh] overflow-y-auto p-4 space-y-4 shadow-2xl flex-1">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/60 dark:border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 flex items-center justify-center border border-emerald-500/30">
-                  <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-500/20 to-teal-500/20 flex items-center justify-center border border-blue-500/30">
+                  <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
                   <div className="font-extrabold text-xs text-slate-900 dark:text-white uppercase tracking-wider">
@@ -381,7 +381,7 @@ export default function Navbar({ user }: NavbarProps) {
             {adminNavGroups.map((group, gIdx) => (
               <div key={gIdx} className="space-y-1">
                 <h5 className="text-[10.5px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-2 py-1 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_6px_#2563eb]" />
                   <span>{group.group}</span>
                 </h5>
                 <div className="grid grid-cols-1 gap-1">
@@ -395,7 +395,7 @@ export default function Navbar({ user }: NavbarProps) {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center justify-between p-2.5 rounded-2xl text-xs font-bold transition-all ${
                           isActive
-                            ? 'bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-emerald-500/25'
+                            ? 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 text-white shadow-md shadow-blue-500/25'
                             : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
                         }`}
                       >

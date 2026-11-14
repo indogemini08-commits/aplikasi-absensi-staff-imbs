@@ -204,7 +204,7 @@ export default function AdminKeterlambatanPage() {
                 onClick={() => setActiveTab('pending')}
                 className={`py-2 px-4 rounded-xl font-bold text-xs transition flex items-center gap-1.5 ${
                   activeTab === 'pending'
-                    ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
@@ -215,7 +215,7 @@ export default function AdminKeterlambatanPage() {
                 onClick={() => setActiveTab('submitted')}
                 className={`py-2 px-4 rounded-xl font-bold text-xs transition flex items-center gap-1.5 ${
                   activeTab === 'submitted'
-                    ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
@@ -226,7 +226,7 @@ export default function AdminKeterlambatanPage() {
                 onClick={() => setActiveTab('all_late')}
                 className={`py-2 px-4 rounded-xl font-bold text-xs transition flex items-center gap-1.5 ${
                   activeTab === 'all_late'
-                    ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
@@ -241,7 +241,7 @@ export default function AdminKeterlambatanPage() {
                 placeholder="Cari nama, NIP, atau alasan..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-emerald-500 text-slate-800 dark:text-slate-100"
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
               />
             </div>
           </div>
@@ -333,7 +333,7 @@ export default function AdminKeterlambatanPage() {
                             <span
                               className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                                 statusVal === 'reviewed'
-                                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                   : statusVal === 'rejected'
                                   ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                                   : reasonText
@@ -356,7 +356,7 @@ export default function AdminKeterlambatanPage() {
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => openReviewModal(r, 'reviewed')}
-                                  className="py-1 px-2.5 rounded-lg font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition"
+                                  className="py-1 px-2.5 rounded-lg font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition"
                                 >
                                   Terima
                                 </button>
@@ -412,7 +412,7 @@ export default function AdminKeterlambatanPage() {
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
               placeholder="Berikan umpan balik atau alasan jika ditolak..."
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -429,7 +429,7 @@ export default function AdminKeterlambatanPage() {
               disabled={isSubmitting}
               className={`py-2 px-5 rounded-xl font-bold text-white shadow-md transition ${
                 reviewStatus === 'reviewed'
-                  ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30'
+                  ? 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/30'
                   : 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/30'
               }`}
             >

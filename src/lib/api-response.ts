@@ -17,3 +17,4 @@ export function jsonResponse(data: any, init?: ResponseInit) {
     headers: mergedHeaders,
   });
 }
+

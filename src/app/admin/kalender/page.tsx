@@ -162,7 +162,7 @@ export default function AdminKalenderPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <Calendar className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Kalender Kerja & Hari Libur Lembaga
                 </h1>
@@ -174,7 +174,7 @@ export default function AdminKalenderPage() {
 
             <button
               onClick={() => setShowModal(true)}
-              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5 self-start sm:self-auto"
+              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition flex items-center gap-1.5 self-start sm:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Hari Libur</span>
@@ -249,7 +249,7 @@ export default function AdminKalenderPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Contoh: Milad Pesantren IMBS ke-15"
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -263,7 +263,7 @@ export default function AdminKalenderPage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -275,7 +275,7 @@ export default function AdminKalenderPage() {
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               >
                 <option value="national">Libur Nasional</option>
                 <option value="institutional">Libur Internal Lembaga</option>
@@ -292,7 +292,7 @@ export default function AdminKalenderPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Keterangan tambahan..."
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -307,7 +307,7 @@ export default function AdminKalenderPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               Simpan Hari Libur

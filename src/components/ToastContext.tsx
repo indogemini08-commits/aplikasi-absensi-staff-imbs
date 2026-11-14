@@ -56,7 +56,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={t.id}
             className={`pointer-events-auto flex items-start gap-3.5 p-4 rounded-2xl backdrop-blur-2xl border text-xs sm:text-sm font-semibold transition-all duration-300 shadow-2xl relative overflow-hidden animate-in fade-in slide-in-from-top-4 ${
               t.type === 'success'
-                ? 'bg-white/90 dark:bg-[#071714]/90 text-slate-800 dark:text-emerald-100 border-emerald-500/50 shadow-[0_10px_35px_-5px_rgba(16,185,129,0.35)]'
+                ? 'bg-white/90 dark:bg-[#071714]/90 text-slate-800 dark:text-blue-100 border-blue-500/50 shadow-[0_10px_35px_-5px_rgba(37, 99, 235,0.35)]'
                 : t.type === 'error'
                 ? 'bg-white/90 dark:bg-[#1f0a10]/90 text-slate-800 dark:text-rose-100 border-rose-500/50 shadow-[0_10px_35px_-5px_rgba(244,63,94,0.35)]'
                 : t.type === 'warning'
@@ -68,7 +68,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <div
               className={`absolute top-0 left-0 right-0 h-[2px] ${
                 t.type === 'success'
-                  ? 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 shadow-[0_0_10px_#10b981]'
+                  ? 'bg-gradient-to-r from-blue-500 via-teal-400 to-blue-500 shadow-[0_0_10px_#2563eb]'
                   : t.type === 'error'
                   ? 'bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500 shadow-[0_0_10px_#f43f5e]'
                   : t.type === 'warning'
@@ -78,7 +78,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             />
 
             <div className="shrink-0 mt-0.5">
-              {t.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />}
+              {t.type === 'success' && <CheckCircle2 className="w-5 h-5 text-blue-500 drop-shadow-[0_0_8px_rgba(37, 99, 235,0.6)]" />}
               {t.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.6)]" />}
               {t.type === 'warning' && <AlertTriangle className="w-5 h-5 text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]" />}
               {t.type === 'info' && <Info className="w-5 h-5 text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]" />}

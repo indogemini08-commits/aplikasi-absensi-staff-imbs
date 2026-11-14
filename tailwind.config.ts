@@ -11,17 +11,17 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: "#ecfdf5",
-          100: "#d1fae5",
-          200: "#a7f3d0",
-          300: "#6ee7b7",
-          400: "#34d399",
-          500: "#10b981", // primary emerald
-          600: "#059669",
-          700: "#047857",
-          800: "#065f46",
-          900: "#064e3b",
-          950: "#022c22",
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3b82f6", // vibrant sapphire blue
+          600: "#2563eb", // primary blue
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",
+          950: "#172554",
         },
         navy: {
           800: "#1e293b",
@@ -35,7 +35,7 @@ const config: Config = {
       boxShadow: {
         glass: "0 8px 32px 0 rgba(0, 0, 0, 0.08)",
         "glass-dark": "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
-        "glow-emerald": "0 0 25px -5px rgba(16, 185, 129, 0.4)",
+        "glow-blue": "0 0 25px -5px rgba(37, 99, 235, 0.45)",
       },
     },
   },

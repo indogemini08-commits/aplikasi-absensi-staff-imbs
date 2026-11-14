@@ -447,7 +447,7 @@ export default function PegawaiPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Data Pegawai & Akun
                 </h1>
@@ -462,13 +462,13 @@ export default function PegawaiPage() {
                 onClick={() => setShowCsvModal(true)}
                 className="py-2.5 px-3.5 rounded-xl font-bold text-xs border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-100 transition flex items-center gap-1.5"
               >
-                <Upload className="w-4 h-4 text-emerald-600" />
+                <Upload className="w-4 h-4 text-blue-600" />
                 <span>Impor CSV</span>
               </button>
 
               <button
                 onClick={openAddModal}
-                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5"
+                className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition flex items-center gap-1.5"
               >
                 <Plus className="w-4 h-4" />
                 <span>Tambah Pegawai Baru</span>
@@ -543,11 +543,11 @@ export default function PegawaiPage() {
                         <button
                           type="button"
                           onClick={toggleSelectAll}
-                          className="p-1 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer"
+                          className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
                           title={isAllSelected ? 'Batalkan Semua Pilihan' : 'Pilih Semua Pegawai'}
                         >
                           {isAllSelected ? (
-                            <CheckSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                            <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                           ) : (
                             <Square className="w-4 h-4 text-slate-400" />
                           )}
@@ -569,17 +569,17 @@ export default function PegawaiPage() {
                       <tr
                         key={emp.id}
                         className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors ${
-                          isSelected ? 'bg-emerald-50/40 dark:bg-emerald-950/20 ' : ''
+                          isSelected ? 'bg-blue-50/40 dark:bg-blue-950/20 ' : ''
                         }${emp.is_active === 0 ? 'opacity-60 bg-slate-100/40 dark:bg-slate-900/40' : ''}`}
                       >
                         <td className="py-3.5 px-3 text-center">
                           <button
                             type="button"
                             onClick={() => toggleSelect(emp.id)}
-                            className="p-1 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer"
+                            className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
                           >
                             {isSelected ? (
-                              <CheckSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                              <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                             ) : (
                               <Square className="w-4 h-4 text-slate-400" />
                             )}
@@ -623,7 +623,7 @@ export default function PegawaiPage() {
                             {emp.dept_start_time || '07:30'} - {emp.dept_end_time || '16:00'} WIB
                           </div>
                           <div className="text-[10px] text-slate-500 flex items-center gap-1.5 mt-0.5">
-                            <span className="px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold text-[9px]">
+                            <span className="px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold text-[9px]">
                               {Array.isArray(emp.dept_work_days) ? emp.dept_work_days.length : 5} Hari Kerja
                             </span>
                             <span className="text-amber-600 dark:text-amber-400 font-medium">
@@ -633,7 +633,7 @@ export default function PegawaiPage() {
                         </td>
 
                         <td className="py-3.5 px-4">
-                          <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                          <span className="font-bold text-blue-600 dark:text-blue-400">
                             {emp.leave_remaining ?? 12} Hari
                           </span>
                         </td>
@@ -641,7 +641,7 @@ export default function PegawaiPage() {
                         <td className="py-3.5 px-4">
                           <span
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${emp.is_active === 1
-                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                 : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                               }`}
                           >
@@ -653,7 +653,7 @@ export default function PegawaiPage() {
                           <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => openEditModal(emp)}
-                              className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition"
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
                               title="Edit Profil"
                             >
                               <Edit className="w-3.5 h-3.5" />
@@ -662,7 +662,7 @@ export default function PegawaiPage() {
                               onClick={() => handleToggleActive(emp)}
                               className={`p-1.5 rounded-lg transition ${emp.is_active === 1
                                   ? 'text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40'
-                                  : 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
+                                  : 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40'
                                 }`}
                               title={emp.is_active === 1 ? 'Nonaktifkan Akun' : 'Aktifkan Akun'}
                             >
@@ -706,7 +706,7 @@ export default function PegawaiPage() {
                 value={nip}
                 onChange={(e) => setNip(e.target.value)}
                 placeholder="Contoh: IMBS-108"
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -720,7 +720,7 @@ export default function PegawaiPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama lengkap beserta gelar..."
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -734,7 +734,7 @@ export default function PegawaiPage() {
               <select
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               >
                 {departments.map((d) => (
                   <option key={d.id} value={d.id}>
@@ -753,7 +753,7 @@ export default function PegawaiPage() {
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
                 placeholder="Contoh: Guru Bahasa Arab / Wali Asrama"
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -771,20 +771,20 @@ export default function PegawaiPage() {
               : ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
             return (
-              <div className="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 space-y-2">
+              <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-800 dark:text-emerald-200">
-                    <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="flex items-center gap-1.5 font-bold text-xs text-blue-800 dark:text-blue-200">
+                    <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                     Jadwal Kerja Departemen Terintegrasi Otomatis
                   </div>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded-full">
+                    <CheckCircle2 className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                     Auto-inherit
                   </span>
                 </div>
 
                 {selectedDept ? (
-                  <div className="space-y-2 pt-1 border-t border-emerald-200/60 dark:border-emerald-800/40">
+                  <div className="space-y-2 pt-1 border-t border-blue-200/60 dark:border-blue-800/40">
                     <div className="text-xs text-slate-700 dark:text-slate-300 grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div>
                         <span className="text-[10px] text-slate-400 block">Hari Kerja Aktif:</span>
@@ -810,7 +810,7 @@ export default function PegawaiPage() {
                               key={day}
                               className={`p-1.5 rounded-lg border ${
                                 dCfg?.isActive
-                                  ? 'bg-white dark:bg-slate-800 border-emerald-200 dark:border-emerald-800 text-slate-700 dark:text-slate-200'
+                                  ? 'bg-white dark:bg-slate-800 border-blue-200 dark:border-blue-800 text-slate-700 dark:text-slate-200'
                                   : 'bg-slate-100/60 dark:bg-slate-900 border-dashed border-slate-200 text-slate-400'
                               }`}
                             >
@@ -825,7 +825,7 @@ export default function PegawaiPage() {
                 ) : (
                   <p className="text-[11px] text-slate-500">Pilih divisi untuk melihat jadwal kerja otomatis.</p>
                 )}
-                <div className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80 italic">
+                <div className="text-[10px] text-blue-700/80 dark:text-blue-400/80 italic">
                   * Jadwal kerja ini diambil langsung secara real-time dari Pengaturan Jadwal Kerja Departemen/Divisi.
                 </div>
               </div>
@@ -843,7 +843,7 @@ export default function PegawaiPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Contoh: ahmad.fauzi"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
@@ -857,7 +857,7 @@ export default function PegawaiPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Default: password123"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -871,7 +871,7 @@ export default function PegawaiPage() {
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               >
                 <option value="L">Laki-Laki (Ikhwan)</option>
                 <option value="P">Perempuan (Akhwat)</option>
@@ -887,7 +887,7 @@ export default function PegawaiPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="0812..."
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -903,7 +903,7 @@ export default function PegawaiPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               {editEmployee ? 'Simpan Perubahan' : 'Tambahkan Pegawai'}
@@ -920,10 +920,10 @@ export default function PegawaiPage() {
         maxWidth="lg"
       >
         <div className="space-y-4">
-          <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-900 dark:text-emerald-200">
+          <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-xs text-blue-900 dark:text-blue-200">
             <div className="font-bold mb-1">Format Kolom CSV:</div>
             <code>nama,nip,username,email,jabatan,gender(L/P),telepon</code>
-            <p className="mt-1 text-[11px] text-emerald-800 dark:text-emerald-300">
+            <p className="mt-1 text-[11px] text-blue-800 dark:text-blue-300">
               Setiap baris mewakili 1 pegawai. Password otomatis di-set ke: <code>password123</code>.
             </p>
           </div>
@@ -937,7 +937,7 @@ export default function PegawaiPage() {
               value={csvText}
               onChange={(e) => setCsvText(e.target.value)}
               placeholder="Ust. Hasan Al-Banna,IMBS-109,hasan,hasan@imbs.sch.id,Guru Tahfidz,L,081233445566&#10;Ustadzah Aisyah,IMBS-110,aisyah,aisyah@imbs.sch.id,Pembina Asrama,P,081244556677"
-              className="w-full p-3 font-mono text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-3 font-mono text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -952,7 +952,7 @@ export default function PegawaiPage() {
             <button
               onClick={handleImportCsv}
               disabled={isImporting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isImporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               Proses Impor Data

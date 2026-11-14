@@ -19,7 +19,7 @@ export default function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4 shadow-inner">
+      <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4 shadow-inner">
         {icon === 'inbox' && <Inbox className="w-8 h-8" />}
         {icon === 'file' && <FileText className="w-8 h-8" />}
         {icon === 'calendar' && <Calendar className="w-8 h-8" />}
@@ -35,7 +35,7 @@ export default function EmptyState({
       {action && (
         <button
           onClick={action.onClick}
-          className="text-xs px-4 py-2 rounded-xl font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition"
+          className="text-xs px-4 py-2 rounded-xl font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition"
         >
           {action.label}
         </button>

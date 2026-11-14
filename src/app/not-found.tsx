@@ -5,7 +5,7 @@ import { Compass, Home, ArrowLeft } from 'lucide-react';
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-[#090d16] text-center">
-      <div className="w-20 h-20 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4 shadow-xl">
+      <div className="w-20 h-20 rounded-3xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-4 shadow-xl">
         <Compass className="w-10 h-10 animate-spin-slow" />
       </div>
 
@@ -22,7 +22,7 @@ export default function NotFound() {
       <div className="flex items-center gap-3">
         <Link
           href="/dashboard"
-          className="py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition flex items-center gap-1.5"
+          className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md transition flex items-center gap-1.5"
         >
           <Home className="w-4 h-4" />
           <span>Kembali ke Beranda</span>

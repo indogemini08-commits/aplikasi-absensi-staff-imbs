@@ -146,7 +146,7 @@ export default function KalenderPage() {
             <span>Rab</span>
             <span>Kam</span>
             <span>Jum</span>
-            <span className="text-emerald-600">Sab</span>
+            <span className="text-blue-600">Sab</span>
           </div>
 
           {/* Days Grid */}
@@ -168,7 +168,7 @@ export default function KalenderPage() {
                   key={day}
                   className={`p-2 rounded-xl flex flex-col items-center justify-center transition-all ${
                     isToday
-                      ? 'bg-emerald-600 text-white font-extrabold shadow-md shadow-emerald-600/30 ring-2 ring-emerald-500/20'
+                      ? 'bg-blue-600 text-white font-extrabold shadow-md shadow-blue-600/30 ring-2 ring-blue-500/20'
                       : isHoliday
                       ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold border border-rose-200/60 dark:border-rose-900/40'
                       : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'

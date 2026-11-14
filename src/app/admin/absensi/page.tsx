@@ -186,7 +186,7 @@ export default function AdminAbsensiMasterPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <ClipboardCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <ClipboardCheck className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Data Absensi Master & Audit GPS
                 </h1>
@@ -212,7 +212,7 @@ export default function AdminAbsensiMasterPage() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
@@ -222,7 +222,7 @@ export default function AdminAbsensiMasterPage() {
                 }}
                 className={`py-1.5 px-3 rounded-lg font-bold text-xs transition ${
                   selectedDate === new Date().toISOString().split('T')[0]
-                    ? 'bg-emerald-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
                 }`}
               >
@@ -246,7 +246,7 @@ export default function AdminAbsensiMasterPage() {
                 placeholder="Cari pegawai atau divisi..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 focus:ring-2 focus:ring-emerald-500"
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -307,7 +307,7 @@ export default function AdminAbsensiMasterPage() {
 
                         <td className="py-3.5 px-4">
                           <div className="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                            <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
                             <span>{r.in_location_name || 'Lokasi Terverifikasi'}</span>
                           </div>
                           <div className="text-[10px] text-slate-400 mt-0.5">
@@ -319,7 +319,7 @@ export default function AdminAbsensiMasterPage() {
                           <span
                             className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                               r.clock_in_status === 'hadir'
-                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                                 : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                             }`}
                           >
@@ -330,7 +330,7 @@ export default function AdminAbsensiMasterPage() {
                         <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => openCorrectionModal(r)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                             title="Koreksi Data Absensi"
                           >
                             <Edit className="w-3.5 h-3.5" />
@@ -367,7 +367,7 @@ export default function AdminAbsensiMasterPage() {
                 value={newClockIn}
                 onChange={(e) => setNewClockIn(e.target.value)}
                 placeholder="HH:mm:ss"
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 tabular-nums"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500 tabular-nums"
                 required
               />
             </div>
@@ -381,7 +381,7 @@ export default function AdminAbsensiMasterPage() {
                 value={newClockOut}
                 onChange={(e) => setNewClockOut(e.target.value)}
                 placeholder="HH:mm:ss"
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 tabular-nums"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500 tabular-nums"
               />
             </div>
           </div>
@@ -393,7 +393,7 @@ export default function AdminAbsensiMasterPage() {
             <select
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
             >
               <option value="hadir">Hadir (Tepat Waktu)</option>
               <option value="terlambat">Terlambat</option>
@@ -409,7 +409,7 @@ export default function AdminAbsensiMasterPage() {
               value={correctionReason}
               onChange={(e) => setCorrectionReason(e.target.value)}
               placeholder="Jelaskan alasan perbaikan data..."
-              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -425,7 +425,7 @@ export default function AdminAbsensiMasterPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               Simpan & Rekam Audit

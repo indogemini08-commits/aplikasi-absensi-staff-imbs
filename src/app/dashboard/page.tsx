@@ -169,11 +169,11 @@ export default function StaffDashboard() {
         {/* Employee Greeting Header */}
         <div className="glass-card rounded-3xl p-5 md:p-6 border border-white/80 dark:border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
           {/* Ambient corner light */}
-          <div className="absolute -top-16 -right-16 w-36 h-36 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -top-16 -right-16 w-36 h-36 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold border border-emerald-200/60 dark:border-emerald-800/60 mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[11px] font-semibold border border-blue-200/60 dark:border-blue-800/60 mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-blue-500" />
                 <span>{statusData?.formattedDate}</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -192,11 +192,11 @@ export default function StaffDashboard() {
               <span
                 className={`text-xs font-bold px-3 py-1 rounded-full ${
                   isClockedOut
-                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'
                     : isClockedIn
                     ? att.clockInStatus === 'terlambat'
                       ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
-                      : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                      : 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'
                     : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
                 }`}
               >
@@ -238,12 +238,12 @@ export default function StaffDashboard() {
         <div className="glass-card rounded-3xl p-5 md:p-6 border border-white/80 dark:border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
                 Jadwal Kerja Hari Ini
               </h3>
             </div>
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
               {schedule?.shiftName || 'Reguler Pagi'}
             </span>
           </div>
@@ -256,7 +256,7 @@ export default function StaffDashboard() {
               <div className="text-lg font-extrabold text-slate-800 dark:text-slate-100 tabular-nums">
                 {schedule?.startTime || '07:30'} WIB
               </div>
-              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+              <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
                 Toleransi: +{schedule?.graceMinutes || 10} mnt
               </div>
             </div>
@@ -276,10 +276,10 @@ export default function StaffDashboard() {
 
           {/* Actual Logged Times if any */}
           {(isClockedIn || isClockedOut) && (
-            <div className="mb-5 p-3 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/50 flex items-center justify-between text-xs">
+            <div className="mb-5 p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/50 flex items-center justify-between text-xs">
               <div>
                 <span className="text-slate-500 dark:text-slate-400">Masuk: </span>
-                <strong className="text-emerald-700 dark:text-emerald-300 font-bold tabular-nums">
+                <strong className="text-blue-700 dark:text-blue-300 font-bold tabular-nums">
                   {att.clockInTime || '-'} WIB
                 </strong>
                 {att.clockInLocation && (
@@ -290,7 +290,7 @@ export default function StaffDashboard() {
               </div>
               <div>
                 <span className="text-slate-500 dark:text-slate-400">Pulang: </span>
-                <strong className="text-emerald-700 dark:text-emerald-300 font-bold tabular-nums">
+                <strong className="text-blue-700 dark:text-blue-300 font-bold tabular-nums">
                   {att.clockOutTime ? `${att.clockOutTime} WIB` : 'Belum Pulang'}
                 </strong>
               </div>
@@ -305,7 +305,7 @@ export default function StaffDashboard() {
                 ? 'bg-slate-700 hover:bg-slate-600'
                 : isClockedIn
                 ? 'bg-gradient-to-r from-teal-600 via-cyan-600 to-indigo-600 hover:from-teal-500 hover:to-indigo-500 shadow-teal-600/35 neon-glow-cyan'
-                : 'bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 shadow-emerald-600/35 neon-glow-emerald'
+                : 'bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 shadow-blue-600/35 neon-glow-blue'
             }`}
           >
             <MapPin className="w-5 h-5 animate-bounce" />
@@ -324,12 +324,12 @@ export default function StaffDashboard() {
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
             <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               Ringkasan Kehadiran Bulan Ini
             </h3>
             <button
               onClick={() => router.push('/riwayat')}
-              className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5"
+              className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
             >
               Lihat Riwayat
               <ChevronRight className="w-3.5 h-3.5" />
@@ -337,11 +337,11 @@ export default function StaffDashboard() {
           </div>
 
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
-            <div className="glass-card glass-card-hover p-3.5 rounded-2xl text-center border border-emerald-400/30 dark:border-emerald-500/30 shadow-xs">
+            <div className="glass-card glass-card-hover p-3.5 rounded-2xl text-center border border-blue-400/30 dark:border-blue-500/30 shadow-xs">
               <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Hadir Tepat
               </div>
-              <div className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+              <div className="text-xl font-black text-blue-600 dark:text-blue-400 mt-1 tabular-nums drop-shadow-[0_0_8px_rgba(37, 99, 235,0.3)]">
                 {historySummary?.totalHadir || 0}
               </div>
             </div>
@@ -388,7 +388,7 @@ export default function StaffDashboard() {
         <div className="glass-card rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800/80">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-emerald-600" />
+              <FileText className="w-4 h-4 text-blue-600" />
               Catatan Absensi Terakhir
             </h3>
             <button
@@ -422,7 +422,7 @@ export default function StaffDashboard() {
                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                       r.clockInStatus === 'terlambat'
                         ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
-                        : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                        : 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'
                     }`}
                   >
                     {r.clockInStatus === 'terlambat' ? `Terlambat (+${r.minutesLate}m)` : 'Hadir Tepat'}

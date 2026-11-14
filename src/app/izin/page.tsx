@@ -207,7 +207,7 @@ export default function IzinPage() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="self-start sm:self-auto py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 active:scale-95 transition flex items-center gap-1.5"
+            className="self-start sm:self-auto py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 active:scale-95 transition flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Buat Pengajuan Baru</span>
@@ -246,10 +246,10 @@ export default function IzinPage() {
                 </div>
               </div>
 
-              <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60">
-                <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">Sisa Saldo</div>
-                <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
-                  {balance.remaining_days} <span className="text-xs font-normal text-emerald-600/70">hari</span>
+              <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60">
+                <div className="text-[10px] text-blue-700 dark:text-blue-400 font-semibold">Sisa Saldo</div>
+                <div className="text-lg font-black text-blue-600 dark:text-blue-400 mt-0.5">
+                  {balance.remaining_days} <span className="text-xs font-normal text-blue-600/70">hari</span>
                 </div>
               </div>
             </div>
@@ -293,7 +293,7 @@ export default function IzinPage() {
                         </span>
                       </div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                        <Calendar className="w-3.5 h-3.5 text-blue-600" />
                         <span>
                           {r.formattedStartDate} s/d {r.formattedEndDate}
                         </span>
@@ -303,7 +303,7 @@ export default function IzinPage() {
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold ${
                         r.status === 'approved'
-                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'
                           : r.status === 'rejected'
                           ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300'
                           : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
@@ -348,7 +348,7 @@ export default function IzinPage() {
             <select
               value={leaveTypeId}
               onChange={(e) => setLeaveTypeId(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             >
               {leaveTypes.map((lt) => (
                 <option key={lt.id} value={lt.id}>
@@ -367,7 +367,7 @@ export default function IzinPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -380,14 +380,14 @@ export default function IzinPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
           </div>
 
           {calculatedDays > 0 && (
-            <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 flex items-center justify-between text-xs text-emerald-900 dark:text-emerald-200 font-semibold">
+            <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-between text-xs text-blue-900 dark:text-blue-200 font-semibold">
               <span>Total Durasi:</span>
               <span className="text-sm font-black">{calculatedDays} Hari</span>
             </div>
@@ -402,7 +402,7 @@ export default function IzinPage() {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Jelaskan alasan izin atau keperluan cuti..."
-              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -416,7 +416,7 @@ export default function IzinPage() {
               value={emergencyContact}
               onChange={(e) => setEmergencyContact(e.target.value)}
               placeholder="Contoh: No HP keluarga / kerabat 0812..."
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -431,7 +431,7 @@ export default function IzinPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
