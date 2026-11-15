@@ -158,14 +158,19 @@ export default function PegawaiPage() {
       const depts = data.departments || [];
       const shfs = data.shifts || [];
 
-      setEmployees(emps);
+      // Sort employees numerically by NIP (e.g. IMBS-001, IMBS-002, ..., IMBS-022)
+      const sortedEmps = [...emps].sort((a, b) =>
+        (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' })
+      );
+
+      setEmployees(sortedEmps);
       setDepartments(depts);
       setShifts(shfs);
 
       if (typeof window !== 'undefined') {
         try {
-          if (emps.length > 0) {
-            sessionStorage.setItem('imbs_pegawai_list', JSON.stringify(emps));
+          if (sortedEmps.length > 0) {
+            sessionStorage.setItem('imbs_pegawai_list', JSON.stringify(sortedEmps));
           } else {
             sessionStorage.removeItem('imbs_pegawai_list');
           }
@@ -451,14 +456,14 @@ export default function PegawaiPage() {
 
   const filteredEmployees = employees.filter((e) => {
     if (!search) return true;
-    const q = search.toLowerCase();
+    const q = search.toLowerCase().trim();
     return (
-      e.name.toLowerCase().includes(q) ||
-      e.nip.toLowerCase().includes(q) ||
+      (e.name && e.name.toLowerCase().includes(q)) ||
+      (e.nip && e.nip.toLowerCase().includes(q)) ||
       (e.username && e.username.toLowerCase().includes(q)) ||
       (e.email && e.email.toLowerCase().includes(q)) ||
-      e.department_name.toLowerCase().includes(q) ||
-      e.position.toLowerCase().includes(q)
+      (e.department_name && e.department_name.toLowerCase().includes(q)) ||
+      (e.position && e.position.toLowerCase().includes(q))
     );
   });
 
@@ -601,16 +606,49 @@ export default function PegawaiPage() {
             </div>
           )}
 
-          {/* Search bar */}
-          <div className="glass-card rounded-2xl p-3 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2">
-            <Search className="w-4 h-4 text-slate-400 ml-2" />
-            <input
-              type="text"
-              placeholder="Cari berdasarkan nama lengkap, NIP, jabatan, atau divisi..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent text-xs p-1 focus:outline-hidden text-slate-800 dark:text-slate-100"
-            />
+          {/* Search bar & Statistics */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 glass-card rounded-2xl p-2.5 sm:p-3 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2">
+              <Search className="w-4 h-4 text-slate-400 ml-1 shrink-0" />
+              <input
+                type="text"
+                placeholder="Cari berdasarkan nama lengkap, NIP, username, email, jabatan, atau divisi..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-transparent text-xs p-1 focus:outline-hidden text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition shrink-0"
+                  title="Hapus pencarian"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="glass-card rounded-2xl py-2 px-3.5 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>
+                  Total Pegawai: <strong className="text-blue-600 dark:text-blue-400 font-extrabold">{filteredEmployees.length}</strong>
+                  {search && <span className="text-slate-400 text-[10.5px]"> (dari {employees.length})</span>}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  fetchEmployees();
+                  toast.success('Daftar pegawai diperbarui');
+                }}
+                className="p-2.5 glass-card rounded-2xl border border-slate-200/80 dark:border-slate-800/80 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                title="Refresh Daftar Pegawai"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Employees Table */}

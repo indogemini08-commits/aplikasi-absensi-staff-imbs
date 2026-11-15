@@ -58,11 +58,21 @@ export async function GET(req: NextRequest) {
       db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all() as Promise<any[]>,
     ]);
 
-    const employees = rawEmployees.map((emp) => ({
-      ...emp,
-      dept_work_days: typeof emp.dept_work_days === 'string' ? JSON.parse(emp.dept_work_days) : (emp.dept_work_days || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']),
-      dept_daily_schedules: typeof emp.dept_daily_schedules === 'string' ? JSON.parse(emp.dept_daily_schedules) : emp.dept_daily_schedules,
-    }));
+    // Deduplicate employees in case join with schedules has multiple rows, and sort naturally by NIP
+    const uniqueEmployeesMap = new Map<string, any>();
+    for (const emp of rawEmployees) {
+      if (!uniqueEmployeesMap.has(emp.id)) {
+        uniqueEmployeesMap.set(emp.id, {
+          ...emp,
+          dept_work_days: typeof emp.dept_work_days === 'string' ? JSON.parse(emp.dept_work_days) : (emp.dept_work_days || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']),
+          dept_daily_schedules: typeof emp.dept_daily_schedules === 'string' ? JSON.parse(emp.dept_daily_schedules) : emp.dept_daily_schedules,
+        });
+      }
+    }
+
+    const employees = Array.from(uniqueEmployeesMap.values()).sort((a, b) =>
+      (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' })
+    );
 
     const departments = rawDepartments.map((d) => ({
       ...d,
