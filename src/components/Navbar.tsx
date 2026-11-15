@@ -228,14 +228,14 @@ export default function Navbar({ user }: NavbarProps) {
       <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/50 via-cyan-400/50 to-transparent shadow-[0_1px_8px_rgba(37, 99, 235,0.4)] pointer-events-none" />
 
       <div className="w-full px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative gap-2 sm:gap-4">
-        {/* Left: Brand & Institution Identity (No crop, no wrap) */}
+        {/* Left: Brand & Institution Identity (Optimized for all screens) */}
         <div
           onClick={() => router.push(currentUser?.role === 'staff' ? '/dashboard' : '/admin')}
-          className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group select-none transition-transform active:scale-[0.99] shrink-0"
+          className="flex items-center gap-2 xs:gap-2.5 sm:gap-3 cursor-pointer group select-none transition-transform active:scale-[0.99] min-w-0 shrink"
           title="Beranda Presensi IMBS"
         >
           {/* Futuristic Frosted Logo Frame with Holographic Reflection */}
-          <div className="h-10 sm:h-11 min-w-[2.75rem] max-w-[5.5rem] px-2 py-1 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-blue-500/20 group-hover:ring-blue-500/50 group-hover:shadow-[0_0_20px_rgba(37, 99, 235,0.3)] transition-all">
+          <div className="h-9 xs:h-10 sm:h-11 min-w-[2.25rem] xs:min-w-[2.75rem] max-w-[4.2rem] xs:max-w-[5.5rem] px-1.5 xs:px-2 py-1 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-blue-500/20 group-hover:ring-blue-500/50 group-hover:shadow-[0_0_20px_rgba(37, 99, 235,0.3)] transition-all">
             <img
               src={appLogo || '/logo-imbs-left.png'}
               alt={orgName || 'Logo IMBS'}
@@ -247,9 +247,9 @@ export default function Navbar({ user }: NavbarProps) {
           </div>
 
           {/* Title & Organization Subtitle */}
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-extrabold text-xs sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <span className="font-extrabold text-[11px] xs:text-xs sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate max-w-[170px] xs:max-w-[220px] sm:max-w-none">
                 {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
               </span>
               <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300/60 dark:border-blue-700/50 shadow-[0_0_12px_rgba(37, 99, 235,0.2)] backdrop-blur-md leading-none shrink-0 whitespace-nowrap">
@@ -257,8 +257,8 @@ export default function Navbar({ user }: NavbarProps) {
                 Presensi Staff
               </span>
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-              <span className="font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">
+            <div className="flex items-center gap-1.5 mt-0.5 text-[9.5px] xs:text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+              <span className="font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap truncate max-w-[160px] xs:max-w-[210px] sm:max-w-none">
                 {foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
               </span>
               <span className="hidden xl:inline text-slate-300 dark:text-slate-600">•</span>

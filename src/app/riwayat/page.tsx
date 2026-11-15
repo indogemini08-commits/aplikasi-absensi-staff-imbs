@@ -192,34 +192,34 @@ export default function RiwayatPage() {
 
         {/* Monthly Summary Badges */}
         {summary && (
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center text-xs">
-            <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Hadir Tepat</span>
-              <div className="text-lg font-black text-blue-600 dark:text-blue-400">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 text-center text-xs">
+            <div className="glass-card p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
+              <span className="text-[10.5px] text-slate-500 font-semibold whitespace-nowrap block">Hadir Tepat</span>
+              <div className="text-lg font-black text-blue-600 dark:text-blue-400 mt-0.5">
                 {summary.totalHadir}
               </div>
             </div>
-            <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Terlambat</span>
-              <div className="text-lg font-black text-amber-500">
+            <div className="glass-card p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
+              <span className="text-[10.5px] text-slate-500 font-semibold whitespace-nowrap block">Terlambat</span>
+              <div className="text-lg font-black text-amber-500 mt-0.5">
                 {summary.totalTerlambat}
               </div>
             </div>
-            <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Izin</span>
-              <div className="text-lg font-black text-cyan-600">
+            <div className="glass-card p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
+              <span className="text-[10.5px] text-slate-500 font-semibold whitespace-nowrap block">Izin</span>
+              <div className="text-lg font-black text-cyan-600 mt-0.5">
                 {summary.totalIzin}
               </div>
             </div>
-            <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
-              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Sakit</span>
-              <div className="text-lg font-black text-indigo-600">
+            <div className="glass-card p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
+              <span className="text-[10.5px] text-slate-500 font-semibold whitespace-nowrap block">Sakit</span>
+              <div className="text-lg font-black text-indigo-600 mt-0.5">
                 {summary.totalSakit}
               </div>
             </div>
-            <div className="glass-card p-2.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 col-span-3 sm:col-span-1">
-              <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Cuti</span>
-              <div className="text-lg font-black text-purple-600">
+            <div className="glass-card p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 col-span-2 sm:col-span-1 lg:col-span-1 flex items-center justify-between px-5 sm:flex-col sm:justify-center sm:px-3">
+              <span className="text-[10.5px] text-slate-500 font-semibold whitespace-nowrap block">Cuti Tahunan</span>
+              <div className="text-lg font-black text-purple-600 sm:mt-0.5">
                 {summary.totalCuti}
               </div>
             </div>
@@ -255,7 +255,7 @@ export default function RiwayatPage() {
                     </div>
 
                     <span
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 ${
                         isLate
                           ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
                           : 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'

@@ -53,17 +53,15 @@ export default function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center py-1 xs:py-1.5 px-1.5 xs:px-2.5 sm:px-3 rounded-2xl transition-all duration-200 cursor-pointer ${
+                className={`flex flex-col items-center justify-center py-1.5 px-2 xs:px-3 rounded-2xl transition-all duration-200 cursor-pointer min-w-[54px] ${
                   isActive
-                    ? 'text-blue-600 dark:text-blue-400 font-extrabold bg-blue-500/10 dark:bg-blue-500/15 scale-105 shadow-[0_0_15px_rgba(37, 99, 235,0.2)]'
+                    ? 'text-blue-600 dark:text-blue-400 font-extrabold bg-blue-500/10 dark:bg-blue-500/15 shadow-[0_0_12px_rgba(37, 99, 235,0.15)] ring-1 ring-blue-500/20'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'
                 }`}
               >
                 <Icon className={`w-4 h-4 xs:w-5 xs:h-5 ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />
-                <span className="text-[9px] xs:text-[10px] mt-0.5 xs:mt-1 font-semibold whitespace-nowrap">{item.label}</span>
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#2563eb] mt-0.5" />
-                )}
+                <span className="text-[9.5px] xs:text-[10px] mt-0.5 font-semibold whitespace-nowrap leading-none">{item.label}</span>
+                <span className={`w-1 h-1 rounded-full mt-1 transition-opacity ${isActive ? 'bg-blue-500 shadow-[0_0_6px_#2563eb] opacity-100' : 'opacity-0'}`} />
               </Link>
             );
           })}

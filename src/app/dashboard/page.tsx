@@ -250,25 +250,25 @@ export default function StaffDashboard() {
 
           <div className="grid grid-cols-2 gap-3 mb-5">
             <div className="p-3.5 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Jam Masuk Terjadwal
               </div>
-              <div className="text-lg font-extrabold text-slate-800 dark:text-slate-100 tabular-nums">
+              <div className="text-lg font-extrabold text-slate-800 dark:text-slate-100 tabular-nums whitespace-nowrap">
                 {schedule?.startTime || '07:30'} WIB
               </div>
-              <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+              <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium whitespace-nowrap">
                 Toleransi: +{schedule?.graceMinutes || 10} mnt
               </div>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Jam Pulang Terjadwal
               </div>
-              <div className="text-lg font-extrabold text-slate-800 dark:text-slate-100 tabular-nums">
+              <div className="text-lg font-extrabold text-slate-800 dark:text-slate-100 tabular-nums whitespace-nowrap">
                 {schedule?.endTime || '16:00'} WIB
               </div>
-              <div className="text-[10px] text-slate-400 font-medium">
+              <div className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
                 Istirahat: {schedule?.breakStart || '12:00'} - {schedule?.breakEnd || '13:00'}
               </div>
             </div>
@@ -336,7 +336,7 @@ export default function StaffDashboard() {
             </button>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
             <div className="glass-card glass-card-hover p-3.5 rounded-2xl text-center border border-blue-400/30 dark:border-blue-500/30 shadow-xs">
               <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Hadir Tepat
@@ -355,7 +355,7 @@ export default function StaffDashboard() {
               </div>
             </div>
 
-            <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
+            <div className="glass-card p-3.5 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
               <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Izin
               </div>
@@ -364,7 +364,7 @@ export default function StaffDashboard() {
               </div>
             </div>
 
-            <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
+            <div className="glass-card p-3.5 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80">
               <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 Sakit
               </div>
@@ -373,11 +373,11 @@ export default function StaffDashboard() {
               </div>
             </div>
 
-            <div className="glass-card p-3 rounded-2xl text-center border border-slate-200/80 dark:border-slate-800/80 col-span-3 sm:col-span-1">
+            <div className="glass-card p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 col-span-2 sm:col-span-1 lg:col-span-1 flex items-center justify-between px-5 sm:flex-col sm:justify-center sm:px-3 text-center">
               <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                Cuti
+                Cuti Tahunan
               </div>
-              <div className="text-xl font-black text-purple-600 dark:text-purple-400 mt-1">
+              <div className="text-xl font-black text-purple-600 dark:text-purple-400 sm:mt-1">
                 {historySummary?.totalCuti || 0}
               </div>
             </div>

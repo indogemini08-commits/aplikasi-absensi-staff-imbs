@@ -207,7 +207,7 @@ export default function IzinPage() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="self-start sm:self-auto py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 active:scale-95 transition flex items-center gap-1.5"
+            className="self-start sm:self-auto py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 active:scale-95 transition flex items-center gap-1.5 whitespace-nowrap shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>Buat Pengajuan Baru</span>
@@ -224,31 +224,31 @@ export default function IzinPage() {
               </h3>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 text-center text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-center text-xs">
               <div className="p-3 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-                <div className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Alokasi Awal</div>
+                <div className="text-[10.5px] text-slate-500 font-semibold whitespace-nowrap">Alokasi Awal</div>
                 <div className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5 whitespace-nowrap">
                   {balance.allocated_days} <span className="text-xs font-normal text-slate-400">hari</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-                <div className="text-[10px] text-slate-500 font-semibold whitespace-nowrap">Terpakai</div>
+                <div className="text-[10.5px] text-slate-500 font-semibold whitespace-nowrap">Terpakai</div>
                 <div className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5 whitespace-nowrap">
                   {balance.used_days} <span className="text-xs font-normal text-slate-400">hari</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
-                <div className="text-[10px] text-amber-600 font-semibold whitespace-nowrap">Menunggu</div>
+                <div className="text-[10.5px] text-amber-600 font-semibold whitespace-nowrap">Menunggu</div>
                 <div className="text-lg font-black text-amber-600 mt-0.5 whitespace-nowrap">
                   {balance.pending_days} <span className="text-xs font-normal text-slate-400">hari</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60">
-                <div className="text-[10px] text-blue-700 dark:text-blue-400 font-semibold whitespace-nowrap">Sisa Saldo</div>
-                <div className="text-lg font-black text-blue-600 dark:text-blue-400 mt-0.5">
+                <div className="text-[10.5px] text-blue-700 dark:text-blue-400 font-semibold whitespace-nowrap">Sisa Saldo</div>
+                <div className="text-lg font-black text-blue-600 dark:text-blue-400 mt-0.5 whitespace-nowrap">
                   {balance.remaining_days} <span className="text-xs font-normal text-blue-600/70">hari</span>
                 </div>
               </div>
@@ -301,7 +301,7 @@ export default function IzinPage() {
                     </div>
 
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap shrink-0 ${
                         r.status === 'approved'
                           ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300'
                           : r.status === 'rejected'

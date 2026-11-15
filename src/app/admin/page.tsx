@@ -380,9 +380,9 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs whitespace-nowrap">
                   <thead>
-                    <tr className="border-b border-slate-200/60 dark:border-slate-800/60 text-slate-400 font-bold">
+                    <tr className="border-b border-slate-200/60 dark:border-slate-800/60 text-slate-400 font-bold whitespace-nowrap">
                       <th className="py-2.5 px-3">Pegawai</th>
                       <th className="py-2.5 px-3">Divisi</th>
                       <th className="py-2.5 px-3">Jadwal Masuk</th>

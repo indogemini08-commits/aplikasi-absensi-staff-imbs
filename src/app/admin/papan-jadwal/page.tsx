@@ -358,9 +358,9 @@ function PapanJadwalContent() {
               />
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs whitespace-nowrap">
                   <thead>
-                    <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                    <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap">
                       <th className="py-3.5 px-4">Pegawai & NIP</th>
                       <th className="py-3.5 px-4">Divisi & Jabatan</th>
                       <th className="py-3.5 px-4">Shift & Rencana</th>
