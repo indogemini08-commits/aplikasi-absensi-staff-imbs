@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser, hashPassword } from '@/lib/auth';
+import { getCurrentUser, hashPassword, invalidateUserSession } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { recordAuditLog } from '@/lib/audit';
 import { jsonResponse } from '@/lib/api-response';
@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
              d.daily_schedules as dept_daily_schedules,
              d.break_start as dept_break_start, d.break_end as dept_break_end,
              u.username, u.email, u.role, u.is_active as user_active,
+             u.needs_password_change,
              lb.remaining_days as leave_remaining,
              st.name as shift_name
       FROM employees e
@@ -44,8 +45,8 @@ export async function GET(req: NextRequest) {
     }
 
     if (search) {
-      query += ` AND (e.name LIKE ? OR e.nip LIKE ? OR u.username LIKE ?)`;
-      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+      query += ` AND (e.name LIKE ? OR e.nip LIKE ? OR u.username LIKE ? OR u.email LIKE ?)`;
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
     }
 
     query += ` ORDER BY e.nip ASC, e.name ASC`;
@@ -305,12 +306,16 @@ export async function PUT(req: NextRequest) {
       id, // employee id
       name,
       nip,
+      username,
+      email,
+      role,
       gender,
       phone,
       departmentId,
       position,
       isActive,
       resetPassword,
+      needsPasswordChange,
     } = body;
 
     if (!id) {
@@ -321,6 +326,25 @@ export async function PUT(req: NextRequest) {
     const emp = await db.prepare(`SELECT * FROM employees WHERE id = ?`).get(id) as any;
     if (!emp) {
       return NextResponse.json({ error: 'Data pegawai tidak ditemukan' }, { status: 404 });
+    }
+
+    // Check duplicate username or email if being modified
+    let cleanUsername: string | undefined = undefined;
+    if (username !== undefined && username.trim()) {
+      cleanUsername = username.trim().toLowerCase();
+      const existingUser = await db.prepare(`SELECT id FROM users WHERE username = ? AND id != ?`).get(cleanUsername, emp.user_id) as any;
+      if (existingUser) {
+        return NextResponse.json({ error: `Username "${cleanUsername}" sudah digunakan oleh akun lain.` }, { status: 400 });
+      }
+    }
+
+    let cleanEmail: string | undefined = undefined;
+    if (email !== undefined && email.trim()) {
+      cleanEmail = email.trim().toLowerCase();
+      const existingMail = await db.prepare(`SELECT id FROM users WHERE email = ? AND id != ?`).get(cleanEmail, emp.user_id) as any;
+      if (existingMail) {
+        return NextResponse.json({ error: `Email "${cleanEmail}" sudah digunakan oleh akun lain.` }, { status: 400 });
+      }
     }
 
     const now = new Date().toISOString();
@@ -341,19 +365,84 @@ export async function PUT(req: NextRequest) {
         WHERE id = ?
       `).run(name, nip, gender, phone, departmentId, position, activeVal, now, id);
 
-      // Sync active state to user account
-      await db.prepare(`UPDATE users SET is_active = ?, updated_at = ? WHERE id = ?`).run(activeVal, now, emp.user_id);
+      // Sync active state, username, email, and role to user account
+      await db.prepare(`
+        UPDATE users SET
+          username = COALESCE(?, username),
+          email = COALESCE(?, email),
+          role = COALESCE(?, role),
+          is_active = ?,
+          updated_at = ?
+        WHERE id = ?
+      `).run(cleanUsername || null, cleanEmail || null, role || null, activeVal, now, emp.user_id);
 
-      // Reset password if requested (requires mandatory personal password setup on next login)
-      if (resetPassword) {
-        const hash = hashPassword(resetPassword);
-        await db.prepare(`UPDATE users SET password_hash = ?, needs_password_change = 1, updated_at = ? WHERE id = ?`).run(hash, now, emp.user_id);
+      // Reset password if requested
+      if (resetPassword && resetPassword.trim()) {
+        const cleanPass = resetPassword.trim();
+        if (cleanPass.length < 6) {
+          throw new Error('Kata sandi baru minimal 6 karakter.');
+        }
+        const hash = hashPassword(cleanPass);
+        const mustChange = needsPasswordChange !== undefined ? (needsPasswordChange ? 1 : 0) : 1;
+        await db.prepare(`
+          UPDATE users SET
+            password_hash = ?,
+            needs_password_change = ?,
+            updated_at = ?
+          WHERE id = ?
+        `).run(hash, mustChange, now, emp.user_id);
+      } else if (needsPasswordChange !== undefined) {
+        await db.prepare(`
+          UPDATE users SET
+            needs_password_change = ?,
+            updated_at = ?
+          WHERE id = ?
+        `).run(needsPasswordChange ? 1 : 0, now, emp.user_id);
       }
 
       await db.exec('COMMIT;');
     } catch (txErr) {
       await db.exec('ROLLBACK;');
       throw txErr;
+    }
+
+    // Invalidate session cache if password, active state, username, or role changed
+    invalidateUserSession(emp.user_id);
+
+    // Audit logs
+    if (resetPassword && resetPassword.trim()) {
+      recordAuditLog({
+        userId: user.userId,
+        userName: user.name || user.username,
+        action: 'RESET_EMPLOYEE_PASSWORD',
+        entityType: 'user',
+        entityId: emp.user_id,
+        details: {
+          employeeName: name || emp.name,
+          nip: nip || emp.nip,
+          username: cleanUsername,
+          requiresMandatorySetup: needsPasswordChange !== false,
+        },
+        ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
+      });
+    }
+
+    if (cleanUsername || cleanEmail || role || isActive !== undefined) {
+      recordAuditLog({
+        userId: user.userId,
+        userName: user.name || user.username,
+        action: 'UPDATE_EMPLOYEE_ACCOUNT',
+        entityType: 'user',
+        entityId: emp.user_id,
+        details: {
+          employeeName: name || emp.name,
+          username: cleanUsername,
+          email: cleanEmail,
+          role,
+          isActive: activeVal,
+        },
+        ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
+      });
     }
 
     recordAuditLog({
@@ -368,7 +457,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Profil pegawai ${name || emp.name} berhasil diperbarui.`,
+      message: `Data pegawai dan akun login ${name || emp.name} berhasil diperbarui.`,
     });
   } catch (err: any) {
     console.error('Employees PUT error:', err);

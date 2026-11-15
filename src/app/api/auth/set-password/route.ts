@@ -90,3 +90,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Gagal memperbarui kata sandi mandiri.' }, { status: 500 });
   }
 }
+

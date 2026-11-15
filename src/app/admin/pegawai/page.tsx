@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Users,
+  User,
   Plus,
   Search,
   Upload,
@@ -100,6 +101,19 @@ export default function PegawaiPage() {
   const [showCsvModal, setShowCsvModal] = useState(false);
   const [csvText, setCsvText] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+
+  // Manage Account & Password Modal state
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [accountEmployee, setAccountEmployee] = useState<any>(null);
+  const [accountUsername, setAccountUsername] = useState('');
+  const [accountEmail, setAccountEmail] = useState('');
+  const [accountRole, setAccountRole] = useState('staff');
+  const [accountIsActive, setAccountIsActive] = useState<boolean>(true);
+  const [accountResetType, setAccountResetType] = useState<'none' | 'default' | 'custom'>('none');
+  const [accountCustomPass, setAccountCustomPass] = useState('');
+  const [accountRequireSetup, setAccountRequireSetup] = useState(true);
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
+  const [showCustomPass, setShowCustomPass] = useState(false);
 
   // Selection & Delete state
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -227,6 +241,9 @@ export default function PegawaiPage() {
             id: editEmployee.id,
             name,
             nip,
+            username: username ? username.trim() : undefined,
+            email: email ? email.trim() : undefined,
+            role,
             gender,
             phone,
             departmentId,
@@ -275,6 +292,74 @@ export default function PegawaiPage() {
     } catch (e) {
       toast.error('Terjadi kesalahan sistem');
       setIsSubmitting(false);
+    }
+  };
+
+  // Manage Account Login & Reset Password Modal Handlers
+  const openManageAccountModal = (emp: any) => {
+    setAccountEmployee(emp);
+    setAccountUsername(emp.username || '');
+    setAccountEmail(emp.email || '');
+    setAccountRole(emp.role || 'staff');
+    setAccountIsActive(emp.is_active === 1);
+    setAccountResetType('none');
+    setAccountCustomPass('');
+    setAccountRequireSetup(true);
+    setShowAccountModal(true);
+  };
+
+  const handleSaveAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!accountEmployee) return;
+
+    if (!accountUsername.trim()) {
+      toast.warning('Username akun login tidak boleh kosong.');
+      return;
+    }
+
+    let finalResetPass: string | undefined = undefined;
+    if (accountResetType === 'default') {
+      finalResetPass = 'password123';
+    } else if (accountResetType === 'custom') {
+      if (!accountCustomPass || accountCustomPass.length < 6) {
+        toast.warning('Kata sandi baru minimal 6 karakter.');
+        return;
+      }
+      finalResetPass = accountCustomPass;
+    }
+
+    setIsSavingAccount(true);
+    try {
+      const res = await fetch('/api/employees', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: accountEmployee.id,
+          username: accountUsername.trim(),
+          email: accountEmail.trim(),
+          role: accountRole,
+          isActive: accountIsActive ? 1 : 0,
+          resetPassword: finalResetPass,
+          needsPasswordChange: finalResetPass ? accountRequireSetup : undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Gagal memperbarui akun login');
+        setIsSavingAccount(false);
+        return;
+      }
+
+      toast.success(data.message || 'Akun pegawai berhasil diperbarui!');
+      setShowAccountModal(false);
+      setIsSavingAccount(false);
+      broadcastDataChange('employees');
+      fetchEmployees();
+    } catch (err) {
+      console.error(err);
+      toast.error('Terjadi kesalahan jaringan');
+      setIsSavingAccount(false);
     }
   };
 
@@ -370,6 +455,8 @@ export default function PegawaiPage() {
     return (
       e.name.toLowerCase().includes(q) ||
       e.nip.toLowerCase().includes(q) ||
+      (e.username && e.username.toLowerCase().includes(q)) ||
+      (e.email && e.email.toLowerCase().includes(q)) ||
       e.department_name.toLowerCase().includes(q) ||
       e.position.toLowerCase().includes(q)
     );
@@ -613,12 +700,27 @@ export default function PegawaiPage() {
                           </td>
 
                           <td className="py-3.5 px-4">
-                            <div className="font-medium text-slate-800 dark:text-slate-200">
-                              {emp.username}
+                            <div className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-bold text-slate-800 dark:text-slate-100 font-mono text-xs">
+                                  @{emp.username}
+                                </span>
+                                <span className="text-[9px] uppercase font-bold px-1.5 py-0.2 rounded bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                                  {emp.role}
+                                </span>
+                                {Number(emp.needs_password_change) === 1 && (
+                                  <span
+                                    className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 border border-amber-200/50"
+                                    title="Pegawai belum membuat kata sandi mandiri (masih menggunakan sandi sementara)"
+                                  >
+                                    Sandi Awal
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[190px]" title={emp.email || 'Belum ada email'}>
+                                {emp.email || '-'}
+                              </div>
                             </div>
-                            <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">
-                              {emp.role}
-                            </span>
                           </td>
 
                           <td className="py-3.5 px-4">
@@ -655,23 +757,34 @@ export default function PegawaiPage() {
                           <td className="py-3.5 px-4 text-right">
                             <div className="flex items-center justify-end gap-1">
                               <button
+                                type="button"
+                                onClick={() => openManageAccountModal(emp)}
+                                className="p-1.5 rounded-lg text-blue-600 hover:text-white hover:bg-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white transition shadow-2xs"
+                                title="Kelola Akun Login & Reset Password"
+                              >
+                                <KeyRound className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => openEditModal(emp)}
                                 className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
-                                title="Edit Profil"
+                                title="Edit Profil Pegawai"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => handleToggleActive(emp)}
                                 className={`p-1.5 rounded-lg transition ${emp.is_active === 1
                                     ? 'text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40'
-                                    : 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40'
+                                    : 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
                                   }`}
                                 title={emp.is_active === 1 ? 'Nonaktifkan Akun' : 'Aktifkan Akun'}
                               >
                                 {emp.is_active === 1 ? <X className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}
                               </button>
                               <button
+                                type="button"
                                 onClick={() => confirmDeleteSingle(emp)}
                                 className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
                                 title="Hapus Akun Pegawai"
@@ -753,9 +866,7 @@ export default function PegawaiPage() {
                             <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">
                               @{emp.username}
                             </span>
-                            <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase">
-                              {emp.role}
-                            </span>
+                            <div className="text-[10px] text-slate-400 truncate max-w-[130px]">{emp.email || '-'}</div>
                           </div>
 
                           <div>
@@ -775,6 +886,16 @@ export default function PegawaiPage() {
 
                         {/* Mobile Actions Toolbar */}
                         <div className="flex items-center justify-end gap-1.5 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
+                          <button
+                            type="button"
+                            onClick={() => openManageAccountModal(emp)}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-[11px] font-bold transition border border-blue-200/50 dark:border-blue-900/50 cursor-pointer"
+                            title="Kelola Akun Login & Reset Password"
+                          >
+                            <KeyRound className="w-3.5 h-3.5 text-blue-600" />
+                            <span>Akun & Sandi</span>
+                          </button>
+
                           <button
                             type="button"
                             onClick={() => openEditModal(emp)}
@@ -960,27 +1081,35 @@ export default function PegawaiPage() {
             );
           })()}
 
-          {!editEmployee && (
-            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Username Akun Login:
-                  </label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Contoh: ahmad.fauzi"
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Username Akun Login: <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Contoh: ahmad.fauzi"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-mono font-bold focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
+                  required
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Kata Sandi Awal:
-                  </label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  {editEmployee ? 'Email Login Terdaftar:' : 'Kata Sandi Awal:'}
+                </label>
+                {editEmployee ? (
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email@imbs.sch.id"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
+                  />
+                ) : (
                   <input
                     type="text"
                     value={password}
@@ -988,17 +1117,23 @@ export default function PegawaiPage() {
                     placeholder="Default: password123"
                     className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
                   />
-                </div>
+                )}
               </div>
+            </div>
 
+            {!editEmployee ? (
               <div className="flex items-center gap-2 text-[11px] font-medium text-blue-700 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/40 p-2 rounded-xl border border-blue-200/50 dark:border-blue-900/50">
                 <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>
                   <strong>Aktivasi Sandi Mandiri:</strong> Pegawai baru akan langsung diwajibkan membuat kata sandi mandiri begitu pertama kali masuk.
                 </span>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+                <span>Untuk mereset password atau pemulihan akses akun, gunakan tombol <strong>Kelola Akun (Ikon Kunci)</strong> pada tabel data.</span>
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -1096,6 +1231,269 @@ export default function PegawaiPage() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* Manage Account & Password Modal */}
+      <Modal
+        isOpen={showAccountModal}
+        onClose={() => setShowAccountModal(false)}
+        title={`Pengelolaan Akun: ${accountEmployee?.name || 'Pegawai'}`}
+        maxWidth="lg"
+      >
+        <form onSubmit={handleSaveAccount} className="space-y-4">
+          {/* Account Profile Header */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-transparent border border-blue-200/80 dark:border-blue-800/60 flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-md shadow-blue-600/30">
+                {accountEmployee?.name?.charAt(0) || 'U'}
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-extrabold text-sm text-slate-800 dark:text-slate-100 truncate">
+                  {accountEmployee?.name}
+                </h3>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate">
+                  NIP: {accountEmployee?.nip} • Divisi: {accountEmployee?.department_name}
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5 truncate">
+                  Jabatan: {accountEmployee?.position}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                  accountIsActive
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                    : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                }`}
+              >
+                {accountIsActive ? 'Akun Aktif' : 'Akun Nonaktif'}
+              </span>
+              <span className="text-[10px] uppercase font-bold text-slate-400">
+                Role: {accountRole}
+              </span>
+            </div>
+          </div>
+
+          {/* Section 1: Username & Email Login Information */}
+          <div className="space-y-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/70 dark:border-slate-800/70">
+            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <User className="w-4 h-4 text-blue-600" />
+              <span>Informasi Kredensial Login Pegawai</span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              Pegawai dapat login menggunakan <strong>Username</strong> maupun <strong>Email</strong> terdaftar. Anda dapat memperbaruinya di sini apabila pegawai mengalami lupa username atau perubahan email.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Username Login: <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={accountUsername}
+                  onChange={(e) => setAccountUsername(e.target.value)}
+                  placeholder="Contoh: ujang.nasirudin"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Email Login:
+                </label>
+                <input
+                  type="email"
+                  value={accountEmail}
+                  onChange={(e) => setAccountEmail(e.target.value)}
+                  placeholder="ujang@imbs.sch.id"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Password Reset & Security Management */}
+          <div className="space-y-3 p-3.5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                <KeyRound className="w-4 h-4 text-amber-600" />
+                <span>Opsi Reset Kata Sandi Pegawai</span>
+              </div>
+              {Number(accountEmployee?.needs_password_change) === 1 ? (
+                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 rounded-full">
+                  Belum Buat Sandi Mandiri
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full">
+                  Sandi Mandiri Aktif
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-2 pt-1 text-xs">
+              <label className="flex items-center gap-2 p-2.5 rounded-xl border transition cursor-pointer bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400">
+                <input
+                  type="radio"
+                  name="resetOption"
+                  checked={accountResetType === 'none'}
+                  onChange={() => setAccountResetType('none')}
+                  className="text-blue-600"
+                />
+                <div>
+                  <div className="font-semibold text-slate-800 dark:text-slate-200">
+                    Pertahankan Kata Sandi Saat Ini
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    Kata sandi pegawai tidak diubah sama sekali.
+                  </div>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-2 p-2.5 rounded-xl border transition cursor-pointer bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400">
+                <input
+                  type="radio"
+                  name="resetOption"
+                  checked={accountResetType === 'default'}
+                  onChange={() => setAccountResetType('default')}
+                  className="text-blue-600"
+                />
+                <div>
+                  <div className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <span>Reset Cepat ke Sandi Default</span>
+                    <span className="font-mono bg-slate-100 dark:bg-slate-900 px-1.5 py-0.2 rounded text-[10px] text-blue-600 font-bold">
+                      password123
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    Sandi akan dikembalikan ke default dan pegawai wajib membuat sandi baru saat login berikutnya.
+                  </div>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-2 p-2.5 rounded-xl border transition cursor-pointer bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-400">
+                <input
+                  type="radio"
+                  name="resetOption"
+                  checked={accountResetType === 'custom'}
+                  onChange={() => setAccountResetType('custom')}
+                  className="text-blue-600"
+                />
+                <div className="flex-1">
+                  <div className="font-semibold text-slate-800 dark:text-slate-200">
+                    Tentukan Kata Sandi Baru Secara Manual
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    Buatkan kata sandi sementara khusus untuk pegawai ini.
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            {/* Custom password field if selected */}
+            {accountResetType === 'custom' && (
+              <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-blue-300 dark:border-blue-700 mt-2 space-y-1.5 animate-in fade-in">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Masukkan Kata Sandi Baru: <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCustomPass ? 'text' : 'password'}
+                    value={accountCustomPass}
+                    onChange={(e) => setAccountCustomPass(e.target.value)}
+                    placeholder="Minimal 6 karakter..."
+                    className="w-full p-2.5 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-semibold focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100 font-mono"
+                    required={accountResetType === 'custom'}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomPass(!showCustomPass)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  >
+                    {showCustomPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Mandatory personal password setup toggle */}
+            {accountResetType !== 'none' && (
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 pt-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={accountRequireSetup}
+                  onChange={(e) => setAccountRequireSetup(e.target.checked)}
+                  className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4"
+                />
+                <span>Wajibkan pegawai membuat kata sandi mandiri saat pertama kali login setelah reset</span>
+              </label>
+            )}
+          </div>
+
+          {/* Section 3: Status Akses Akun (Aktif / Nonaktif) */}
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/70 dark:border-slate-800/70 flex items-center justify-between">
+            <div>
+              <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                Status Keaktifan Akun Pegawai:
+              </div>
+              <div className="text-[11px] text-slate-500">
+                {accountIsActive
+                  ? 'Pegawai dapat login dan mencatat absensi seperti biasa.'
+                  : 'Akun dinonaktifkan. Pegawai tidak dapat login ke portal.'}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAccountIsActive(!accountIsActive)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer ${
+                accountIsActive
+                  ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 hover:bg-rose-100 border border-rose-200 dark:border-rose-800'
+                  : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-800'
+              }`}
+            >
+              {accountIsActive ? (
+                <>
+                  <X className="w-3.5 h-3.5" />
+                  <span>Nonaktifkan Akun</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Aktifkan Akun</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Security Disclaimer Notice */}
+          <div className="p-3 rounded-xl bg-slate-100/70 dark:bg-slate-800/60 text-[10.5px] text-slate-500 dark:text-slate-400 flex items-start gap-2">
+            <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            <span>
+              <strong>Ketentuan Keamanan:</strong> Demi privasi pegawai, Administrator tidak dapat melihat password asli karena tersimpan dalam bentuk enkripsi satu arah (bcrypt hash). Seluruh tindakan perubahan kredensial dan reset sandi otomatis tercatat pada <strong>Audit Log</strong> sistem.
+            </span>
+          </div>
+
+          {/* Modal Actions */}
+          <div className="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setShowAccountModal(false)}
+              className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={isSavingAccount}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2 transition cursor-pointer"
+            >
+              {isSavingAccount ? 'Menyimpan Akun...' : 'Simpan Perubahan Akun'}
+            </button>
+          </div>
+        </form>
       </Modal>
 
       {/* Delete Confirmation Modal */}
