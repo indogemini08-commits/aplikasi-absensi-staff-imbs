@@ -103,7 +103,27 @@ export default function ReportPreviewModal({
       });
     }
 
-    // 2. Inject explicit CSS overrides into cloned document before canvas capture
+    // 2. Unconstrain cloned document & parents, remove transform scale completely
+    const clonedDocRoot = clonedDoc.getElementById('official-recap-document');
+    if (clonedDocRoot) {
+      clonedDocRoot.style.height = 'auto';
+      clonedDocRoot.style.minHeight = 'fit-content';
+      clonedDocRoot.style.maxHeight = 'none';
+      clonedDocRoot.style.overflow = 'visible';
+      clonedDocRoot.style.transform = 'none';
+
+      let parent = clonedDocRoot.parentElement;
+      while (parent && parent !== clonedDoc.body) {
+        parent.style.height = 'auto';
+        parent.style.minHeight = 'fit-content';
+        parent.style.maxHeight = 'none';
+        parent.style.overflow = 'visible';
+        parent.style.transform = 'none';
+        parent = parent.parentElement;
+      }
+    }
+
+    // 3. Inject explicit CSS overrides into cloned document before canvas capture
     const style = clonedDoc.createElement('style');
     style.textContent = `
       * {
@@ -111,11 +131,23 @@ export default function ReportPreviewModal({
         -moz-osx-font-smoothing: grayscale !important;
         box-sizing: border-box !important;
       }
+      html, body {
+        height: auto !important;
+        min-height: fit-content !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+      }
       img {
         display: inline-block !important;
       }
       #official-recap-document {
+        height: auto !important;
+        min-height: fit-content !important;
+        max-height: none !important;
         overflow: visible !important;
+        transform: none !important;
+        box-sizing: border-box !important;
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
       }
       #official-recap-document h1 {
@@ -125,6 +157,7 @@ export default function ReportPreviewModal({
       #official-recap-document table {
         border-collapse: collapse !important;
         width: 100% !important;
+        height: auto !important;
       }
       #official-recap-document th {
         vertical-align: middle !important;
@@ -186,6 +219,8 @@ export default function ReportPreviewModal({
 
       const html2canvas = (await import('html2canvas')).default;
       const element = documentRef.current;
+      const fullWidth = Math.max(element.scrollWidth, element.offsetWidth, 1240);
+      const fullHeight = Math.max(element.scrollHeight, element.offsetHeight);
 
       const canvas = await html2canvas(element, {
         scale: 3, // Ultra-sharp 300 DPI high resolution
@@ -194,7 +229,10 @@ export default function ReportPreviewModal({
         backgroundColor: '#ffffff',
         scrollX: 0,
         scrollY: 0,
-        windowWidth: element.offsetWidth || 1240,
+        width: fullWidth,
+        height: fullHeight,
+        windowWidth: fullWidth,
+        windowHeight: fullHeight,
         onclone: (clonedDoc) => configureClonedDocument(clonedDoc),
       });
 
@@ -206,7 +244,7 @@ export default function ReportPreviewModal({
       link.click();
       document.body.removeChild(link);
 
-      setDownloadSuccess('File PNG High Quality (Auto-Fit 300 DPI) berhasil diunduh dengan alignment teks presisi!');
+      setDownloadSuccess('File PNG High Quality (Auto-Fit 300 DPI) berhasil diunduh dengan seluruh data lengkap!');
       setTimeout(() => setDownloadSuccess(null), 4500);
     } catch (err) {
       console.error('Error generating PNG:', err);
@@ -231,6 +269,8 @@ export default function ReportPreviewModal({
       const html2canvas = (await import('html2canvas')).default;
       const { jsPDF } = await import('jspdf');
       const element = documentRef.current;
+      const fullWidth = Math.max(element.scrollWidth, element.offsetWidth, 1240);
+      const fullHeight = Math.max(element.scrollHeight, element.offsetHeight);
 
       const canvas = await html2canvas(element, {
         scale: 2.5, // High resolution for crisp PDF rendering
@@ -239,7 +279,10 @@ export default function ReportPreviewModal({
         backgroundColor: '#ffffff',
         scrollX: 0,
         scrollY: 0,
-        windowWidth: element.offsetWidth || 1240,
+        width: fullWidth,
+        height: fullHeight,
+        windowWidth: fullWidth,
+        windowHeight: fullHeight,
         onclone: (clonedDoc) => configureClonedDocument(clonedDoc),
       });
 
@@ -252,7 +295,7 @@ export default function ReportPreviewModal({
       const contentWidthMm = elementWidthPx * 0.264583;
       const contentHeightMm = elementHeightPx * 0.264583;
 
-      const marginMm = 6;
+      const marginMm = 8;
       const pdfWidthMm = contentWidthMm + marginMm * 2;
       const pdfHeightMm = contentHeightMm + marginMm * 2;
       const pdfOrientation = pdfWidthMm >= pdfHeightMm ? 'landscape' : 'portrait';
@@ -267,7 +310,7 @@ export default function ReportPreviewModal({
       pdf.addImage(imgData, 'PNG', marginMm, marginMm, contentWidthMm, contentHeightMm);
       pdf.save(`Rekap_Kehadiran_IMBS_${cleanPeriodForFilename}_AutoFit.pdf`);
 
-      setDownloadSuccess('Dokumen PDF resmi (Auto-Fit & Middle Align) berhasil diunduh secara presisi!');
+      setDownloadSuccess('Dokumen PDF resmi (Auto-Fit Seluruh Halaman) berhasil diunduh tanpa terpotong!');
       setTimeout(() => setDownloadSuccess(null), 4500);
     } catch (err) {
       console.error('Error generating PDF:', err);
@@ -323,6 +366,12 @@ export default function ReportPreviewModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
       {/* Global CSS for Perfect Middle Alignment & Print Isolation */}
       <style jsx global>{`
+        #official-recap-document {
+          height: auto !important;
+          min-height: fit-content !important;
+          max-height: none !important;
+          overflow: visible !important;
+        }
         #official-recap-document th,
         #official-recap-document td {
           vertical-align: middle !important;
@@ -532,21 +581,22 @@ export default function ReportPreviewModal({
           </div>
         )}
 
-        {/* Document Viewer Body (Scrollable paper desk) */}
-        <div className="flex-1 overflow-auto bg-slate-100/90 dark:bg-[#080c14] p-4 sm:p-6 lg:p-8 flex justify-center">
+        {/* Document Viewer Body (Scrollable paper desk - Auto-Expand Height, Zero Cropping) */}
+        <div className="flex-1 overflow-auto bg-slate-100/90 dark:bg-[#080c14] p-4 sm:p-6 lg:p-8 flex justify-center items-start">
           <div
             style={{
               transform: `scale(${zoomLevel / 100})`,
               transformOrigin: 'top center',
               transition: 'transform 0.15s ease-out',
             }}
-            className="w-full flex justify-center min-w-fit"
+            className="w-full flex justify-center items-start min-w-fit h-auto min-h-fit pb-12"
           >
             {/* The Official Document Paper Sheet (Auto Layout - Zero Cropping) */}
             <div
               ref={documentRef}
               id="official-recap-document"
-              className="bg-white text-slate-900 w-full max-w-[1240px] min-w-[1020px] p-6 sm:p-8 md:p-10 shadow-2xl border border-slate-200/90 rounded-2xl font-sans relative box-border mx-auto transition-all"
+              className="bg-white text-slate-900 w-full max-w-[1240px] min-w-[1020px] p-6 sm:p-8 md:p-10 shadow-2xl border border-slate-200/90 rounded-2xl font-sans relative box-border mx-auto transition-all h-auto min-h-fit overflow-visible"
+              style={{ height: 'auto', minHeight: 'fit-content' }}
             >
               {/* 1. Header Laporan: Logo, Nama Lembaga, Kontak, & Badge Dokumen */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-200/80">
@@ -648,7 +698,7 @@ export default function ReportPreviewModal({
               </div>
 
               {/* 3. Tabel Rekapitulasi Kehadiran (Full Frame - Middle Align & Zero Cropping) */}
-              <div className="w-full rounded-2xl border border-slate-200/80 shadow-xs backdrop-blur-md bg-white/80 my-4 overflow-hidden">
+              <div className="w-full rounded-2xl border border-slate-200/80 shadow-xs backdrop-blur-md bg-white/80 my-4 overflow-visible h-auto">
                 <table className="w-full text-left border-collapse table-auto whitespace-nowrap">
                   <thead>
                     <tr className="bg-[#0c2340] text-white text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap align-middle">
