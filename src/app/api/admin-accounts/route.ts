@@ -97,8 +97,8 @@ export async function POST(req: NextRequest) {
     const now = new Date().toISOString();
 
     await execute(`
-      INSERT INTO users (id, username, email, password_hash, role, is_active, full_name, phone, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?)
+      INSERT INTO users (id, username, email, password_hash, role, is_active, full_name, phone, needs_password_change, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, 1, ?, ?, 1, ?, ?)
     `, [newId, cleanUsername, cleanEmail, passHash, role, fullName || cleanUsername, phone || '', now, now]);
 
     await recordAuditLog({
@@ -236,6 +236,8 @@ export async function PUT(req: NextRequest) {
       }
       updates.push('password_hash = ?');
       params.push(hashPassword(newPassword.trim()));
+      updates.push('needs_password_change = ?');
+      params.push(isEditingSelf ? 0 : 1);
       // Invalidate target user cached session
       invalidateUserSession(id);
     }

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const db = getDb();
     const user = await db.prepare(`
-      SELECT u.id, u.username, u.email, u.password_hash, u.role, u.is_active,
+      SELECT u.id, u.username, u.email, u.password_hash, u.role, u.is_active, u.needs_password_change,
              e.id as employee_id, e.nip, e.name, e.department_id, e.position,
              d.name as department_name
       FROM users u
@@ -43,6 +43,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Determine if user must set a new independent password (first-time login or flagged)
+    const mustChangePassword = Number(user.needs_password_change ?? 0) === 1 || password === 'password123';
+
     const sessionPayload = {
       userId: user.id,
       username: user.username,
@@ -53,6 +56,7 @@ export async function POST(req: NextRequest) {
       departmentId: user.department_id,
       departmentName: user.department_name,
       position: user.position,
+      needsPasswordChange: mustChangePassword,
     };
 
     const token = createSessionToken(sessionPayload);
@@ -64,15 +68,16 @@ export async function POST(req: NextRequest) {
       action: 'USER_LOGIN',
       entityType: 'user',
       entityId: user.id,
-      details: { username: user.username, role: user.role },
+      details: { username: user.username, role: user.role, mustChangePassword },
       ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
     });
 
     const response = NextResponse.json({
       success: true,
-      message: 'Login berhasil',
+      message: mustChangePassword ? 'Login berhasil. Demi keamanan, silakan buat kata sandi baru Anda.' : 'Login berhasil',
       user: sessionPayload,
-      redirectUrl: user.role === 'staff' ? '/dashboard' : '/admin',
+      mustChangePassword,
+      redirectUrl: mustChangePassword ? '/buat-kata-sandi' : (user.role === 'staff' ? '/dashboard' : '/admin'),
     });
 
     // Set secure HTTP-only cookie

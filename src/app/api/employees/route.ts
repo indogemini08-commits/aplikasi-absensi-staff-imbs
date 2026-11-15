@@ -125,8 +125,8 @@ export async function POST(req: NextRequest) {
           const empId = `emp-imp-${Date.now()}-${i}`;
 
           await db.prepare(`
-            INSERT INTO users (id, username, email, password_hash, role, is_active, created_at, updated_at)
-            VALUES (?, ?, ?, ?, 'staff', 1, ?, ?)
+            INSERT INTO users (id, username, email, password_hash, role, is_active, needs_password_change, created_at, updated_at)
+            VALUES (?, ?, ?, ?, 'staff', 1, 1, ?, ?)
           `).run(userId, row.username.trim().toLowerCase(), row.email || `${row.username}@imbs.sch.id`, defaultPasswordHash, now, now);
 
           await db.prepare(`
@@ -223,8 +223,8 @@ export async function POST(req: NextRequest) {
     await db.exec('BEGIN TRANSACTION;');
     try {
       await db.prepare(`
-        INSERT INTO users (id, username, email, password_hash, role, is_active, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, 1, ?, ?)
+        INSERT INTO users (id, username, email, password_hash, role, is_active, needs_password_change, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, 1, 1, ?, ?)
       `).run(
         userId,
         username.trim().toLowerCase(),
@@ -344,10 +344,10 @@ export async function PUT(req: NextRequest) {
       // Sync active state to user account
       await db.prepare(`UPDATE users SET is_active = ?, updated_at = ? WHERE id = ?`).run(activeVal, now, emp.user_id);
 
-      // Reset password if requested
+      // Reset password if requested (requires mandatory personal password setup on next login)
       if (resetPassword) {
         const hash = hashPassword(resetPassword);
-        await db.prepare(`UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?`).run(hash, now, emp.user_id);
+        await db.prepare(`UPDATE users SET password_hash = ?, needs_password_change = 1, updated_at = ? WHERE id = ?`).run(hash, now, emp.user_id);
       }
 
       await db.exec('COMMIT;');

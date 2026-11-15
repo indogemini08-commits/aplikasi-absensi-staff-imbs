@@ -96,12 +96,19 @@ export default function LoginPage() {
         return;
       }
 
-      toast.success(`Selamat datang, ${data.user.name}!`);
+      if (data.mustChangePassword) {
+        toast.info(`Selamat datang, ${data.user.name}! Demi keamanan akun, silakan buat kata sandi mandiri Anda.`);
+      } else {
+        toast.success(`Selamat datang, ${data.user.name}!`);
+      }
+
       try {
         invalidateMasterCache();
         localStorage.setItem('imbs_user_session', JSON.stringify(data.user));
       } catch {}
-      router.push(data.redirectUrl || '/dashboard');
+
+      const destination = data.mustChangePassword ? '/buat-kata-sandi' : (data.redirectUrl || '/dashboard');
+      router.push(destination);
       router.refresh();
     } catch (err: any) {
       toast.error('Terjadi kesalahan koneksi');

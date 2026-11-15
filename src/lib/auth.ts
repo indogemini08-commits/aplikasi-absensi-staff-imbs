@@ -17,6 +17,7 @@ export interface UserSession {
   departmentId?: string;
   departmentName?: string;
   position?: string;
+  needsPasswordChange?: boolean;
 }
 
 export function hashPassword(plain: string): string {
@@ -98,7 +99,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
     try {
       const db = getDb();
       const userRow = (await db.prepare(`
-        SELECT u.id as user_id, u.username, u.email, u.role, u.is_active, u.full_name,
+        SELECT u.id as user_id, u.username, u.email, u.role, u.is_active, u.full_name, u.needs_password_change,
                e.id as employee_id, e.nip, e.name, e.department_id, e.position,
                d.name as department_name
         FROM users u
@@ -124,6 +125,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
         departmentId: userRow.department_id,
         departmentName: userRow.department_name,
         position: userRow.position,
+        needsPasswordChange: Number(userRow.needs_password_change ?? 0) === 1,
       };
 
       // Cache for 60 seconds
@@ -146,6 +148,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
         departmentId: session.departmentId,
         departmentName: session.departmentName,
         position: session.position,
+        needsPasswordChange: !!session.needsPasswordChange,
       };
       return fallbackSession;
     }

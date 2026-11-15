@@ -101,6 +101,13 @@ export default function Navbar({ user }: NavbarProps) {
     }
   }, [user]);
 
+  // Mandatory check: if user requires first-time password setup, enforce redirect to /buat-kata-sandi
+  useEffect(() => {
+    if (currentUser?.needsPasswordChange && pathname !== '/buat-kata-sandi' && pathname !== '/login') {
+      router.push('/buat-kata-sandi');
+    }
+  }, [currentUser, pathname, router]);
+
   // Close mobile drawer upon route change
   useEffect(() => {
     setMobileMenuOpen(false);
