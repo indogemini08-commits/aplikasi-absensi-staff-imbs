@@ -363,7 +363,7 @@ function LaporanContent() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs"
+                  className="p-2 min-w-[135px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs cursor-pointer"
                 />
               </div>
 
@@ -373,7 +373,7 @@ function LaporanContent() {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs"
+                  className="p-2 min-w-[135px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 text-xs cursor-pointer"
                 />
               </div>
 

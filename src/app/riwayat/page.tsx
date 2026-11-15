@@ -179,14 +179,16 @@ export default function RiwayatPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-400" />
-            <input
-              type="month"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="relative flex items-center">
+              <Filter className="w-4 h-4 text-blue-600 dark:text-blue-400 absolute left-3 pointer-events-none" />
+              <input
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 shadow-xs min-w-[165px] xs:min-w-[185px] cursor-pointer"
+              />
+            </div>
           </div>
         </div>
 

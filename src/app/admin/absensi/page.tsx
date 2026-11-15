@@ -212,7 +212,7 @@ export default function AdminAbsensiMasterPage() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500"
+                className="p-2 min-w-[145px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 font-semibold focus:ring-2 focus:ring-blue-500 cursor-pointer"
               />
               <button
                 type="button"

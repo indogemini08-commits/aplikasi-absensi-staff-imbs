@@ -227,29 +227,29 @@ export default function Navbar({ user }: NavbarProps) {
       {/* Bottom glowing futuristic laser accent line */}
       <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/50 via-cyan-400/50 to-transparent shadow-[0_1px_8px_rgba(37, 99, 235,0.4)] pointer-events-none" />
 
-      <div className="w-full px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative gap-2 sm:gap-4">
-        {/* Left: Brand & Institution Identity (Optimized for all screens) */}
+      <div className="w-full px-2.5 xs:px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative gap-1.5 xs:gap-2 sm:gap-4">
+        {/* Left: Brand & Institution Identity (Always Full Text, Never Truncated/Cropped) */}
         <div
           onClick={() => router.push(currentUser?.role === 'staff' ? '/dashboard' : '/admin')}
-          className="flex items-center gap-2 xs:gap-2.5 sm:gap-3 cursor-pointer group select-none transition-transform active:scale-[0.99] min-w-0 shrink"
+          className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 cursor-pointer group select-none transition-transform active:scale-[0.99] shrink-0"
           title="Beranda Presensi IMBS"
         >
           {/* Futuristic Frosted Logo Frame with Holographic Reflection */}
-          <div className="h-9 xs:h-10 sm:h-11 min-w-[2.25rem] xs:min-w-[2.75rem] max-w-[4.2rem] xs:max-w-[5.5rem] px-1.5 xs:px-2 py-1 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-md border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-blue-500/20 group-hover:ring-blue-500/50 group-hover:shadow-[0_0_20px_rgba(37, 99, 235,0.3)] transition-all">
+          <div className="h-8 w-8 xs:h-9 xs:w-9 sm:h-11 sm:w-11 p-1 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-xs border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden ring-1.5 ring-blue-500/20 group-hover:ring-blue-500/50 group-hover:shadow-[0_0_20px_rgba(37, 99, 235,0.3)] transition-all">
             <img
               src={appLogo || '/logo-imbs-left.png'}
               alt={orgName || 'Logo IMBS'}
-              className="max-h-full w-auto object-contain filter drop-shadow-xs transition-transform group-hover:scale-105"
+              className="max-h-full max-w-full object-contain filter drop-shadow-xs transition-transform group-hover:scale-105"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/logo-imbs-left.png';
               }}
             />
           </div>
 
-          {/* Title & Organization Subtitle */}
-          <div className="flex flex-col justify-center min-w-0">
+          {/* Title & Organization Subtitle (Full Text Visible Without Ellipsis) */}
+          <div className="flex flex-col justify-center">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-extrabold text-[11px] xs:text-xs sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate max-w-[170px] xs:max-w-[220px] sm:max-w-none">
+              <span className="font-extrabold text-[10px] xs:text-[11px] sm:text-sm md:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-sans whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {orgName || 'IMAM MUZANI BOARDING SCHOOL'}
               </span>
               <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300/60 dark:border-blue-700/50 shadow-[0_0_12px_rgba(37, 99, 235,0.2)] backdrop-blur-md leading-none shrink-0 whitespace-nowrap">
@@ -257,8 +257,8 @@ export default function Navbar({ user }: NavbarProps) {
                 Presensi Staff
               </span>
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5 text-[9.5px] xs:text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-              <span className="font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap truncate max-w-[160px] xs:max-w-[210px] sm:max-w-none">
+            <div className="flex items-center gap-1.5 mt-0.5 text-[8.5px] xs:text-[9.5px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+              <span className="font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">
                 {foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
               </span>
               <span className="hidden xl:inline text-slate-300 dark:text-slate-600">•</span>
@@ -280,7 +280,7 @@ export default function Navbar({ user }: NavbarProps) {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 shrink-0">
           {!isInstalled && (
             <>
               {/* Full button on XL */}
@@ -308,7 +308,7 @@ export default function Navbar({ user }: NavbarProps) {
           {/* Notifications Button */}
           <button
             onClick={() => router.push('/notifikasi')}
-            className="relative p-2 sm:p-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 transition-all border border-slate-200/80 dark:border-slate-700/80 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(37, 99, 235,0.25)]"
+            className="relative p-1.5 xs:p-2 sm:p-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 transition-all border border-slate-200/80 dark:border-slate-700/80 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(37, 99, 235,0.25)] shrink-0"
             title="Pusat Notifikasi"
           >
             <Bell className="w-4 h-4" />
@@ -323,7 +323,7 @@ export default function Navbar({ user }: NavbarProps) {
           {currentUser && currentUser.role !== 'staff' && (
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-700/80 transition cursor-pointer"
+              className="md:hidden p-1.5 xs:p-2 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-700/80 transition cursor-pointer shrink-0"
               title="Menu Navigasi Admin"
             >
               {mobileMenuOpen ? <X className="w-4 h-4 text-blue-500" /> : <Menu className="w-4 h-4" />}
@@ -332,12 +332,12 @@ export default function Navbar({ user }: NavbarProps) {
 
           {/* User profile dropdown / quick card */}
           {currentUser ? (
-            <div className="flex items-center gap-2 pl-2 border-l border-slate-200/80 dark:border-slate-800/80">
+            <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 pl-1.5 xs:pl-2 border-l border-slate-200/80 dark:border-slate-800/80 shrink-0">
               <div
                 onClick={() => router.push(currentUser.role === 'staff' ? '/profil' : '/admin')}
-                className="cursor-pointer flex items-center gap-2 p-1.5 pr-2.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/70 dark:border-slate-700/70 hover:border-blue-500/40 hover:shadow-[0_0_15px_rgba(37, 99, 235,0.2)] transition-all group"
+                className="cursor-pointer flex items-center gap-1.5 xs:gap-2 p-1 xs:p-1.5 sm:pr-2.5 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/70 dark:border-slate-700/70 hover:border-blue-500/40 hover:shadow-[0_0_15px_rgba(37, 99, 235,0.2)] transition-all group shrink-0"
               >
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs neon-glow-blue">
+                <div className="w-7 h-7 xs:w-8 xs:h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs neon-glow-blue shrink-0">
                   {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div className="hidden lg:block text-left text-xs">

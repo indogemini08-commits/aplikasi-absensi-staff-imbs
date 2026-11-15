@@ -189,7 +189,7 @@ export default function KoreksiPage() {
                   </div>
 
                   <span
-                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${
                       c.status === 'approved'
                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                         : c.status === 'rejected'
