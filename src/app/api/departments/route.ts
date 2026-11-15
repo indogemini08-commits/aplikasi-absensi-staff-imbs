@@ -195,6 +195,9 @@ export async function PUT(req: NextRequest) {
       id,
       name,
       code,
+      managerName,
+      manager_name,
+      description,
       gracePeriodMinutes,
       dailySchedules,
     } = body;
@@ -209,26 +212,77 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Departemen tidak ditemukan' }, { status: 404 });
     }
 
-    if (!dailySchedules || typeof dailySchedules !== 'object') {
-      return NextResponse.json({ error: 'Konfigurasi jadwal harian tidak valid' }, { status: 400 });
+    const targetName = name !== undefined ? name.trim() : current.name;
+    const targetCode = code !== undefined ? code.trim().toUpperCase() : current.code;
+
+    if (!targetName || !targetCode) {
+      return NextResponse.json(
+        { error: 'Nama departemen dan kode singkatan tidak boleh kosong' },
+        { status: 400 }
+      );
     }
 
-    const activeDays = Object.entries(dailySchedules)
-      .filter(([_, cfg]: [string, any]) => cfg.isActive)
-      .map(([day]) => day);
+    // Check duplicate code or name excluding current department
+    const duplicate = await db.prepare(`
+      SELECT id FROM departments
+      WHERE (UPPER(code) = ? OR LOWER(name) = ?) AND id != ?
+    `).get(targetCode, targetName.toLowerCase(), id);
 
-    const firstActiveDay = activeDays[0] || 'Senin';
-    const primaryStart = dailySchedules[firstActiveDay]?.startTime || '07:30';
-    const primaryEnd = dailySchedules[firstActiveDay]?.endTime || '16:00';
-    const primaryBreakStart = dailySchedules[firstActiveDay]?.breakStart || null;
-    const primaryBreakEnd = dailySchedules[firstActiveDay]?.breakEnd || null;
+    if (duplicate) {
+      return NextResponse.json(
+        { error: `Departemen dengan kode "${targetCode}" atau nama "${targetName}" sudah digunakan oleh divisi lain.` },
+        { status: 400 }
+      );
+    }
 
-    const grace = gracePeriodMinutes !== undefined && gracePeriodMinutes !== null ? parseInt(gracePeriodMinutes, 10) : (current.grace_period_minutes ?? 10);
+    const targetManagerName = managerName !== undefined
+      ? (managerName ? managerName.trim() : null)
+      : (manager_name !== undefined ? (manager_name ? manager_name.trim() : null) : current.manager_name);
+
+    const targetDescription = description !== undefined
+      ? (description ? description.trim() : null)
+      : current.description;
+
+    const targetGrace = gracePeriodMinutes !== undefined && gracePeriodMinutes !== null
+      ? parseInt(gracePeriodMinutes, 10)
+      : (current.grace_period_minutes ?? 10);
+
+    let targetDailySchedulesJson = current.daily_schedules;
+    let targetWorkDaysJson = current.work_days;
+    let targetStartTime = current.start_time || '07:30';
+    let targetEndTime = current.end_time || '16:00';
+    let targetBreakStart = current.break_start || null;
+    let targetBreakEnd = current.break_end || null;
+    let activeDays: string[] = [];
+
+    if (dailySchedules && typeof dailySchedules === 'object') {
+      activeDays = Object.entries(dailySchedules)
+        .filter(([_, cfg]: [string, any]) => cfg.isActive)
+        .map(([day]) => day);
+
+      const firstActiveDay = activeDays[0] || 'Senin';
+      targetStartTime = dailySchedules[firstActiveDay]?.startTime || '07:30';
+      targetEndTime = dailySchedules[firstActiveDay]?.endTime || '16:00';
+      targetBreakStart = dailySchedules[firstActiveDay]?.breakStart || null;
+      targetBreakEnd = dailySchedules[firstActiveDay]?.breakEnd || null;
+      targetWorkDaysJson = JSON.stringify(activeDays);
+      targetDailySchedulesJson = JSON.stringify(dailySchedules);
+    } else {
+      try {
+        activeDays = typeof current.work_days === 'string'
+          ? JSON.parse(current.work_days)
+          : (current.work_days || []);
+      } catch {
+        activeDays = [];
+      }
+    }
 
     await db.prepare(`
       UPDATE departments SET
-        name = COALESCE(?, name),
-        code = COALESCE(?, code),
+        name = ?,
+        code = ?,
+        manager_name = ?,
+        description = ?,
         start_time = ?,
         end_time = ?,
         grace_period_minutes = ?,
@@ -238,35 +292,49 @@ export async function PUT(req: NextRequest) {
         break_end = ?
       WHERE id = ?
     `).run(
-      name ? name.trim() : current.name,
-      code ? code.trim().toUpperCase() : current.code,
-      primaryStart,
-      primaryEnd,
-      grace,
-      JSON.stringify(activeDays),
-      JSON.stringify(dailySchedules),
-      primaryBreakStart,
-      primaryBreakEnd,
+      targetName,
+      targetCode,
+      targetManagerName,
+      targetDescription,
+      targetStartTime,
+      targetEndTime,
+      targetGrace,
+      targetWorkDaysJson,
+      targetDailySchedulesJson,
+      targetBreakStart,
+      targetBreakEnd,
       id
     );
 
     recordAuditLog({
       userId: user.userId,
       userName: user.name || user.username,
-      action: 'UPDATE_DEPARTMENT_SCHEDULE',
+      action: dailySchedules ? 'UPDATE_DEPARTMENT_SCHEDULE' : 'UPDATE_DEPARTMENT',
       entityType: 'department',
       entityId: id,
       details: {
-        departmentName: name || current.name,
+        previousName: current.name,
+        newName: targetName,
+        previousCode: current.code,
+        newCode: targetCode,
+        managerName: targetManagerName,
+        gracePeriodMinutes: targetGrace,
         activeDays,
-        gracePeriodMinutes: grace,
       },
       ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
     });
 
     return NextResponse.json({
       success: true,
-      message: `Jadwal harian departemen ${name || current.name} berhasil diperbarui dan otomatis berlaku untuk seluruh stafnya.`,
+      message: `Data departemen "${targetName}" (${targetCode}) berhasil diperbarui dan disinkronkan ke seluruh sistem.`,
+      department: {
+        id,
+        name: targetName,
+        code: targetCode,
+        manager_name: targetManagerName,
+        description: targetDescription,
+        grace_period_minutes: targetGrace,
+      },
     });
   } catch (err: any) {
     console.error('Department PUT error:', err);

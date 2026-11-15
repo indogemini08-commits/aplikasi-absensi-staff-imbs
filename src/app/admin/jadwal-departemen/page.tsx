@@ -158,6 +158,16 @@ export default function JadwalDepartemenPage() {
   const [editDailySchedules, setEditDailySchedules] = useState<DailySchedules>(getDefaultDailySchedule('5days'));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Edit Department Info Modal (Nama, Kode, Koordinator, Toleransi, Deskripsi)
+  const [showEditDeptModal, setShowEditDeptModal] = useState(false);
+  const [editingDeptData, setEditingDeptData] = useState<any>(null);
+  const [editDeptName, setEditDeptName] = useState('');
+  const [editDeptCode, setEditDeptCode] = useState('');
+  const [editDeptManager, setEditDeptManager] = useState('');
+  const [editDeptGrace, setEditDeptGrace] = useState<number>(10);
+  const [editDeptDesc, setEditDeptDesc] = useState('');
+  const [isSavingDeptInfo, setIsSavingDeptInfo] = useState(false);
+
   // Add Department Modal
   const [showAddModal, setShowAddModal] = useState(false);
   const [addName, setAddName] = useState('');
@@ -295,6 +305,59 @@ export default function JadwalDepartemenPage() {
       console.error(e);
       toast.error('Terjadi kesalahan saat menghapus');
       setIsDeleting(false);
+    }
+  };
+
+  // --- EDIT DEPARTMENT PROFILE MODAL (Nama, Kode, Koordinator, dll) ---
+  const openEditDeptInfo = (dept: any) => {
+    setEditingDeptData(dept);
+    setEditDeptName(dept.name || '');
+    setEditDeptCode(dept.code || '');
+    setEditDeptManager(dept.manager_name || '');
+    setEditDeptGrace(dept.grace_period_minutes ?? 10);
+    setEditDeptDesc(dept.description || '');
+    setShowEditDeptModal(true);
+  };
+
+  const handleSaveDeptInfo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingDeptData) return;
+    if (!editDeptName.trim() || !editDeptCode.trim()) {
+      toast.warning('Nama dan kode singkatan departemen wajib diisi');
+      return;
+    }
+
+    setIsSavingDeptInfo(true);
+    try {
+      const res = await fetch('/api/departments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingDeptData.id,
+          name: editDeptName.trim(),
+          code: editDeptCode.trim().toUpperCase(),
+          managerName: editDeptManager.trim(),
+          description: editDeptDesc.trim(),
+          gracePeriodMinutes: Number(editDeptGrace),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Gagal memperbarui data departemen');
+        setIsSavingDeptInfo(false);
+        return;
+      }
+
+      toast.success(data.message || 'Data departemen berhasil diperbarui!');
+      setShowEditDeptModal(false);
+      setIsSavingDeptInfo(false);
+      broadcastDataChange('departments');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error('Terjadi kesalahan jaringan');
+      setIsSavingDeptInfo(false);
     }
   };
 
@@ -610,18 +673,34 @@ export default function JadwalDepartemenPage() {
                             <h3 className="font-bold text-base text-slate-800 dark:text-slate-100 mt-1 leading-snug truncate" title={dept.name}>
                               {dept.name}
                             </h3>
+                            {dept.manager_name && (
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1 truncate" title={`Koordinator: ${dept.manager_name}`}>
+                                <span className="font-semibold text-slate-600 dark:text-slate-300">PJ / Koordinator:</span>
+                                <span className="truncate">{dept.manager_name}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        {/* Individual Delete Button */}
-                        <button
-                          type="button"
-                          onClick={() => confirmDeleteSingle(dept)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition opacity-70 hover:opacity-100 shrink-0"
-                          title="Hapus Departemen Ini"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {/* Top-Right Card Actions: Edit & Delete */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => openEditDeptInfo(dept)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition opacity-80 hover:opacity-100"
+                            title="Edit Data Departemen (Nama, Kode, Koordinator)"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => confirmDeleteSingle(dept)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition opacity-70 hover:opacity-100"
+                            title="Hapus Departemen Ini"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
 
                       {/* Primary Work Hours & Tolerance (Simple Clean Summary) */}
@@ -708,14 +787,27 @@ export default function JadwalDepartemenPage() {
                       </div>
                     </div>
 
-                    {/* Action Button */}
-                    <button
-                      onClick={() => openEditSchedule(dept)}
-                      className="w-full py-2 px-3 rounded-xl border border-blue-600/30 hover:border-blue-500 bg-blue-500/10 hover:bg-blue-600 text-blue-700 hover:text-white dark:text-blue-300 dark:hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition duration-200 mt-1"
-                    >
-                      <Sliders className="w-3.5 h-3.5" />
-                      Atur Jam Kerja Harian
-                    </button>
+                    {/* Action Buttons: Edit Data Divisi & Atur Jam Kerja */}
+                    <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                      <button
+                        type="button"
+                        onClick={() => openEditDeptInfo(dept)}
+                        className="w-full py-2 px-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition duration-200 shadow-xs"
+                        title="Edit Nama, Kode, dan Koordinator"
+                      >
+                        <Edit className="w-3.5 h-3.5 text-blue-600" />
+                        <span className="truncate">Edit Data Divisi</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openEditSchedule(dept)}
+                        className="w-full py-2 px-2 rounded-xl border border-blue-600/30 hover:border-blue-500 bg-blue-500/10 hover:bg-blue-600 text-blue-700 hover:text-white dark:text-blue-300 dark:hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition duration-200 shadow-xs"
+                        title="Atur Jam Kerja Harian"
+                      >
+                        <Sliders className="w-3.5 h-3.5" />
+                        <span className="truncate">Atur Jam Kerja</span>
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -851,6 +943,117 @@ export default function JadwalDepartemenPage() {
         </main>
       </div>
 
+      {/* MODAL 0: Edit Department Profile (Nama, Kode, Koordinator, Toleransi, Deskripsi) */}
+      <Modal
+        isOpen={showEditDeptModal}
+        onClose={() => setShowEditDeptModal(false)}
+        title="Edit Data Departemen / Divisi"
+        maxWidth="lg"
+      >
+        <form onSubmit={handleSaveDeptInfo} className="space-y-4">
+          <div className="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-xs text-blue-800 dark:text-blue-200 flex items-center gap-2.5">
+            <Building className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>
+              Perubahan data nama, kode, dan koordinator divisi akan langsung disinkronkan ke seluruh sistem dan data pegawai.
+            </span>
+          </div>
+
+          <div className="space-y-3.5">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Nama Departemen / Divisi: <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={editDeptName}
+                onChange={(e) => setEditDeptName(e.target.value)}
+                placeholder="Contoh: Kepala Rumah Tangga"
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Kode Singkatan (Maks 6 Huruf): <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editDeptCode}
+                  onChange={(e) => setEditDeptCode(e.target.value.toUpperCase())}
+                  placeholder="Contoh: KRT-01"
+                  maxLength={8}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold focus:ring-2 focus:ring-blue-500 uppercase text-slate-800 dark:text-slate-100"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Toleransi Keterlambatan:
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="0"
+                    max="60"
+                    value={editDeptGrace}
+                    onChange={(e) => setEditDeptGrace(Number(e.target.value))}
+                    className="w-full p-2.5 pr-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold focus:ring-2 focus:ring-blue-500 font-mono text-slate-800 dark:text-slate-100"
+                    required
+                  />
+                  <span className="absolute right-3 top-2.5 text-xs text-slate-400">Menit</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Nama Kepala / Koordinator (Opsional):
+              </label>
+              <input
+                type="text"
+                value={editDeptManager}
+                onChange={(e) => setEditDeptManager(e.target.value)}
+                placeholder="Nama kepala / koordinator penanggung jawab..."
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Keterangan / Deskripsi (Opsional):
+              </label>
+              <textarea
+                rows={2}
+                value={editDeptDesc}
+                onChange={(e) => setEditDeptDesc(e.target.value)}
+                placeholder="Deskripsi tugas atau ruang lingkup divisi..."
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100 resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setShowEditDeptModal(false)}
+              className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={isSavingDeptInfo}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2 transition"
+            >
+              {isSavingDeptInfo ? 'Menyimpan...' : 'Simpan Perubahan'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
       {/* MODAL 1: Edit Daily Schedules for a Department */}
       <Modal
         isOpen={showEditModal}
@@ -859,25 +1062,41 @@ export default function JadwalDepartemenPage() {
         maxWidth="xl"
       >
         <form onSubmit={handleSaveEditSchedule} className="space-y-4">
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
             <div>
               <div className="font-bold text-slate-800 dark:text-slate-200">
                 Departemen: {editingDept?.name} ({editingDept?.code})
               </div>
               <div className="text-slate-500 text-[11px]">
                 Mengatur jadwal untuk <strong>{editingDept?.employee_count ?? 0} orang staf aktif</strong>.
+                {editingDept?.manager_name && <span> • Koordinator: {editingDept.manager_name}</span>}
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={copyMondayToAllEdit}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-semibold hover:bg-blue-200 transition"
-              title="Salin jam Senin ke hari kerja lainnya"
-            >
-              <Copy className="w-3 h-3" />
-              Salin Jam Senin ke Semua Hari
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditModal(false);
+                  openEditDeptInfo(editingDept);
+                }}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                title="Edit Nama, Kode, atau Koordinator Departemen"
+              >
+                <Edit className="w-3 h-3 text-blue-600" />
+                Edit Data Divisi
+              </button>
+
+              <button
+                type="button"
+                onClick={copyMondayToAllEdit}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-semibold hover:bg-blue-200 transition"
+                title="Salin jam Senin ke hari kerja lainnya"
+              >
+                <Copy className="w-3 h-3" />
+                Salin Jam Senin ke Semua Hari
+              </button>
+            </div>
           </div>
 
           {/* Tolerance Setting */}
