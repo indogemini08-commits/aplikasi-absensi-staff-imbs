@@ -99,10 +99,11 @@ export default function ReportPreviewModal({
       document.fonts.forEach((font) => {
         try {
           clonedDoc.fonts.add(font);
-        } catch {}
+        } catch { }
       });
     }
 
+    // 2. Inject explicit CSS overrides into cloned document before canvas capture
     // 2. Unconstrain cloned document & parents, remove transform scale completely
     const clonedDocRoot = clonedDoc.getElementById('official-recap-document');
     if (clonedDocRoot) {
@@ -337,7 +338,7 @@ export default function ReportPreviewModal({
     try {
       const raw = sessionStorage.getItem('imbs_settings_data') || localStorage.getItem('imbs_settings_data');
       if (raw) localSettings = JSON.parse(raw);
-    } catch {}
+    } catch { }
   }
 
   const activeInst = {
@@ -598,369 +599,367 @@ export default function ReportPreviewModal({
               className="bg-white text-slate-900 w-full max-w-[1240px] min-w-[1020px] p-6 sm:p-8 md:p-10 shadow-2xl border border-slate-200/90 rounded-2xl font-sans relative box-border mx-auto transition-all h-auto min-h-fit overflow-visible"
               style={{ height: 'auto', minHeight: 'fit-content' }}
             >
-              {/* 1. Header Laporan: Logo, Nama Lembaga, Kontak, & Badge Dokumen */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-200/80">
-                <div className="flex items-center gap-3.5">
-                  <div className="h-16 w-16 p-2 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-center shrink-0">
-                    <img
-                      src={activeInst.logoInstitution || activeInst.logoApp || "/logo-imbs-left.png"}
-                      alt={activeInst.schoolName || "Logo IMBS"}
-                      className="max-h-full max-w-full object-contain inline-block"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/logo-imbs-left.png";
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-black text-[#0c2340] uppercase font-sans leading-snug">
-                      {activeInst.schoolName || 'IMAM MUZANI BOARDING SCHOOL'}
-                    </h1>
-                    <div className="text-xs font-bold text-slate-700 tracking-wide mt-0.5 uppercase leading-normal">
-                      {activeInst.foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
+                {/* 1. Header Laporan: Logo, Nama Lembaga, Kontak, & Badge Dokumen */}
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-200/80">
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-16 w-16 p-2 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-center shrink-0">
+                      <img
+                        src={activeInst.logoInstitution || activeInst.logoApp || "/logo-imbs-left.png"}
+                        alt={activeInst.schoolName || "Logo IMBS"}
+                        className="max-h-full max-w-full object-contain inline-block"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/logo-imbs-left.png";
+                        }}
+                      />
                     </div>
-                    <div className="text-[10px] text-slate-500 font-medium leading-relaxed mt-1 max-w-xl">
-                      {activeInst.address || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610'}
+                    <div>
+                      <h1 className="text-xl font-black text-[#0c2340] uppercase font-sans leading-snug">
+                        {activeInst.schoolName || 'IMAM MUZANI BOARDING SCHOOL'}
+                      </h1>
+                      <div className="text-xs font-bold text-slate-700 tracking-wide mt-0.5 uppercase leading-normal">
+                        {activeInst.foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-medium leading-relaxed mt-1 max-w-xl">
+                        {activeInst.address || 'Jl. Dukuh Manis Kp. Nambo RT.04 RW.01 Ds. Sukajaya, Kec. Tamansari, Kab. Bogor, Jawa Barat, 16610'}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-slate-500 mt-0.5 leading-normal">
+                        {orgEmail && <span>E-Mail: <span className="text-slate-700 font-semibold">{orgEmail}</span></span>}
+                        {orgEmail && orgPhone && <span>•</span>}
+                        {orgPhone && <span>No Telepon: <span className="text-slate-700 font-semibold">{orgPhone}</span></span>}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-slate-500 mt-0.5 leading-normal">
-                      {orgEmail && <span>E-Mail: <span className="text-slate-700 font-semibold">{orgEmail}</span></span>}
-                      {orgEmail && orgPhone && <span>•</span>}
-                      {orgPhone && <span>No Telepon: <span className="text-slate-700 font-semibold">{orgPhone}</span></span>}
+                  </div>
+
+                  <div className="text-right flex flex-col items-end self-start shrink-0">
+                    <div className="recap-header-badge inline-flex items-center justify-center px-4 py-1.5 rounded-xl bg-[#edf4fb] text-[#1c4974] text-xs font-black tracking-wider uppercase border border-[#cfe1f3] shadow-xs leading-none">
+                      <span>REKAPITULASI KEHADIRAN</span>
+                    </div>
+                    <div className="text-[10px] font-mono text-slate-500 font-semibold mt-2.5 leading-normal">
+                      No. Dok: <span className="font-bold text-[#0c2340]">IMBS/ABS/{cleanPeriodForFilename.toUpperCase()}</span>
+                    </div>
+                    <div className="text-[10.5px] text-slate-500 mt-0.5 leading-normal">
+                      Tgl Cetak: <span className="font-bold text-slate-800">{formattedEndDate}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-right flex flex-col items-end self-start shrink-0">
-                  <div className="recap-header-badge inline-flex items-center justify-center px-4 py-1.5 rounded-xl bg-[#edf4fb] text-[#1c4974] text-xs font-black tracking-wider uppercase border border-[#cfe1f3] shadow-xs leading-none">
-                    <span>REKAPITULASI KEHADIRAN</span>
+                {/* 2. Informasi Pelaporan: Layout 2 Kolom Sejajar */}
+                <div className="grid grid-cols-2 gap-x-8 gap-y-2 py-3 px-1 text-xs border-b border-slate-200/80">
+                  {/* Kolom Kiri */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center text-[11px] leading-normal">
+                      <span className="w-28 text-slate-500 font-medium shrink-0">Nama Lembaga</span>
+                      <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                      <span className="font-bold text-[#0c2340] text-[11px] whitespace-nowrap uppercase leading-normal">
+                        {activeInst.schoolName || 'IMAM MUZANI BOARDING SCHOOL'}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-[11px] leading-normal">
+                      <span className="w-28 text-slate-500 font-medium shrink-0">Yayasan Naungan</span>
+                      <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                      <span className="font-bold text-[#0c2340] text-[11px] whitespace-nowrap uppercase leading-normal">
+                        {activeInst.foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-[11px] leading-normal">
+                      <span className="w-28 text-slate-500 font-medium shrink-0">Periode Absensi</span>
+                      <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                      <span className="recap-badge inline-flex items-center justify-center px-2.5 py-1 rounded-md bg-slate-100 font-extrabold text-[#0c2340] text-[11px] border border-slate-200 leading-none align-middle whitespace-nowrap">
+                        {periodFormatted}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-[10px] font-mono text-slate-500 font-semibold mt-2.5 leading-normal">
-                    No. Dok: <span className="font-bold text-[#0c2340]">IMBS/ABS/{cleanPeriodForFilename.toUpperCase()}</span>
-                  </div>
-                  <div className="text-[10.5px] text-slate-500 mt-0.5 leading-normal">
-                    Tgl Cetak: <span className="font-bold text-slate-800">{formattedEndDate}</span>
+
+                  {/* Kolom Kanan */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center text-[11px] leading-normal">
+                      <span className="w-28 text-slate-500 font-medium shrink-0">Bulan Pelaporan</span>
+                      <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                      <span className="font-bold text-[#0c2340] text-[11px] uppercase leading-normal whitespace-nowrap">
+                        {monthName}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-[11px] leading-normal">
+                      <span className="w-28 text-slate-500 font-medium shrink-0">
+                        {activeInst.tuStaffTitle || 'Petugas Tata Usaha'}
+                      </span>
+                      <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                      <span className="font-bold text-[#0c2340] text-[11px] leading-normal whitespace-nowrap">
+                        {activeInst.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-[11px] leading-normal">
+                      <span className="w-28 text-slate-500 font-medium shrink-0">Tanggal Cetak</span>
+                      <span className="w-3 text-slate-400 text-center shrink-0">:</span>
+                      <span className="font-bold text-[#0c2340] text-[11px] leading-normal whitespace-nowrap">
+                        {formattedEndDate}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* 2. Informasi Pelaporan: Layout 2 Kolom Sejajar */}
-              <div className="grid grid-cols-2 gap-x-8 gap-y-2 py-3 px-1 text-xs border-b border-slate-200/80">
-                {/* Kolom Kiri */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center text-[11px] leading-normal">
-                    <span className="w-28 text-slate-500 font-medium shrink-0">Nama Lembaga</span>
-                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-[#0c2340] text-[11px] whitespace-nowrap uppercase leading-normal">
-                      {activeInst.schoolName || 'IMAM MUZANI BOARDING SCHOOL'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-[11px] leading-normal">
-                    <span className="w-28 text-slate-500 font-medium shrink-0">Yayasan Naungan</span>
-                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-[#0c2340] text-[11px] whitespace-nowrap uppercase leading-normal">
-                      {activeInst.foundationName || 'YAYASAN SABILUL HUDA NAMBO'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-[11px] leading-normal">
-                    <span className="w-28 text-slate-500 font-medium shrink-0">Periode Absensi</span>
-                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="recap-badge inline-flex items-center justify-center px-2.5 py-1 rounded-md bg-slate-100 font-extrabold text-[#0c2340] text-[11px] border border-slate-200 leading-none align-middle whitespace-nowrap">
-                      {periodFormatted}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Kolom Kanan */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center text-[11px] leading-normal">
-                    <span className="w-28 text-slate-500 font-medium shrink-0">Bulan Pelaporan</span>
-                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-[#0c2340] text-[11px] uppercase leading-normal whitespace-nowrap">
-                      {monthName}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-[11px] leading-normal">
-                    <span className="w-28 text-slate-500 font-medium shrink-0">
-                      {activeInst.tuStaffTitle || 'Petugas Tata Usaha'}
-                    </span>
-                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-[#0c2340] text-[11px] leading-normal whitespace-nowrap">
-                      {activeInst.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-[11px] leading-normal">
-                    <span className="w-28 text-slate-500 font-medium shrink-0">Tanggal Cetak</span>
-                    <span className="w-3 text-slate-400 text-center shrink-0">:</span>
-                    <span className="font-bold text-[#0c2340] text-[11px] leading-normal whitespace-nowrap">
-                      {formattedEndDate}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 3. Tabel Rekapitulasi Kehadiran (Full Frame - Middle Align & Zero Cropping) */}
-              <div className="w-full rounded-2xl border border-slate-200/80 shadow-xs backdrop-blur-md bg-white/80 my-4 overflow-visible h-auto">
-                <table className="w-full text-left border-collapse table-auto whitespace-nowrap">
-                  <thead>
-                    <tr className="bg-[#0c2340] text-white text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap align-middle">
-                      <th className="py-3 px-2 text-center w-[3.5%] whitespace-nowrap align-middle leading-normal">No</th>
-                      <th className="py-3 px-3 text-left w-[20%] whitespace-nowrap align-middle leading-normal">Nama Pegawai</th>
-                      <th className="py-3 px-3 text-left w-[14%] whitespace-nowrap align-middle leading-normal">Departemen</th>
-                      <th className="py-3 px-2 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Absen Masuk</th>
-                      <th className="py-3 px-2 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Absen Pulang</th>
-                      <th className="py-3 px-2 text-center w-[6.5%] whitespace-nowrap align-middle leading-normal">Telat</th>
-                      <th className="py-3 px-2 text-center w-[8.5%] whitespace-nowrap align-middle leading-normal">Pulang Cepat</th>
-                      <th className="py-3 px-3 text-center w-[12%] whitespace-nowrap align-middle leading-normal">Tidak Absen Pulang</th>
-                      <th className="py-3 px-2 text-center w-[8.5%] whitespace-nowrap align-middle leading-normal">Tidak Hadir</th>
-                      <th className="py-3 px-2.5 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Predikat</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 whitespace-nowrap text-[10.5px] sm:text-[11px] align-middle">
-                    {recapSummary.length === 0 ? (
-                      <tr>
-                        <td colSpan={10} className="py-10 text-center text-slate-400 italic whitespace-nowrap align-middle">
-                          Tidak ada catatan kehadiran untuk rentang waktu ini.
-                        </td>
-                      </tr>
-                    ) : (
-                      recapSummary.map((item, idx) => {
-                        const isEven = idx % 2 === 0;
-                        return (
-                          <tr
-                            key={item.employee_id || idx}
-                            className={`transition-colors hover:bg-blue-50/40 whitespace-nowrap align-middle ${
-                              isEven ? 'bg-white/95 backdrop-blur-xs' : 'bg-slate-50/70 backdrop-blur-xs'
-                            }`}
-                          >
-                            <td className="py-2.5 px-2 text-center text-slate-500 font-medium whitespace-nowrap align-middle leading-normal">
-                              {item.no}
-                            </td>
-                            <td className="py-2.5 px-3 whitespace-nowrap align-middle">
-                              <div className="font-bold text-slate-900 leading-snug whitespace-nowrap">
-                                {item.name}
-                              </div>
-                              {item.nip && (
-                                <div className="text-[9px] font-sans text-slate-400 mt-0.5 whitespace-nowrap leading-snug">
-                                  {item.nip}
-                                </div>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-3 text-slate-700 font-medium whitespace-nowrap align-middle">
-                              <div className="whitespace-nowrap leading-snug">{item.department_name}</div>
-                              {item.position && (
-                                <div className="text-[9px] text-slate-400 mt-0.5 whitespace-nowrap leading-snug">
-                                  {item.position}
-                                </div>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-2 text-center tabular-nums font-bold text-slate-900 whitespace-nowrap align-middle leading-normal">
-                              {item.total_masuk} Kali
-                            </td>
-                            <td className="py-2.5 px-2 text-center tabular-nums font-bold text-slate-900 whitespace-nowrap align-middle leading-normal">
-                              {item.total_pulang} Kali
-                            </td>
-                            <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
-                              {item.total_telat > 0 ? (
-                                <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-amber-200/80 bg-amber-50 text-amber-800 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
-                                  {item.total_telat} Kali
-                                </span>
-                              ) : (
-                                <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
-                              {item.total_pulang_cepat > 0 ? (
-                                <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-blue-200/80 bg-blue-50 text-blue-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
-                                  {item.total_pulang_cepat} Kali
-                                </span>
-                              ) : (
-                                <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-3 text-center whitespace-nowrap align-middle">
-                              {item.total_lupa_pulang > 0 ? (
-                                <span className="recap-badge inline-flex items-center justify-center px-2.5 py-1 rounded border border-orange-200/80 bg-orange-50 text-orange-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
-                                  {item.total_lupa_pulang} Kali
-                                </span>
-                              ) : (
-                                <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
-                              {item.total_tidak_hadir > 0 ? (
-                                <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-rose-200/80 bg-rose-50 text-rose-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
-                                  {item.total_tidak_hadir} Kali
-                                </span>
-                              ) : (
-                                <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-2.5 text-center whitespace-nowrap align-middle">
-                              {/* Pill Badge Predikat Minimalis, Simetris & Konsisten (Middle Align) */}
-                              <span
-                                className={`recap-badge-pill inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold border shadow-2xs leading-none whitespace-nowrap align-middle ${
-                                  item.predikat === 'Sangat Baik'
-                                    ? 'bg-blue-50 text-blue-700 border-blue-300'
-                                    : item.predikat === 'Baik'
-                                    ? 'bg-[#edf4fb] text-[#1c4974] border-[#cfe1f3]'
-                                    : item.predikat === 'Kurang Baik'
-                                    ? 'bg-amber-50 text-amber-800 border-amber-300'
-                                    : 'bg-rose-50 text-rose-700 border-rose-300'
-                                }`}
-                              >
-                                {item.predikat}
-                              </span>
+                {/* 3. Tabel Rekapitulasi Kehadiran (Full Frame - Middle Align & Zero Cropping) */}
+                <div className="w-full rounded-2xl border border-slate-200/80 shadow-xs backdrop-blur-md bg-white/80 my-4 overflow-visible h-auto">
+                  <table className="w-full text-left border-collapse table-auto whitespace-nowrap">
+                      <thead>
+                        <tr className="bg-[#0c2340] text-white text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap align-middle">
+                          <th className="py-3 px-2 text-center w-[3.5%] whitespace-nowrap align-middle leading-normal">No</th>
+                          <th className="py-3 px-3 text-left w-[20%] whitespace-nowrap align-middle leading-normal">Nama Pegawai</th>
+                          <th className="py-3 px-3 text-left w-[14%] whitespace-nowrap align-middle leading-normal">Departemen</th>
+                          <th className="py-3 px-2 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Absen Masuk</th>
+                          <th className="py-3 px-2 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Absen Pulang</th>
+                          <th className="py-3 px-2 text-center w-[6.5%] whitespace-nowrap align-middle leading-normal">Telat</th>
+                          <th className="py-3 px-2 text-center w-[8.5%] whitespace-nowrap align-middle leading-normal">Pulang Cepat</th>
+                          <th className="py-3 px-3 text-center w-[12%] whitespace-nowrap align-middle leading-normal">Tidak Absen Pulang</th>
+                          <th className="py-3 px-2 text-center w-[8.5%] whitespace-nowrap align-middle leading-normal">Tidak Hadir</th>
+                          <th className="py-3 px-2.5 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Predikat</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 whitespace-nowrap text-[10.5px] sm:text-[11px] align-middle">
+                        {recapSummary.length === 0 ? (
+                          <tr>
+                            <td colSpan={10} className="py-10 text-center text-slate-400 italic whitespace-nowrap align-middle">
+                              Tidak ada catatan kehadiran untuk rentang waktu ini.
                             </td>
                           </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                  {recapSummary.length > 0 && (
-                    <tfoot className="border-t-2 border-slate-200/90 bg-[#f8fafc]/95 font-bold text-slate-800 text-[10.5px] whitespace-nowrap align-middle">
-                      <tr className="align-middle">
-                        <td colSpan={3} className="py-3 px-3 text-right uppercase tracking-wider text-slate-600 whitespace-nowrap align-middle leading-normal">
-                          Total Akumulasi Keseluruhan:
-                        </td>
-                        <td className="py-3 px-2 text-center text-slate-900 whitespace-nowrap align-middle leading-normal">{totalMasukAll} Kali</td>
-                        <td className="py-3 px-2 text-center text-slate-900 whitespace-nowrap align-middle leading-normal">{totalPulangAll} Kali</td>
-                        <td className="py-3 px-2 text-center text-amber-700 whitespace-nowrap align-middle leading-normal">{totalTelatAll} Kali</td>
-                        <td className="py-3 px-2 text-center text-blue-700 whitespace-nowrap align-middle leading-normal">{totalPulangCepatAll} Kali</td>
-                        <td className="py-3 px-3 text-center text-orange-700 whitespace-nowrap align-middle leading-normal">{totalLupaPulangAll} Kali</td>
-                        <td className="py-3 px-2 text-center text-rose-700 whitespace-nowrap align-middle leading-normal">{totalTidakHadirAll} Kali</td>
-                        <td className="py-3 px-2.5 text-center text-slate-600 font-medium whitespace-nowrap align-middle leading-normal">Terverifikasi</td>
-                      </tr>
-                    </tfoot>
-                  )}
-                </table>
-              </div>
+                        ) : (
+                          recapSummary.map((item, idx) => {
+                            const isEven = idx % 2 === 0;
+                            return (
+                              <tr
+                                key={item.employee_id || idx}
+                                className={`transition-colors hover:bg-blue-50/40 whitespace-nowrap align-middle ${isEven ? 'bg-white/95 backdrop-blur-xs' : 'bg-slate-50/70 backdrop-blur-xs'
+                                  }`}
+                              >
+                                <td className="py-2.5 px-2 text-center text-slate-500 font-medium whitespace-nowrap align-middle leading-normal">
+                                  {item.no}
+                                </td>
+                                <td className="py-2.5 px-3 whitespace-nowrap align-middle">
+                                  <div className="font-bold text-slate-900 leading-snug whitespace-nowrap">
+                                    {item.name}
+                                  </div>
+                                  {item.nip && (
+                                    <div className="text-[9px] font-sans text-slate-400 mt-0.5 whitespace-nowrap leading-snug">
+                                      {item.nip}
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-3 text-slate-700 font-medium whitespace-nowrap align-middle">
+                                  <div className="whitespace-nowrap leading-snug">{item.department_name}</div>
+                                  {item.position && (
+                                    <div className="text-[9px] text-slate-400 mt-0.5 whitespace-nowrap leading-snug">
+                                      {item.position}
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-2 text-center tabular-nums font-bold text-slate-900 whitespace-nowrap align-middle leading-normal">
+                                  {item.total_masuk} Kali
+                                </td>
+                                <td className="py-2.5 px-2 text-center tabular-nums font-bold text-slate-900 whitespace-nowrap align-middle leading-normal">
+                                  {item.total_pulang} Kali
+                                </td>
+                                <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
+                                  {item.total_telat > 0 ? (
+                                    <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-amber-200/80 bg-amber-50 text-amber-800 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
+                                      {item.total_telat} Kali
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
+                                  {item.total_pulang_cepat > 0 ? (
+                                    <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-blue-200/80 bg-blue-50 text-blue-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
+                                      {item.total_pulang_cepat} Kali
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-3 text-center whitespace-nowrap align-middle">
+                                  {item.total_lupa_pulang > 0 ? (
+                                    <span className="recap-badge inline-flex items-center justify-center px-2.5 py-1 rounded border border-orange-200/80 bg-orange-50 text-orange-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
+                                      {item.total_lupa_pulang} Kali
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
+                                  {item.total_tidak_hadir > 0 ? (
+                                    <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-rose-200/80 bg-rose-50 text-rose-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
+                                      {item.total_tidak_hadir} Kali
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-2.5 text-center whitespace-nowrap align-middle">
+                                  {/* Pill Badge Predikat Minimalis, Simetris & Konsisten (Middle Align) */}
+                                  <span
+                                    className={`recap-badge-pill inline-flex items-center justify-center px-3 py-1 rounded-full text-[10px] font-bold border shadow-2xs leading-none whitespace-nowrap align-middle ${item.predikat === 'Sangat Baik'
+                                        ? 'bg-blue-50 text-blue-700 border-blue-300'
+                                        : item.predikat === 'Baik'
+                                          ? 'bg-[#edf4fb] text-[#1c4974] border-[#cfe1f3]'
+                                          : item.predikat === 'Kurang Baik'
+                                            ? 'bg-amber-50 text-amber-800 border-amber-300'
+                                            : 'bg-rose-50 text-rose-700 border-rose-300'
+                                      }`}
+                                  >
+                                    {item.predikat}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                      {recapSummary.length > 0 && (
+                        <tfoot className="border-t-2 border-slate-200/90 bg-[#f8fafc]/95 font-bold text-slate-800 text-[10.5px] whitespace-nowrap align-middle">
+                          <tr className="align-middle">
+                            <td colSpan={3} className="py-3 px-3 text-right uppercase tracking-wider text-slate-600 whitespace-nowrap align-middle leading-normal">
+                              Total Akumulasi Keseluruhan:
+                            </td>
+                            <td className="py-3 px-2 text-center text-slate-900 whitespace-nowrap align-middle leading-normal">{totalMasukAll} Kali</td>
+                            <td className="py-3 px-2 text-center text-slate-900 whitespace-nowrap align-middle leading-normal">{totalPulangAll} Kali</td>
+                            <td className="py-3 px-2 text-center text-amber-700 whitespace-nowrap align-middle leading-normal">{totalTelatAll} Kali</td>
+                            <td className="py-3 px-2 text-center text-blue-700 whitespace-nowrap align-middle leading-normal">{totalPulangCepatAll} Kali</td>
+                            <td className="py-3 px-3 text-center text-orange-700 whitespace-nowrap align-middle leading-normal">{totalLupaPulangAll} Kali</td>
+                            <td className="py-3 px-2 text-center text-rose-700 whitespace-nowrap align-middle leading-normal">{totalTidakHadirAll} Kali</td>
+                            <td className="py-3 px-2.5 text-center text-slate-600 font-medium whitespace-nowrap align-middle leading-normal">Terverifikasi</td>
+                          </tr>
+                        </tfoot>
+                      )}
+                    </table>
+                  </div>
 
-              {/* 4. Area Verifikasi dan Tanda Tangan (Full Frame - 3 Pilar Proporsional) */}
-              <div className="flex flex-row items-end justify-between gap-4 pt-4 mt-3 border-t border-slate-200/80 print-avoid-break">
-                {/* Pilar 1: Card VERIFIKASI KEASLIAN (QR Code & Serial) */}
-                <div className="bg-[#f8fafc]/90 backdrop-blur-xs rounded-2xl border border-slate-200/90 p-3 w-52 text-center shadow-2xs shrink-0 whitespace-nowrap">
-                  <div className="flex items-center justify-center gap-1.5 text-[9.5px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">
-                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                    <span>VERIFIKASI KEASLIAN</span>
-                  </div>
-                  <div className="my-1.5 flex justify-center">
-                    <svg className="w-14 h-14 text-[#0c2340]" viewBox="0 0 100 100" fill="currentColor">
-                      <rect x="8" y="8" width="26" height="26" rx="4" fill="#0c2340" />
-                      <rect x="13" y="13" width="16" height="16" rx="2" fill="white" />
-                      <rect x="17" y="17" width="8" height="8" rx="1" fill="#1c4974" />
-                      <rect x="66" y="8" width="26" height="26" rx="4" fill="#0c2340" />
-                      <rect x="71" y="13" width="16" height="16" rx="2" fill="white" />
-                      <rect x="75" y="17" width="8" height="8" rx="1" fill="#1c4974" />
-                      <rect x="8" y="66" width="26" height="26" rx="4" fill="#0c2340" />
-                      <rect x="13" y="71" width="16" height="16" rx="2" fill="white" />
-                      <rect x="17" y="75" width="8" height="8" rx="1" fill="#1c4974" />
-                      <rect x="42" y="12" width="7" height="7" fill="#0c2340" />
-                      <rect x="52" y="18" width="7" height="7" fill="#0c2340" />
-                      <rect x="42" y="28" width="8" height="8" rx="2" fill="#1c4974" />
-                      <rect x="14" y="44" width="7" height="7" fill="#0c2340" />
-                      <rect x="25" y="48" width="8" height="7" fill="#0c2340" />
-                      <rect x="40" y="42" width="20" height="20" rx="4" fill="#0c2340" />
-                      <circle cx="50" cy="52" r="4" fill="white" />
-                      <rect x="68" y="44" width="8" height="8" fill="#0c2340" />
-                      <rect x="80" y="52" width="8" height="7" fill="#0c2340" />
-                      <rect x="42" y="70" width="7" height="10" fill="#0c2340" />
-                      <rect x="54" y="76" width="10" height="7" fill="#0c2340" />
-                      <rect x="72" y="72" width="16" height="16" rx="3" fill="#0c2340" />
-                    </svg>
-                  </div>
-                  <div className="font-sans text-[8.5px] font-bold text-slate-700 tracking-wider whitespace-nowrap">
-                    |||||| IMBS/ABS/{cleanPeriodForFilename.slice(0, 10).toUpperCase()} ||||||
-                  </div>
-                  <div className="text-[7.5px] text-slate-400 mt-0.5 whitespace-nowrap">
-                    Scan untuk Bukti Verifikasi Resmi Sistem
-                  </div>
-                  <div className="text-[8px] font-bold text-slate-700 mt-0.5 whitespace-nowrap">
-                    IMAM MUZANI BOARDING SCHOOL
-                  </div>
-                </div>
+                  {/* 4. Area Verifikasi dan Tanda Tangan (Full Frame - 3 Pilar Proporsional) */}
+                  <div className="flex flex-row items-end justify-between gap-4 pt-4 mt-3 border-t border-slate-200/80 print-avoid-break">
+                    {/* Pilar 1: Card VERIFIKASI KEASLIAN (QR Code & Serial) */}
+                    <div className="bg-[#f8fafc]/90 backdrop-blur-xs rounded-2xl border border-slate-200/90 p-3 w-52 text-center shadow-2xs shrink-0 whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1.5 text-[9.5px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">
+                        <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                        <span>VERIFIKASI KEASLIAN</span>
+                      </div>
+                      <div className="my-1.5 flex justify-center">
+                        <svg className="w-14 h-14 text-[#0c2340]" viewBox="0 0 100 100" fill="currentColor">
+                          <rect x="8" y="8" width="26" height="26" rx="4" fill="#0c2340" />
+                          <rect x="13" y="13" width="16" height="16" rx="2" fill="white" />
+                          <rect x="17" y="17" width="8" height="8" rx="1" fill="#1c4974" />
+                          <rect x="66" y="8" width="26" height="26" rx="4" fill="#0c2340" />
+                          <rect x="71" y="13" width="16" height="16" rx="2" fill="white" />
+                          <rect x="75" y="17" width="8" height="8" rx="1" fill="#1c4974" />
+                          <rect x="8" y="66" width="26" height="26" rx="4" fill="#0c2340" />
+                          <rect x="13" y="71" width="16" height="16" rx="2" fill="white" />
+                          <rect x="17" y="75" width="8" height="8" rx="1" fill="#1c4974" />
+                          <rect x="42" y="12" width="7" height="7" fill="#0c2340" />
+                          <rect x="52" y="18" width="7" height="7" fill="#0c2340" />
+                          <rect x="42" y="28" width="8" height="8" rx="2" fill="#1c4974" />
+                          <rect x="14" y="44" width="7" height="7" fill="#0c2340" />
+                          <rect x="25" y="48" width="8" height="7" fill="#0c2340" />
+                          <rect x="40" y="42" width="20" height="20" rx="4" fill="#0c2340" />
+                          <circle cx="50" cy="52" r="4" fill="white" />
+                          <rect x="68" y="44" width="8" height="8" fill="#0c2340" />
+                          <rect x="80" y="52" width="8" height="7" fill="#0c2340" />
+                          <rect x="42" y="70" width="7" height="10" fill="#0c2340" />
+                          <rect x="54" y="76" width="10" height="7" fill="#0c2340" />
+                          <rect x="72" y="72" width="16" height="16" rx="3" fill="#0c2340" />
+                        </svg>
+                      </div>
+                      <div className="font-sans text-[8.5px] font-bold text-slate-700 tracking-wider whitespace-nowrap">
+                        |||||| IMBS/ABS/{cleanPeriodForFilename.slice(0, 10).toUpperCase()} ||||||
+                      </div>
+                      <div className="text-[7.5px] text-slate-400 mt-0.5 whitespace-nowrap">
+                        Scan untuk Bukti Verifikasi Resmi Sistem
+                      </div>
+                      <div className="text-[8px] font-bold text-slate-700 mt-0.5 whitespace-nowrap">
+                        IMAM MUZANI BOARDING SCHOOL
+                      </div>
+                    </div>
 
-                {/* Pilar 2: Tanda Tangan Penandatangan 1 / Kepala Sekolah (Tengah) */}
-                <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
-                  <div className="text-slate-500 text-[10.5px] whitespace-nowrap leading-normal">Mengetahui,</div>
-                  <div className="font-bold text-slate-900 text-xs whitespace-nowrap leading-normal">
-                    {activeInst.headmasterTitle || 'Kepala Sekolah'}
-                  </div>
-                  <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap leading-normal">
-                    [ Tanda Tangan & Cap Sah ]
-                  </div>
-                  <div className="font-extrabold text-slate-950 underline text-xs tracking-normal whitespace-nowrap leading-normal">
-                    {activeInst.headmaster || 'Fauzan Azhiimaa, Lc'}
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap leading-normal">
-                    NIP: {activeInst.headmasterNip || '—'}
-                  </div>
-                </div>
+                    {/* Pilar 2: Tanda Tangan Penandatangan 1 / Kepala Sekolah (Tengah) */}
+                    <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
+                      <div className="text-slate-500 text-[10.5px] whitespace-nowrap leading-normal">Mengetahui,</div>
+                      <div className="font-bold text-slate-900 text-xs whitespace-nowrap leading-normal">
+                        {activeInst.headmasterTitle || 'Kepala Sekolah'}
+                      </div>
+                      <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap leading-normal">
+                        [ Tanda Tangan & Cap Sah ]
+                      </div>
+                      <div className="font-extrabold text-slate-950 underline text-xs tracking-normal whitespace-nowrap leading-normal">
+                        {activeInst.headmaster || 'Fauzan Azhiimaa, Lc'}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap leading-normal">
+                        NIP: {activeInst.headmasterNip || '—'}
+                      </div>
+                    </div>
 
-                {/* Pilar 3: Tanggal Cetak & Tanda Tangan Penandatangan 2 / Tata Usaha (Kanan) */}
-                <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
-                  <div className="text-slate-600 text-[10.5px] font-medium mb-0.5 whitespace-nowrap leading-normal">
-                    Bogor, <span className="font-semibold text-slate-800">{formattedEndDate}</span>
-                  </div>
-                  <div className="font-bold text-slate-900 text-xs whitespace-nowrap leading-normal">
-                    {activeInst.tuStaffTitle || 'Petugas Tata Usaha'}
-                  </div>
-                  <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap leading-normal">
-                    [ Tanda Tangan Sah ]
-                  </div>
-                  <div className="font-extrabold text-slate-950 underline text-xs tracking-normal whitespace-nowrap leading-normal">
-                    {activeInst.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap leading-normal">
-                    NIP: {activeInst.tuStaffNip || '—'}
+                    {/* Pilar 3: Tanggal Cetak & Tanda Tangan Penandatangan 2 / Tata Usaha (Kanan) */}
+                    <div className="text-center w-52 shrink-0 whitespace-nowrap pb-1">
+                      <div className="text-slate-600 text-[10.5px] font-medium mb-0.5 whitespace-nowrap leading-normal">
+                        Bogor, <span className="font-semibold text-slate-800">{formattedEndDate}</span>
+                      </div>
+                      <div className="font-bold text-slate-900 text-xs whitespace-nowrap leading-normal">
+                        {activeInst.tuStaffTitle || 'Petugas Tata Usaha'}
+                      </div>
+                      <div className="h-12 flex items-center justify-center text-[10px] text-slate-400 italic whitespace-nowrap leading-normal">
+                        [ Tanda Tangan Sah ]
+                      </div>
+                      <div className="font-extrabold text-slate-950 underline text-xs tracking-normal whitespace-nowrap leading-normal">
+                        {activeInst.tuStaff || 'ALDRI WAHYUDI CHANDRA'}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-sans mt-0.5 whitespace-nowrap leading-normal">
+                        NIP: {activeInst.tuStaffNip || '—'}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Modal Footer Controls */}
+            <div className="px-6 py-3.5 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 whitespace-nowrap">
+                <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span>Dokumen resmi hasil kalkulasi real-time SIM-Presensi Imam Muzani Boarding School (Layout Otomatis Bebas Crop).</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={isGeneratingPdf || isGeneratingPng}
+                  className="py-2.5 px-4 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-500 text-white shadow transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isGeneratingPdf ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileText className="w-4 h-4" />
+                  )}
+                  <span>Simpan dalam PDF</span>
+                </button>
+
+                <button
+                  onClick={handleDownloadPng}
+                  disabled={isGeneratingPdf || isGeneratingPng}
+                  className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isGeneratingPng ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <ImageIcon className="w-4 h-4" />
+                  )}
+                  <span>Simpan dalam PNG High Quality</span>
+                </button>
+
+                <button
+                  onClick={onClose}
+                  className="py-2.5 px-4 rounded-xl font-bold text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
+                >
+                  Tutup
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Modal Footer Controls */}
-        <div className="px-6 py-3.5 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
-          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 whitespace-nowrap">
-            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span>Dokumen resmi hasil kalkulasi real-time SIM-Presensi Imam Muzani Boarding School (Layout Otomatis Bebas Crop).</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleDownloadPdf}
-              disabled={isGeneratingPdf || isGeneratingPng}
-              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-500 text-white shadow transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {isGeneratingPdf ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileText className="w-4 h-4" />
-              )}
-              <span>Simpan dalam PDF</span>
-            </button>
-
-            <button
-              onClick={handleDownloadPng}
-              disabled={isGeneratingPdf || isGeneratingPng}
-              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {isGeneratingPng ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <ImageIcon className="w-4 h-4" />
-              )}
-              <span>Simpan dalam PNG High Quality</span>
-            </button>
-
-            <button
-              onClick={onClose}
-              className="py-2.5 px-4 rounded-xl font-bold text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
-            >
-              Tutup
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+      );
+    }
