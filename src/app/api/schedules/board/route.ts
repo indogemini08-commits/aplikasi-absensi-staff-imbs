@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     // Build employees query
     let empQuery = `
-      SELECT e.id as employee_id, e.nip, e.name, e.gender, e.position,
+      SELECT e.id as employee_id, e.nip, e.name, e.gender, e.position, e.sort_order,
              d.id as department_id, d.name as department_name, d.code as department_code,
              d.start_time, d.end_time, d.grace_period_minutes, d.work_days, d.daily_schedules
       FROM employees e
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     empQuery += ` ORDER BY COALESCE(e.sort_order, 999999) ASC, e.nip ASC, e.name ASC`;
 
     // Execute all independent queries concurrently in parallel
-    const [holiday, employees, defaultShift, attendances, leaves] = await Promise.all([
+    const [holiday, rawEmployees, defaultShift, attendances, leaves] = await Promise.all([
       db.prepare(`SELECT * FROM holidays WHERE date = ?`).get(dateParam) as Promise<any>,
       db.prepare(empQuery).all(...empParams) as Promise<any[]>,
       db.prepare(`SELECT * FROM shift_templates WHERE is_default = 1 LIMIT 1`).get() as Promise<any>,
@@ -64,6 +64,25 @@ export async function GET(req: NextRequest) {
         WHERE lr.status = 'approved' AND ? BETWEEN lr.start_date AND lr.end_date
       `).all(dateParam) as Promise<any[]>,
     ]);
+
+    // Query custom order from app_settings as fallback / sync layer
+    const customOrderMap = new Map<string, number>();
+    try {
+      const orderSetting = (await db.prepare(`SELECT value FROM app_settings WHERE key = 'employees_custom_order'`).get()) as any;
+      if (orderSetting && orderSetting.value) {
+        const orderedIds: string[] = typeof orderSetting.value === 'string' ? JSON.parse(orderSetting.value) : orderSetting.value;
+        if (Array.isArray(orderedIds)) {
+          orderedIds.forEach((id, idx) => customOrderMap.set(id, idx + 1));
+        }
+      }
+    } catch {}
+
+    const employees = [...rawEmployees].sort((a, b) => {
+      const orderA = customOrderMap.get(a.employee_id) ?? (typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999);
+      const orderB = customOrderMap.get(b.employee_id) ?? (typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999);
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' });
+    });
 
     const attMap = new Map();
     for (const a of attendances) {

@@ -279,6 +279,10 @@ export default function PegawaiPage() {
 
       if (res.ok) {
         toast.success(`Urutan ${sourceItem.name} berhasil disimpan secara permanen`);
+        try {
+          sessionStorage.removeItem('imbs_laporan_data');
+          localStorage.removeItem('imbs_laporan_data');
+        } catch {}
         broadcastDataChange('employees');
         broadcastDataChange('reports');
         setIsOrderSaved(true);
@@ -336,6 +340,10 @@ export default function PegawaiPage() {
       });
       if (res.ok) {
         toast.success(`Urutan pegawai diperbarui`);
+        try {
+          sessionStorage.removeItem('imbs_laporan_data');
+          localStorage.removeItem('imbs_laporan_data');
+        } catch {}
         broadcastDataChange('employees');
         broadcastDataChange('reports');
         setIsOrderSaved(true);
@@ -359,6 +367,10 @@ export default function PegawaiPage() {
       });
       if (res.ok) {
         toast.success('Urutan pegawai berhasil dikembalikan ke standar NIP numerik');
+        try {
+          sessionStorage.removeItem('imbs_laporan_data');
+          localStorage.removeItem('imbs_laporan_data');
+        } catch {}
         broadcastDataChange('employees');
         broadcastDataChange('reports');
         await fetchEmployees();

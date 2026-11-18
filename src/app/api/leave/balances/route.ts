@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     const db = getDb();
 
     let query = `
-      SELECT lb.*, e.name as employee_name, e.nip as employee_nip, d.name as department_name
+      SELECT lb.*, e.name as employee_name, e.nip as employee_nip, e.sort_order, d.name as department_name
       FROM leave_balances lb
       JOIN employees e ON lb.employee_id = e.id
       JOIN departments d ON e.department_id = d.id
@@ -33,7 +33,26 @@ export async function GET(req: NextRequest) {
     }
 
     query += ` ORDER BY COALESCE(e.sort_order, 999999) ASC, e.nip ASC, e.name ASC`;
-    const balances = await db.prepare(query).all(...params);
+    const rawBalances = await db.prepare(query).all(...params) as any[];
+
+    // Query custom order from app_settings
+    const customOrderMap = new Map<string, number>();
+    try {
+      const orderSetting = (await db.prepare(`SELECT value FROM app_settings WHERE key = 'employees_custom_order'`).get()) as any;
+      if (orderSetting && orderSetting.value) {
+        const orderedIds: string[] = typeof orderSetting.value === 'string' ? JSON.parse(orderSetting.value) : orderSetting.value;
+        if (Array.isArray(orderedIds)) {
+          orderedIds.forEach((id, idx) => customOrderMap.set(id, idx + 1));
+        }
+      }
+    } catch {}
+
+    const balances = [...rawBalances].sort((a, b) => {
+      const orderA = customOrderMap.get(a.employee_id) ?? (typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999);
+      const orderB = customOrderMap.get(b.employee_id) ?? (typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999);
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.employee_nip || '').localeCompare(b.employee_nip || '', undefined, { numeric: true, sensitivity: 'base' });
+    });
 
     return NextResponse.json({ balances, year });
   } catch (err: any) {

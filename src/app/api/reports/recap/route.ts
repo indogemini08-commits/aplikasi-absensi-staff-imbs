@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
 
     // 4. Generate Employee Recap Summary - PURE DYNAMIC QUERY FROM REAL DATABASE
     let empQuery = `
-      SELECT e.id, e.name, e.nip, e.position, d.id as department_id, d.name as department_name,
+      SELECT e.id, e.name, e.nip, e.position, e.sort_order, d.id as department_id, d.name as department_name,
              d.work_days, d.daily_schedules
       FROM employees e
       JOIN departments d ON e.department_id = d.id
@@ -161,10 +161,22 @@ export async function GET(req: NextRequest) {
     empQuery += ` ORDER BY COALESCE(e.sort_order, 999999) ASC, e.nip ASC, e.name ASC`;
     let activeEmployees = await db.prepare(empQuery).all(...empParams) as any[];
 
-    // Ensure strict sort by sort_order
+    // Fetch custom order from app_settings for global single source of truth
+    const customOrderMap = new Map<string, number>();
+    try {
+      const orderSetting = (await db.prepare(`SELECT value FROM app_settings WHERE key = 'employees_custom_order'`).get()) as any;
+      if (orderSetting && orderSetting.value) {
+        const orderedIds: string[] = typeof orderSetting.value === 'string' ? JSON.parse(orderSetting.value) : orderSetting.value;
+        if (Array.isArray(orderedIds)) {
+          orderedIds.forEach((id, idx) => customOrderMap.set(id, idx + 1));
+        }
+      }
+    } catch {}
+
+    // Ensure strict sort by customOrderMap / sort_order
     activeEmployees.sort((a, b) => {
-      const orderA = typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999;
-      const orderB = typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999;
+      const orderA = customOrderMap.get(a.id) ?? (typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999);
+      const orderB = customOrderMap.get(b.id) ?? (typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999);
       if (orderA !== orderB) return orderA - orderB;
       return (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' });
     });

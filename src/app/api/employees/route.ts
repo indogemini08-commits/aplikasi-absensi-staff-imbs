@@ -70,9 +70,21 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Query custom order from app_settings
+    const customOrderMap = new Map<string, number>();
+    try {
+      const orderSetting = (await db.prepare(`SELECT value FROM app_settings WHERE key = 'employees_custom_order'`).get()) as any;
+      if (orderSetting && orderSetting.value) {
+        const orderedIds: string[] = typeof orderSetting.value === 'string' ? JSON.parse(orderSetting.value) : orderSetting.value;
+        if (Array.isArray(orderedIds)) {
+          orderedIds.forEach((id, idx) => customOrderMap.set(id, idx + 1));
+        }
+      }
+    } catch {}
+
     const employees = Array.from(uniqueEmployeesMap.values()).sort((a, b) => {
-      const orderA = typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999;
-      const orderB = typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999;
+      const orderA = customOrderMap.get(a.id) ?? (typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999);
+      const orderB = customOrderMap.get(b.id) ?? (typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999);
       if (orderA !== orderB) return orderA - orderB;
       return (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' });
     });
@@ -121,11 +133,13 @@ export async function POST(req: NextRequest) {
       // Persist global custom order in app_settings for global single source of truth
       try {
         await db.prepare(`
-          INSERT INTO app_settings (key, value, updated_at)
-          VALUES ('employees_custom_order', ?, ?)
-          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
-        `).run(JSON.stringify(orderedIds), now);
-      } catch {}
+          INSERT INTO app_settings (key, value)
+          VALUES ('employees_custom_order', ?)
+          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+        `).run(JSON.stringify(orderedIds));
+      } catch (e) {
+        console.error('Failed to set employees_custom_order in app_settings:', e);
+      }
 
       recordAuditLog({
         userId: user.userId,
@@ -160,11 +174,13 @@ export async function POST(req: NextRequest) {
 
       try {
         await db.prepare(`
-          INSERT INTO app_settings (key, value, updated_at)
-          VALUES ('employees_custom_order', ?, ?)
-          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
-        `).run(JSON.stringify(allEmps.map((e) => e.id)), now);
-      } catch {}
+          INSERT INTO app_settings (key, value)
+          VALUES ('employees_custom_order', ?)
+          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+        `).run(JSON.stringify(allEmps.map((e) => e.id)));
+      } catch (e) {
+        console.error('Failed to reset employees_custom_order in app_settings:', e);
+      }
 
       recordAuditLog({
         userId: user.userId,
