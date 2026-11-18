@@ -96,7 +96,8 @@ export async function POST(req: NextRequest) {
         const gf = checkGeofence(
           { latitude, longitude },
           { latitude: loc.latitude, longitude: loc.longitude },
-          loc.radius_meters
+          loc.radius_meters,
+          typeof accuracy === 'number' ? accuracy : undefined
         );
         if (gf.distanceMeters < minDistance) {
           minDistance = gf.distanceMeters;
@@ -110,7 +111,8 @@ export async function POST(req: NextRequest) {
     const geofence = checkGeofence(
       { latitude, longitude },
       { latitude: targetLocation.latitude, longitude: targetLocation.longitude },
-      targetLocation.radius_meters
+      targetLocation.radius_meters,
+      typeof accuracy === 'number' ? accuracy : undefined
     );
 
     if (!geofence.isWithinRadius) {

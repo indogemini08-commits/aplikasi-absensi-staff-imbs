@@ -271,27 +271,56 @@ export default function LokasiPage() {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
-  // Get current device GPS
+  // Get current device GPS with precision multi-sample calibration
   const pickCurrentGps = () => {
     if (!('geolocation' in navigator)) {
       toast.error('Browser tidak mendukung geolokasi');
       return;
     }
-    toast.info('Mengambil titik koordinat GPS dari perangkat...');
+    toast.info('Mengkalibrasi titik koordinat GPS presisi tinggi dari satelit...');
+    let bestAcc = Infinity;
+    let samples = 0;
+
+    // Fast initial position
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const lat = parseFloat(pos.coords.latitude.toFixed(6));
         const lng = parseFloat(pos.coords.longitude.toFixed(6));
+        bestAcc = pos.coords.accuracy;
         setLatitude(lat);
         setLongitude(lng);
-        setExtractSuccessMsg(`Koordinat GPS perangkat disinkronkan: ${lat}, ${lng}`);
-        toast.success(`Koordinat GPS perangkat berhasil disinkronkan! (${lat}, ${lng})`);
+        setExtractSuccessMsg(`Titik GPS perangkat: ${lat}, ${lng} (Akurasi: ±${Math.round(bestAcc)}m)`);
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+
+    // Watch for optimal precision
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        samples++;
+        if (pos.coords.accuracy <= bestAcc) {
+          bestAcc = pos.coords.accuracy;
+          const lat = parseFloat(pos.coords.latitude.toFixed(6));
+          const lng = parseFloat(pos.coords.longitude.toFixed(6));
+          setLatitude(lat);
+          setLongitude(lng);
+          setExtractSuccessMsg(`Titik GPS Presisi: ${lat}, ${lng} (Akurasi: ±${Math.round(bestAcc)}m)`);
+        }
+        if (pos.coords.accuracy <= 12 && samples >= 2) {
+          navigator.geolocation.clearWatch(watchId);
+          toast.success(`Koordinat GPS terkunci presisi tinggi (±${Math.round(pos.coords.accuracy)}m)!`);
+        }
       },
       (err) => {
-        toast.error('Gagal mengambil GPS: ' + err.message);
+        console.warn(err);
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
+
+    setTimeout(() => {
+      navigator.geolocation.clearWatch(watchId);
+    }, 6000);
   };
 
   const handleSaveLocation = async (e: React.FormEvent) => {
@@ -678,13 +707,13 @@ export default function LokasiPage() {
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Batas Radius Geofencing (Meter):
             </label>
-            <div className="flex items-center gap-2 mb-2">
-              {[50, 80, 100, 150, 200].map((preset) => (
+            <div className="flex flex-wrap items-center gap-1.5 mb-2">
+              {[50, 100, 150, 200, 250, 300, 500].map((preset) => (
                 <button
                   key={preset}
                   type="button"
                   onClick={() => setRadiusMeters(preset)}
-                  className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition border ${
+                  className={`flex-1 min-w-[50px] py-1.5 rounded-xl text-xs font-bold transition border ${
                     radiusMeters === preset
                       ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                       : 'border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'

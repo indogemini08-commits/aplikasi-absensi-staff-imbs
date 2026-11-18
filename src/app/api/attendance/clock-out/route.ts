@@ -71,7 +71,12 @@ export async function POST(req: NextRequest) {
       let closestLoc = allowedLocations[0];
       let minDistance = Infinity;
       for (const loc of allowedLocations) {
-        const gf = checkGeofence({ latitude, longitude }, { latitude: loc.latitude, longitude: loc.longitude }, loc.radius_meters);
+        const gf = checkGeofence(
+          { latitude, longitude },
+          { latitude: loc.latitude, longitude: loc.longitude },
+          loc.radius_meters,
+          typeof accuracy === 'number' ? accuracy : undefined
+        );
         if (gf.distanceMeters < minDistance) {
           minDistance = gf.distanceMeters;
           closestLoc = loc;
@@ -84,7 +89,8 @@ export async function POST(req: NextRequest) {
     const geofence = checkGeofence(
       { latitude, longitude },
       { latitude: targetLocation.latitude, longitude: targetLocation.longitude },
-      targetLocation.radius_meters
+      targetLocation.radius_meters,
+      typeof accuracy === 'number' ? accuracy : undefined
     );
 
     if (!geofence.isWithinRadius) {

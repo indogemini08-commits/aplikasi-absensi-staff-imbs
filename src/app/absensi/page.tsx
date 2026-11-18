@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MapPin,
@@ -61,6 +61,31 @@ export default function AbsensiPage() {
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [gpsCalibrating, setGpsCalibrating] = useState(false);
+
+  // Precision GPS references
+  const watchIdRef = useRef<number | null>(null);
+  const bestAccuracyRef = useRef<number>(Infinity);
+  const settleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const stopWatchingGps = () => {
+    if (watchIdRef.current !== null && typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+    if (settleTimeoutRef.current) {
+      clearTimeout(settleTimeoutRef.current);
+      settleTimeoutRef.current = null;
+    }
+    setIsLocating(false);
+    setGpsCalibrating(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      stopWatchingGps();
+    };
+  }, []);
 
   // Selected work location
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
@@ -129,54 +154,129 @@ export default function AbsensiPage() {
     }
   };
 
-  const requestGpsLocation = (targetLoc?: any) => {
+  const requestGpsLocation = (targetLoc?: any, isManualCalibration: boolean = false) => {
+    stopWatchingGps();
     setIsLocating(true);
+    setGpsCalibrating(true);
     setGpsError(null);
+    bestAccuracyRef.current = Infinity;
+    let sampleCounter = 0;
 
     if (!('geolocation' in navigator)) {
       setGpsError('Peramban (browser) Anda tidak mendukung fitur geolokasi GPS.');
       setIsLocating(false);
+      setGpsCalibrating(false);
       return;
     }
 
+    if (isManualCalibration) {
+      toast.info('Mengkalibrasi sinyal satelit GPS presisi tinggi...');
+    }
+
+    const loc = targetLoc || selectedLocation;
+
+    // Fast initial one-shot fix for immediate coordinate display
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const coords = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         };
+        const acc = position.coords.accuracy;
         setUserCoord(coords);
-        setAccuracy(position.coords.accuracy);
+        setAccuracy(acc);
+        bestAccuracyRef.current = acc;
 
-        const loc = targetLoc || selectedLocation;
         if (loc) {
-          evaluateGeofence(coords, loc);
+          evaluateGeofence(coords, loc, acc);
         }
-        setIsLocating(false);
       },
-      (error) => {
-        console.warn('GPS Error:', error);
-        let msg = 'Gagal mendeteksi lokasi GPS.';
-        if (error.code === error.PERMISSION_DENIED) {
-          msg = 'Izin lokasi ditolak. Silakan izinkan akses lokasi pada browser smartphone Anda dan coba kembali.';
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          msg = 'Sinyal GPS tidak tersedia atau perangkat sedang offline.';
-        } else if (error.code === error.TIMEOUT) {
-          msg = 'Waktu permintaan lokasi GPS habis. Silakan coba kembali.';
-        }
-        setGpsError(msg);
-        setIsLocating(false);
-      },
+      () => {},
       {
         enableHighAccuracy: true,
-        timeout: 15000,
+        timeout: 6000,
         maximumAge: 0,
       }
     );
+
+    // Continuous precision tracking to lock onto satellite triangulation
+    try {
+      const id = navigator.geolocation.watchPosition(
+        (position) => {
+          sampleCounter++;
+
+          const coords = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          const acc = position.coords.accuracy;
+
+          // Always accept the coordinate if it provides better or equal accuracy
+          if (acc <= bestAccuracyRef.current || !userCoord) {
+            bestAccuracyRef.current = acc;
+            setUserCoord(coords);
+            setAccuracy(acc);
+
+            const activeLoc = targetLoc || selectedLocation;
+            if (activeLoc) {
+              evaluateGeofence(coords, activeLoc, acc);
+            }
+          }
+
+          // If accuracy is high-precision (<= 12 meters) and we have collected at least 2 samples,
+          // lock in the optimal fix and gracefully stop tracking to conserve battery!
+          if (acc <= 12 && sampleCounter >= 2) {
+            stopWatchingGps();
+            if (isManualCalibration) {
+              toast.success(`Satelit GPS terkunci presisi tinggi (Akurasi: ±${Math.round(acc)}m)`);
+            }
+          }
+        },
+        (error) => {
+          console.warn('GPS Watcher Error:', error);
+          if (!userCoord) {
+            let msg = 'Gagal mendeteksi lokasi GPS.';
+            if (error.code === error.PERMISSION_DENIED) {
+              msg = 'Izin lokasi ditolak. Silakan izinkan akses lokasi pada browser smartphone Anda.';
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+              msg = 'Sinyal GPS tidak tersedia atau perangkat sedang offline.';
+            } else if (error.code === error.TIMEOUT) {
+              msg = 'Waktu permintaan lokasi GPS habis. Silakan coba kembali di area terbuka.';
+            }
+            setGpsError(msg);
+          }
+          stopWatchingGps();
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0,
+        }
+      );
+      watchIdRef.current = id;
+
+      // Auto-settle after 7 seconds so tracking doesn't run indefinitely
+      settleTimeoutRef.current = setTimeout(() => {
+        stopWatchingGps();
+      }, 7000);
+    } catch (e) {
+      console.warn('Error starting GPS watchPosition:', e);
+      stopWatchingGps();
+    }
   };
 
-  const evaluateGeofence = (coords: { latitude: number; longitude: number }, location: any) => {
-    const gf = checkGeofence(coords, { latitude: location.latitude, longitude: location.longitude }, location.radius_meters);
+  const evaluateGeofence = (
+    coords: { latitude: number; longitude: number },
+    location: any,
+    accMeters?: number | null
+  ) => {
+    const effectiveAcc = typeof accMeters === 'number' ? accMeters : accuracy;
+    const gf = checkGeofence(
+      coords,
+      { latitude: location.latitude, longitude: location.longitude },
+      location.radius_meters,
+      typeof effectiveAcc === 'number' ? effectiveAcc : undefined
+    );
     setDistanceMeters(gf.distanceMeters);
     setIsWithinRadius(gf.isWithinRadius);
   };
@@ -186,7 +286,7 @@ export default function AbsensiPage() {
     if (loc) {
       setSelectedLocation(loc);
       if (userCoord) {
-        evaluateGeofence(userCoord, loc);
+        evaluateGeofence(userCoord, loc, accuracy);
       }
     }
   };
@@ -428,8 +528,9 @@ export default function AbsensiPage() {
             targetLocation={selectedLocation}
             distanceMeters={distanceMeters}
             isWithinRadius={isWithinRadius}
-            onRefreshGps={() => requestGpsLocation()}
+            onRefreshGps={() => requestGpsLocation(undefined, true)}
             isLoadingGps={isLocating}
+            isCalibrating={gpsCalibrating}
           />
 
           {/* Main Attendance Action Card */}
