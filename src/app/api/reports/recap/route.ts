@@ -191,16 +191,34 @@ export async function GET(req: NextRequest) {
 
     // Query approved leave requests in date range for all employees
     const allApprovedLeaves = await db.prepare(`
-      SELECT employee_id, start_date, end_date, total_days
-      FROM leave_requests
-      WHERE status = 'approved'
-        AND start_date <= ? AND end_date >= ?
+      SELECT lr.employee_id, lr.start_date, lr.end_date, lr.total_days,
+             lt.code as leave_code, lt.name as leave_name
+      FROM leave_requests lr
+      LEFT JOIN leave_types lt ON lr.leave_type_id = lt.id
+      WHERE lr.status = 'approved'
+        AND lr.start_date <= ? AND lr.end_date >= ?
     `).all(endDate, startDate) as any[];
 
-    const empLeavesMap = new Map<string, number>();
+    const empTotalLeavesMap = new Map<string, number>();
+    const empIzinMap = new Map<string, number>();
+    const empSakitMap = new Map<string, number>();
+
     for (const l of allApprovedLeaves) {
-      const current = empLeavesMap.get(l.employee_id) || 0;
-      empLeavesMap.set(l.employee_id, current + (l.total_days || 0));
+      const days = Number(l.total_days) || 1;
+      const code = (l.leave_code || '').toUpperCase();
+      const name = (l.leave_name || '').toLowerCase();
+
+      // Total approved days
+      const curTotal = empTotalLeavesMap.get(l.employee_id) || 0;
+      empTotalLeavesMap.set(l.employee_id, curTotal + days);
+
+      if (code.includes('IZIN') || name.includes('izin')) {
+        const curIzin = empIzinMap.get(l.employee_id) || 0;
+        empIzinMap.set(l.employee_id, curIzin + days);
+      } else if (code.includes('SAKIT') || name.includes('sakit')) {
+        const curSakit = empSakitMap.get(l.employee_id) || 0;
+        empSakitMap.set(l.employee_id, curSakit + days);
+      }
     }
 
     const recapSummary = activeEmployees.map((emp, index) => {
@@ -240,7 +258,9 @@ export async function GET(req: NextRequest) {
       if (scheduledWorkDays === 0) scheduledWorkDays = allDatesInRange.length;
 
       // Subtract approved duty / leave days from database
-      const approvedDutyDays = empLeavesMap.get(emp.id) || 0;
+      const approvedDutyDays = empTotalLeavesMap.get(emp.id) || 0;
+      const total_izin = empIzinMap.get(emp.id) || 0;
+      const total_sakit = empSakitMap.get(emp.id) || 0;
       const total_tidak_hadir = Math.max(0, scheduledWorkDays - total_masuk - approvedDutyDays);
 
       const predikat = determinePredikat(
@@ -265,6 +285,8 @@ export async function GET(req: NextRequest) {
         total_telat,
         total_pulang_cepat,
         total_lupa_pulang,
+        total_izin,
+        total_sakit,
         total_tidak_hadir,
         predikat,
       };
@@ -327,11 +349,13 @@ export async function GET(req: NextRequest) {
         'No',
         'Nama Pegawai',
         'Departemen',
-        'Absen Masuk (Kali)',
-        'Absen Pulang (Kali)',
+        'Masuk (Kali)',
+        'Pulang (Kali)',
         'Telat (Kali)',
         'Pulang Lebih Awal (Kali)',
         'Lupa Absen Pulang (Kali)',
+        'Izin (Hari)',
+        'Sakit (Hari)',
         'Tidak Hadir (Kali)',
         'Predikat',
       ];
@@ -348,6 +372,8 @@ export async function GET(req: NextRequest) {
           `"${s.total_telat}"`,
           `"${s.total_pulang_cepat}"`,
           `"${s.total_lupa_pulang}"`,
+          `"${s.total_izin || 0}"`,
+          `"${s.total_sakit || 0}"`,
           `"${s.total_tidak_hadir}"`,
           `"${s.predikat}"`,
         ];

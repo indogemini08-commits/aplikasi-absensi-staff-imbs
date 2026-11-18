@@ -504,15 +504,17 @@ function LaporanContent() {
                   <table className="w-full text-left text-xs whitespace-nowrap">
                     <thead>
                       <tr className="bg-slate-100/80 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-white/10 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider text-[10.5px]">
-                        <th className="py-3 px-4 text-center w-12">No</th>
+                        <th className="py-3 px-3 text-center w-12">No</th>
                         <th className="py-3 px-4">Nama Pegawai</th>
                         <th className="py-3 px-4">Departemen</th>
-                        <th className="py-3 px-4 text-center">Absen Masuk</th>
-                        <th className="py-3 px-4 text-center">Absen Pulang</th>
-                        <th className="py-3 px-4 text-center text-amber-600 dark:text-amber-400">Telat</th>
-                        <th className="py-3 px-4 text-center">Pulang Cepat</th>
-                        <th className="py-3 px-4 text-center text-amber-600 dark:text-amber-400">Tidak Absen Pulang</th>
-                        <th className="py-3 px-4 text-center text-rose-600 dark:text-rose-400">Tidak Hadir</th>
+                        <th className="py-3 px-3 text-center">Masuk</th>
+                        <th className="py-3 px-3 text-center">Pulang</th>
+                        <th className="py-3 px-3 text-center text-amber-600 dark:text-amber-400">Telat</th>
+                        <th className="py-3 px-3 text-center">Pulang Cepat</th>
+                        <th className="py-3 px-3 text-center text-amber-600 dark:text-amber-400">Tidak Absen Pulang</th>
+                        <th className="py-3 px-3 text-center text-blue-600 dark:text-blue-400">Izin</th>
+                        <th className="py-3 px-3 text-center text-purple-600 dark:text-purple-400">Sakit</th>
+                        <th className="py-3 px-3 text-center text-rose-600 dark:text-rose-400">Tidak Hadir</th>
                         <th className="py-3 px-4 text-center w-28">Predikat</th>
                       </tr>
                     </thead>
@@ -526,7 +528,7 @@ function LaporanContent() {
                               isEven ? 'bg-white/70 dark:bg-slate-900/40' : 'bg-slate-50/50 dark:bg-slate-800/25'
                             }`}
                           >
-                            <td className="py-3 px-4 text-center font-bold text-slate-500">
+                            <td className="py-3 px-3 text-center font-bold text-slate-500">
                               {item.no}
                             </td>
                             <td className="py-3 px-4">
@@ -540,22 +542,28 @@ function LaporanContent() {
                             <td className="py-3 px-4 text-slate-600 dark:text-slate-300 font-semibold">
                               {item.department_name}
                             </td>
-                            <td className="py-3 px-4 text-center tabular-nums font-bold text-slate-800 dark:text-slate-200">
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-slate-800 dark:text-slate-200">
                               {item.total_masuk} Kali
                             </td>
-                            <td className="py-3 px-4 text-center tabular-nums font-bold text-slate-800 dark:text-slate-200">
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-slate-800 dark:text-slate-200">
                               {item.total_pulang} Kali
                             </td>
-                            <td className="py-3 px-4 text-center tabular-nums font-bold text-amber-600 dark:text-amber-400">
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-amber-600 dark:text-amber-400">
                               {item.total_telat} Kali
                             </td>
-                            <td className="py-3 px-4 text-center tabular-nums font-bold text-slate-600 dark:text-slate-400">
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-slate-600 dark:text-slate-400">
                               {item.total_pulang_cepat} Kali
                             </td>
-                            <td className="py-3 px-4 text-center tabular-nums font-bold text-amber-600 dark:text-amber-400">
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-amber-600 dark:text-amber-400">
                               {item.total_lupa_pulang} Kali
                             </td>
-                            <td className="py-3 px-4 text-center tabular-nums font-bold text-rose-600 dark:text-rose-400">
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-blue-600 dark:text-blue-400">
+                              {item.total_izin || 0} Hari
+                            </td>
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-purple-600 dark:text-purple-400">
+                              {item.total_sakit || 0} Hari
+                            </td>
+                            <td className="py-3 px-3 text-center tabular-nums font-bold text-rose-600 dark:text-rose-400">
                               {item.total_tidak_hadir} Kali
                             </td>
                             <td className="py-3 px-4 text-center">

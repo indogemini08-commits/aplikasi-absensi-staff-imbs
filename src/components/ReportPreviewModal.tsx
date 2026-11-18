@@ -27,6 +27,8 @@ export interface RecapItem {
   total_telat: number;
   total_pulang_cepat: number;
   total_lupa_pulang: number;
+  total_izin?: number;
+  total_sakit?: number;
   total_tidak_hadir: number;
   predikat: string;
 }
@@ -330,6 +332,8 @@ export default function ReportPreviewModal({
   const totalTelatAll = recapSummary.reduce((acc, i) => acc + (i.total_telat || 0), 0);
   const totalPulangCepatAll = recapSummary.reduce((acc, i) => acc + (i.total_pulang_cepat || 0), 0);
   const totalLupaPulangAll = recapSummary.reduce((acc, i) => acc + (i.total_lupa_pulang || 0), 0);
+  const totalIzinAll = recapSummary.reduce((acc, i) => acc + (i.total_izin || 0), 0);
+  const totalSakitAll = recapSummary.reduce((acc, i) => acc + (i.total_sakit || 0), 0);
   const totalTidakHadirAll = recapSummary.reduce((acc, i) => acc + (i.total_tidak_hadir || 0), 0);
 
   // Real-time synchronization: read latest live settings from storage
@@ -703,22 +707,24 @@ export default function ReportPreviewModal({
                 <table className="w-full text-left border-collapse table-auto whitespace-nowrap">
                   <thead>
                     <tr className="bg-[#0c2340] text-white text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap align-middle">
-                      <th className="py-3 px-2 text-center w-[3.5%] whitespace-nowrap align-middle leading-normal">No</th>
-                      <th className="py-3 px-3 text-left w-[20%] whitespace-nowrap align-middle leading-normal">Nama Pegawai</th>
-                      <th className="py-3 px-3 text-left w-[14%] whitespace-nowrap align-middle leading-normal">Departemen</th>
-                      <th className="py-3 px-2 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Absen Masuk</th>
-                      <th className="py-3 px-2 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Absen Pulang</th>
-                      <th className="py-3 px-2 text-center w-[6.5%] whitespace-nowrap align-middle leading-normal">Telat</th>
-                      <th className="py-3 px-2 text-center w-[8.5%] whitespace-nowrap align-middle leading-normal">Pulang Cepat</th>
-                      <th className="py-3 px-3 text-center w-[12%] whitespace-nowrap align-middle leading-normal">Tidak Absen Pulang</th>
-                      <th className="py-3 px-2 text-center w-[8.5%] whitespace-nowrap align-middle leading-normal">Tidak Hadir</th>
-                      <th className="py-3 px-2.5 text-center w-[9%] whitespace-nowrap align-middle leading-normal">Predikat</th>
+                      <th className="py-3 px-2 text-center w-[3%] whitespace-nowrap align-middle leading-normal">No</th>
+                      <th className="py-3 px-3 text-left w-[18%] whitespace-nowrap align-middle leading-normal">Nama Pegawai</th>
+                      <th className="py-3 px-3 text-left w-[13%] whitespace-nowrap align-middle leading-normal">Departemen</th>
+                      <th className="py-3 px-2 text-center w-[7.5%] whitespace-nowrap align-middle leading-normal">Masuk</th>
+                      <th className="py-3 px-2 text-center w-[7.5%] whitespace-nowrap align-middle leading-normal">Pulang</th>
+                      <th className="py-3 px-2 text-center w-[6%] whitespace-nowrap align-middle leading-normal">Telat</th>
+                      <th className="py-3 px-2 text-center w-[7.5%] whitespace-nowrap align-middle leading-normal">Pulang Cepat</th>
+                      <th className="py-3 px-2.5 text-center w-[10%] whitespace-nowrap align-middle leading-normal">Tidak Absen Pulang</th>
+                      <th className="py-3 px-2 text-center w-[6%] whitespace-nowrap align-middle leading-normal">Izin</th>
+                      <th className="py-3 px-2 text-center w-[6%] whitespace-nowrap align-middle leading-normal">Sakit</th>
+                      <th className="py-3 px-2 text-center w-[7.5%] whitespace-nowrap align-middle leading-normal">Tidak Hadir</th>
+                      <th className="py-3 px-2.5 text-center w-[8%] whitespace-nowrap align-middle leading-normal">Predikat</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 whitespace-nowrap text-[10.5px] sm:text-[11px] align-middle">
                     {recapSummary.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="py-10 text-center text-slate-400 italic whitespace-nowrap align-middle">
+                        <td colSpan={12} className="py-10 text-center text-slate-400 italic whitespace-nowrap align-middle">
                           Tidak ada catatan kehadiran untuk rentang waktu ini.
                         </td>
                       </tr>
@@ -776,13 +782,31 @@ export default function ReportPreviewModal({
                                 <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
                               )}
                             </td>
-                            <td className="py-2.5 px-3 text-center whitespace-nowrap align-middle">
+                            <td className="py-2.5 px-2.5 text-center whitespace-nowrap align-middle">
                               {item.total_lupa_pulang > 0 ? (
-                                <span className="recap-badge inline-flex items-center justify-center px-2.5 py-1 rounded border border-orange-200/80 bg-orange-50 text-orange-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
+                                <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-orange-200/80 bg-orange-50 text-orange-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
                                   {item.total_lupa_pulang} Kali
                                 </span>
                               ) : (
                                 <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Kali</span>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
+                              {(item.total_izin || 0) > 0 ? (
+                                <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-blue-200/80 bg-blue-50 text-blue-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
+                                  {item.total_izin} Hari
+                                </span>
+                              ) : (
+                                <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Hari</span>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
+                              {(item.total_sakit || 0) > 0 ? (
+                                <span className="recap-badge inline-flex items-center justify-center px-2 py-1 rounded border border-purple-200/80 bg-purple-50 text-purple-700 font-bold text-[10.5px] leading-none whitespace-nowrap align-middle">
+                                  {item.total_sakit} Hari
+                                </span>
+                              ) : (
+                                <span className="text-slate-400 font-normal whitespace-nowrap leading-normal">0 Hari</span>
                               )}
                             </td>
                             <td className="py-2.5 px-2 text-center whitespace-nowrap align-middle">
@@ -824,7 +848,9 @@ export default function ReportPreviewModal({
                         <td className="py-3 px-2 text-center text-slate-900 whitespace-nowrap align-middle leading-normal">{totalPulangAll} Kali</td>
                         <td className="py-3 px-2 text-center text-amber-700 whitespace-nowrap align-middle leading-normal">{totalTelatAll} Kali</td>
                         <td className="py-3 px-2 text-center text-blue-700 whitespace-nowrap align-middle leading-normal">{totalPulangCepatAll} Kali</td>
-                        <td className="py-3 px-3 text-center text-orange-700 whitespace-nowrap align-middle leading-normal">{totalLupaPulangAll} Kali</td>
+                        <td className="py-3 px-2.5 text-center text-orange-700 whitespace-nowrap align-middle leading-normal">{totalLupaPulangAll} Kali</td>
+                        <td className="py-3 px-2 text-center text-blue-700 whitespace-nowrap align-middle leading-normal">{totalIzinAll} Hari</td>
+                        <td className="py-3 px-2 text-center text-purple-700 whitespace-nowrap align-middle leading-normal">{totalSakitAll} Hari</td>
                         <td className="py-3 px-2 text-center text-rose-700 whitespace-nowrap align-middle leading-normal">{totalTidakHadirAll} Kali</td>
                         <td className="py-3 px-2.5 text-center text-slate-600 font-medium whitespace-nowrap align-middle leading-normal">Terverifikasi</td>
                       </tr>
