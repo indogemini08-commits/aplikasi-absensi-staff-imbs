@@ -83,10 +83,12 @@ export default function ProfilPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pb-20">
+      <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
         <Navbar user={user} />
-        <main className="max-w-md mx-auto p-4 space-y-4">
-          <div className="h-40 rounded-3xl bg-slate-200 dark:bg-slate-800 animate-pulse" />
+        <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-4 pb-28 md:pb-12 app-scroll-container">
+          <div className="max-w-md mx-auto space-y-4">
+            <div className="h-40 rounded-3xl bg-slate-200 dark:bg-slate-800 animate-pulse" />
+          </div>
         </main>
         <BottomNav />
       </div>
@@ -94,10 +96,11 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="min-h-screen pb-28 md:pb-12 bg-transparent">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
       <Navbar user={user} />
 
-      <main className="max-w-md mx-auto px-4 py-5 space-y-4">
+      <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden app-scroll-container">
+        <div className="max-w-md mx-auto px-4 py-5 pb-28 md:pb-12 space-y-4">
         {/* Profile Card */}
         <div className="glass-card rounded-3xl p-6 text-center border border-slate-200/80 dark:border-slate-800/80 relative overflow-hidden">
           <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/25 ring-4 ring-blue-500/20">
@@ -216,6 +219,7 @@ export default function ProfilPage() {
         <p className="text-center text-[10px] text-slate-400 dark:text-slate-500 pt-2">
           Aplikasi Absensi Staff IMBS v1.0.0 • PWA Ready
         </p>
+        </div>
       </main>
 
       <BottomNav />

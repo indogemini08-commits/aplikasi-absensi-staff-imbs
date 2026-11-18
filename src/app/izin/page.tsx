@@ -190,10 +190,11 @@ export default function IzinPage() {
   };
 
   return (
-    <div className="min-h-screen pb-28 md:pb-12 bg-transparent">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
       <Navbar user={user} />
 
-      <main className="max-w-4xl mx-auto px-4 py-5 md:py-8 space-y-5">
+      <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden app-scroll-container">
+        <div className="max-w-4xl mx-auto px-4 py-5 md:py-8 pb-28 md:pb-12 space-y-5">
         {/* Header & Submit Button */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -331,6 +332,7 @@ export default function IzinPage() {
               ))}
             </div>
           )}
+        </div>
         </div>
       </main>
 

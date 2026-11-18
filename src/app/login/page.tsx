@@ -117,7 +117,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8 relative">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] w-full overflow-y-auto overflow-x-hidden flex flex-col justify-center items-center px-4 py-8 relative app-scroll-container">
       {/* Top right theme toggle */}
       <div className="absolute top-5 right-5">
         <ThemeToggle />

@@ -101,10 +101,11 @@ export default function KalenderPage() {
   ];
 
   return (
-    <div className="min-h-screen pb-28 md:pb-12 bg-transparent">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
       <Navbar user={user} />
 
-      <main className="max-w-md mx-auto px-4 py-5 space-y-4">
+      <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden app-scroll-container">
+        <div className="max-w-md mx-auto px-4 py-5 pb-28 md:pb-12 space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900 dark:text-white">
@@ -214,6 +215,7 @@ export default function KalenderPage() {
               </div>
             ))}
           </div>
+        </div>
         </div>
       </main>
 

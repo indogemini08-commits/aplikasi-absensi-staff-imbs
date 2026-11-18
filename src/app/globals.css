@@ -37,13 +37,33 @@
   --neon-violet: #a78bfa;
 }
 
+html,
+body {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior-y: none;
+}
+
 body {
   color: var(--foreground);
   background-color: var(--background);
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
-  min-height: 100vh;
+}
+
+/* Independent smooth scroll container with iOS touch inertia */
+.app-scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+@media print {
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
 }
 
 /* ==========================================================================

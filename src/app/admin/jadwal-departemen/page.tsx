@@ -538,7 +538,7 @@ export default function JadwalDepartemenPage() {
       <Navbar user={user} />
       <div className="flex">
         <Sidebar userRole={user?.role} />
-        <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 lg:p-8 space-y-6 app-scroll-container">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>

@@ -144,12 +144,14 @@ export default function StaffDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pb-20">
+      <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
         <Navbar user={user} />
-        <main className="max-w-md mx-auto p-4 space-y-4">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+        <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-4 pb-28 md:pb-12 app-scroll-container">
+          <div className="max-w-md mx-auto space-y-4">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
         </main>
         <BottomNav />
       </div>
@@ -162,10 +164,11 @@ export default function StaffDashboard() {
   const schedule = statusData?.schedule;
 
   return (
-    <div className="min-h-screen pb-24 md:pb-12 bg-transparent">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
       <Navbar user={user} />
 
-      <main className="max-w-4xl mx-auto px-4 py-5 md:py-8 space-y-5">
+      <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden app-scroll-container">
+        <div className="max-w-4xl mx-auto px-4 py-5 md:py-8 pb-28 md:pb-12 space-y-5">
         {/* Employee Greeting Header */}
         <div className="glass-card rounded-3xl p-5 md:p-6 border border-white/80 dark:border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
           {/* Ambient corner light */}
@@ -431,6 +434,7 @@ export default function StaffDashboard() {
               ))}
             </div>
           )}
+        </div>
         </div>
       </main>
 

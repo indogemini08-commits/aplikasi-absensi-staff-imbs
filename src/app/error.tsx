@@ -12,7 +12,7 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-[#090d16] text-center">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] w-full overflow-y-auto flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-[#090d16] text-center app-scroll-container">
       <div className="w-20 h-20 rounded-3xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto mb-4 shadow-xl">
         <AlertTriangle className="w-10 h-10" />
       </div>

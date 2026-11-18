@@ -98,7 +98,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
 
   return (
     <aside
-      className={`hidden md:flex flex-col shrink-0 border-r border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#070b14]/75 backdrop-blur-2xl transition-all duration-300 select-none z-30 sticky top-16 h-[calc(100vh-4rem)] print:hidden ${
+      className={`hidden md:flex flex-col shrink-0 border-r border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#070b14]/75 backdrop-blur-2xl transition-all duration-300 select-none z-30 h-full min-h-0 overflow-hidden print:hidden ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
@@ -123,8 +123,8 @@ export default function Sidebar({ userRole }: SidebarProps) {
         </button>
       </div>
 
-      {/* Menu links list with smooth scrolling */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+      {/* Menu links list with smooth independent scrolling */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-4 app-scroll-container">
         {menuGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1">
             {!collapsed && (

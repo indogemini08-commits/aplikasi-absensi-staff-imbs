@@ -275,15 +275,15 @@ function LaporanContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent print:bg-white print:text-black">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent print:bg-white print:text-black print:h-auto print:overflow-visible">
       <div className="print:hidden">
         <Navbar user={user} />
       </div>
 
-      <div className="flex flex-1">
+      <div className="flex-1 flex overflow-hidden min-h-0 w-full relative print:h-auto print:overflow-visible">
         <Sidebar userRole={user?.role} />
 
-        <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 lg:p-8 space-y-6 app-scroll-container print:overflow-visible print:h-auto">
           {/* Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
             <div>

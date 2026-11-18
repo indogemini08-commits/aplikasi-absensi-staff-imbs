@@ -138,13 +138,13 @@ export default function AdminSaldoCutiPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
       <Navbar user={user} />
 
-      <div className="flex flex-1">
+      <div className="flex-1 flex overflow-hidden min-h-0 w-full relative">
         <Sidebar userRole={user?.role} />
 
-        <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 lg:p-8 space-y-6 app-scroll-container">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">

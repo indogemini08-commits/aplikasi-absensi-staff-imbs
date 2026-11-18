@@ -40,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={plusJakartaSans.variable} suppressHydrationWarning>
-      <body className={`${plusJakartaSans.className} min-h-screen bg-[#edf2f9] dark:bg-[#060913] text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white relative overflow-x-hidden`}>
+      <body className={`${plusJakartaSans.className} h-screen h-[100dvh] max-h-[100dvh] bg-[#edf2f9] dark:bg-[#060913] text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white relative overflow-hidden`}>
         <ToastProvider>
           <PWAProvider>
             {/* Futuristic Ambient Lighting Canvas & Floating Blurred Neon Orbs */}

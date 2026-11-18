@@ -142,11 +142,11 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-transparent">
+      <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
         <Navbar user={user} />
-        <div className="flex flex-1">
+        <div className="flex-1 flex overflow-hidden min-h-0 w-full relative">
           <Sidebar userRole={user?.role} />
-          <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
+          <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 lg:p-8 space-y-6 app-scroll-container">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
               <SkeletonCard />
               <SkeletonCard />
@@ -171,13 +171,13 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
       <Navbar user={user} />
 
-      <div className="flex flex-1">
+      <div className="flex-1 flex overflow-hidden min-h-0 w-full relative">
         <Sidebar userRole={user?.role} />
 
-        <main className="flex-1 w-full min-w-0 p-3 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 lg:p-8 space-y-6 app-scroll-container">
           {/* Executive Header Banner with Futuristic Glass & Holographic Accent */}
           <div className="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-white/80 dark:border-white/10 shadow-[0_20px_50px_-10px_rgba(37, 99, 235,0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden">
             {/* Subtle corner light refraction */}

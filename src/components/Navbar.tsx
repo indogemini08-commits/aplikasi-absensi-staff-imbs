@@ -230,7 +230,7 @@ export default function Navbar({ user }: NavbarProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-nav relative transition-all">
+    <header className="shrink-0 sticky top-0 z-40 w-full glass-nav relative select-none transition-all">
       {/* Bottom glowing futuristic laser accent line */}
       <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/50 via-cyan-400/50 to-transparent shadow-[0_1px_8px_rgba(37, 99, 235,0.4)] pointer-events-none" />
 

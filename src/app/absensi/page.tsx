@@ -346,11 +346,13 @@ export default function AbsensiPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pb-20">
+      <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
         <Navbar user={user} />
-        <main className="max-w-md mx-auto p-4 space-y-4">
-          <div className="w-full h-48 bg-slate-200 dark:bg-slate-800 rounded-3xl animate-pulse" />
-          <div className="w-full h-32 bg-slate-200 dark:bg-slate-800 rounded-3xl animate-pulse" />
+        <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden p-4 pb-28 md:pb-12 app-scroll-container">
+          <div className="max-w-md mx-auto space-y-4">
+            <div className="w-full h-48 bg-slate-200 dark:bg-slate-800 rounded-3xl animate-pulse" />
+            <div className="w-full h-32 bg-slate-200 dark:bg-slate-800 rounded-3xl animate-pulse" />
+          </div>
         </main>
         <BottomNav />
       </div>
@@ -363,10 +365,11 @@ export default function AbsensiPage() {
   const schedule = statusData?.schedule;
 
   return (
-    <div className="min-h-screen pb-28 md:pb-12 bg-transparent">
+    <div className="h-screen h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-transparent">
       <Navbar user={user} />
 
-      <main className="max-w-md mx-auto px-4 py-5 space-y-4">
+      <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden app-scroll-container">
+        <div className="max-w-md mx-auto px-4 py-5 pb-28 md:pb-12 space-y-4">
         {/* Title Header */}
         <div className="text-center">
           <h1 className="text-xl font-black text-slate-900 dark:text-white">
@@ -528,6 +531,7 @@ export default function AbsensiPage() {
           <p className="text-[11px] text-slate-400 dark:text-slate-500">
             * Waktu absensi diverifikasi otomatis menggunakan server waktu resmi Asia/Jakarta (WIB).
           </p>
+        </div>
         </div>
       </main>
 
