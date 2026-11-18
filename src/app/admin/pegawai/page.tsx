@@ -24,6 +24,12 @@ import {
   CheckSquare,
   AlertTriangle,
   ShieldCheck,
+  GripVertical,
+  ChevronUp,
+  ChevronDown,
+  RotateCcw,
+  Loader2,
+  ArrowUpDown,
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
@@ -121,6 +127,12 @@ export default function PegawaiPage() {
   const [empToDelete, setEmpToDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Drag & Drop Reorder state
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isReordering, setIsReordering] = useState(false);
+  const [isOrderSaved, setIsOrderSaved] = useState(false);
+
   useEffect(() => {
     fetchEmployees();
   }, []);
@@ -158,10 +170,13 @@ export default function PegawaiPage() {
       const depts = data.departments || [];
       const shfs = data.shifts || [];
 
-      // Sort employees numerically by NIP (e.g. IMBS-001, IMBS-002, ..., IMBS-022)
-      const sortedEmps = [...emps].sort((a, b) =>
-        (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' })
-      );
+      // Sort employees: prioritize custom sort_order, then fallback to natural NIP order
+      const sortedEmps = [...emps].sort((a, b) => {
+        const orderA = typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999;
+        const orderB = typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999;
+        if (orderA !== orderB) return orderA - orderB;
+        return (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' });
+      });
 
       setEmployees(sortedEmps);
       setDepartments(depts);
@@ -197,6 +212,163 @@ export default function PegawaiPage() {
     } catch (e) {
       console.error(e);
       setLoading(false);
+    }
+  };
+
+  // Drag & Drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(index));
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const currentFiltered = [...filteredEmployees];
+    const sourceItem = currentFiltered[draggedIndex];
+    const targetItem = currentFiltered[targetIndex];
+    if (!sourceItem || !targetItem) return;
+
+    // Find in full employees list
+    const fullList = [...employees];
+    const sourceFullIndex = fullList.findIndex((item) => item.id === sourceItem.id);
+    const targetFullIndex = fullList.findIndex((item) => item.id === targetItem.id);
+    if (sourceFullIndex === -1 || targetFullIndex === -1) return;
+
+    const [moved] = fullList.splice(sourceFullIndex, 1);
+    fullList.splice(targetFullIndex, 0, moved);
+
+    // Reassign sequential sort_order (1..N)
+    const updatedList = fullList.map((item, idx) => ({
+      ...item,
+      sort_order: idx + 1,
+    }));
+
+    setEmployees(updatedList);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+
+    try {
+      sessionStorage.setItem('imbs_pegawai_list', JSON.stringify(updatedList));
+    } catch {}
+
+    setIsReordering(true);
+    try {
+      const res = await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reorder',
+          orderedIds: updatedList.map((emp) => emp.id),
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`Urutan ${sourceItem.name} berhasil disimpan secara permanen`);
+        broadcastDataChange('employees');
+        broadcastDataChange('reports');
+        setIsOrderSaved(true);
+        setTimeout(() => setIsOrderSaved(false), 3500);
+      } else {
+        toast.error('Gagal menyimpan urutan pegawai ke database');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Terjadi kendala saat menyimpan urutan pegawai');
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const moveEmployee = async (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= filteredEmployees.length) return;
+    const currentFiltered = [...filteredEmployees];
+    const sourceItem = currentFiltered[fromIndex];
+    const targetItem = currentFiltered[toIndex];
+    if (!sourceItem || !targetItem) return;
+
+    const fullList = [...employees];
+    const sourceFullIndex = fullList.findIndex((item) => item.id === sourceItem.id);
+    const targetFullIndex = fullList.findIndex((item) => item.id === targetItem.id);
+    if (sourceFullIndex === -1 || targetFullIndex === -1) return;
+
+    const [moved] = fullList.splice(sourceFullIndex, 1);
+    fullList.splice(targetFullIndex, 0, moved);
+
+    const updatedList = fullList.map((item, idx) => ({
+      ...item,
+      sort_order: idx + 1,
+    }));
+
+    setEmployees(updatedList);
+    try {
+      sessionStorage.setItem('imbs_pegawai_list', JSON.stringify(updatedList));
+    } catch {}
+
+    setIsReordering(true);
+    try {
+      const res = await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reorder',
+          orderedIds: updatedList.map((emp) => emp.id),
+        }),
+      });
+      if (res.ok) {
+        toast.success(`Urutan pegawai diperbarui`);
+        broadcastDataChange('employees');
+        broadcastDataChange('reports');
+        setIsOrderSaved(true);
+        setTimeout(() => setIsOrderSaved(false), 3000);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
+  const handleResetOrder = async () => {
+    if (!confirm('Kembalikan urutan seluruh pegawai ke urutan standar NIP numerik?')) return;
+    setIsReordering(true);
+    try {
+      const res = await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset_order' }),
+      });
+      if (res.ok) {
+        toast.success('Urutan pegawai berhasil dikembalikan ke standar NIP numerik');
+        broadcastDataChange('employees');
+        broadcastDataChange('reports');
+        await fetchEmployees();
+      } else {
+        toast.error('Gagal mengembalikan urutan');
+      }
+    } catch (e) {
+      toast.error('Gagal mengembalikan urutan');
+    } finally {
+      setIsReordering(false);
     }
   };
 
@@ -629,7 +801,35 @@ export default function PegawaiPage() {
               )}
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              {isReordering ? (
+                <div className="glass-card rounded-2xl py-1.5 px-3 border border-blue-300 dark:border-blue-800 flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 animate-pulse">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Menyimpan Urutan...</span>
+                </div>
+              ) : isOrderSaved ? (
+                <div className="glass-card rounded-2xl py-1.5 px-3 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 animate-in fade-in">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Urutan Tersimpan Permanen</span>
+                </div>
+              ) : (
+                <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-900/40 px-3 py-1.5 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
+                  <GripVertical className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Drag & Drop untuk Mengatur Urutan Pegawai</span>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={handleResetOrder}
+                disabled={isReordering}
+                className="py-2 px-3 glass-card rounded-2xl border border-slate-200/80 dark:border-slate-800/80 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+                title="Kembalikan urutan seluruh pegawai ke urutan standar NIP numerik"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Reset Urutan NIP</span>
+              </button>
+
               <div className="glass-card rounded-2xl py-2 px-3.5 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>
@@ -667,6 +867,12 @@ export default function PegawaiPage() {
                   <table className="w-full text-left text-xs whitespace-nowrap">
                     <thead>
                       <tr className="bg-slate-100/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                        <th className="py-3.5 px-3 w-20 text-center" title="Urutan prioritas global pegawai (dapat di-drag & drop)">
+                          <div className="flex items-center justify-center gap-1 text-slate-600 dark:text-slate-300">
+                            <ArrowUpDown className="w-3.5 h-3.5 text-blue-500" />
+                            <span>Urutan</span>
+                          </div>
+                        </th>
                         <th className="py-3.5 px-3 w-10 text-center">
                           <button
                             type="button"
@@ -691,16 +897,63 @@ export default function PegawaiPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                      {filteredEmployees.map((emp) => {
+                      {filteredEmployees.map((emp, index) => {
                         const isSelected = selectedIds.includes(emp.id);
+                        const isDragging = draggedIndex === index;
+                        const isDragOver = dragOverIndex === index;
+
                         return (
                         <tr
                           key={emp.id}
-                          className={`hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors ${
-                            isSelected ? 'bg-blue-50/40 dark:bg-blue-950/20 ' : ''
-                          }${emp.is_active === 0 ? 'opacity-60 bg-slate-100/40 dark:bg-slate-900/40' : ''}`}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index)}
+                          onDragOver={(e) => handleDragOver(e, index)}
+                          onDrop={(e) => handleDrop(e, index)}
+                          onDragEnd={handleDragEnd}
+                          className={`transition-all duration-150 ${
+                            isDragging
+                              ? 'opacity-35 scale-[0.99] bg-blue-100/60 dark:bg-blue-950/60 ring-2 ring-blue-500/50 shadow-inner'
+                              : isDragOver
+                              ? 'border-t-2 border-t-blue-600 bg-blue-50/80 dark:bg-blue-900/30'
+                              : 'hover:bg-slate-50/70 dark:hover:bg-slate-800/50'
+                          } ${isSelected ? 'bg-blue-50/40 dark:bg-blue-950/20 ' : ''}${emp.is_active === 0 ? 'opacity-60 bg-slate-100/40 dark:bg-slate-900/40' : ''}`}
                         >
-                          <td className="py-3.5 px-3 text-center">
+                          {/* 0. Drag Handle & Sequence Order */}
+                          <td className="py-3 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-center gap-1 select-none">
+                              <div
+                                className="cursor-grab active:cursor-grabbing p-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-700/60 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                title="Klik dan seret (drag & drop) untuk memindahkan urutan pegawai ini"
+                              >
+                                <GripVertical className="w-4 h-4" />
+                              </div>
+                              <span className="font-mono text-[10.5px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-1.5 py-0.5 rounded-md min-w-[24px] text-center shadow-2xs">
+                                #{index + 1}
+                              </span>
+                              <div className="flex flex-col gap-0.5 opacity-60 hover:opacity-100 transition">
+                                <button
+                                  type="button"
+                                  disabled={index === 0 || isReordering}
+                                  onClick={() => moveEmployee(index, index - 1)}
+                                  className="p-0.5 text-slate-400 hover:text-blue-600 disabled:opacity-20 cursor-pointer"
+                                  title="Pindahkan ke atas"
+                                >
+                                  <ChevronUp className="w-3 h-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={index === filteredEmployees.length - 1 || isReordering}
+                                  onClick={() => moveEmployee(index, index + 1)}
+                                  className="p-0.5 text-slate-400 hover:text-blue-600 disabled:opacity-20 cursor-pointer"
+                                  title="Pindahkan ke bawah"
+                                >
+                                  <ChevronDown className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
                               onClick={() => toggleSelect(emp.id)}
@@ -840,24 +1093,44 @@ export default function PegawaiPage() {
 
                 {/* Mobile View: High Performance Card Stream */}
                 <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800 p-2.5 space-y-3">
-                  {filteredEmployees.map((emp) => {
+                  {filteredEmployees.map((emp, index) => {
                     const isSelected = selectedIds.includes(emp.id);
+                    const isDragging = draggedIndex === index;
+                    const isDragOver = dragOverIndex === index;
+
                     return (
                       <div
                         key={emp.id}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={(e) => handleDragOver(e, index)}
+                        onDrop={(e) => handleDrop(e, index)}
+                        onDragEnd={handleDragEnd}
                         className={`p-3.5 rounded-2xl border transition-all ${
-                          isSelected
+                          isDragging
+                            ? 'opacity-40 scale-[0.98] ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950/40'
+                            : isDragOver
+                            ? 'border-t-4 border-t-blue-600 bg-blue-50/70 dark:bg-blue-900/30'
+                            : isSelected
                             ? 'bg-blue-50/50 dark:bg-blue-950/30 border-blue-500/50 shadow-xs ring-1 ring-blue-500/30'
                             : 'bg-white/80 dark:bg-slate-900/60 border-slate-200/80 dark:border-white/10 shadow-xs'
                         } ${emp.is_active === 0 ? 'opacity-60' : ''}`}
                       >
-                        {/* Header: Checkbox + Avatar + Name + Status */}
-                        <div className="flex items-start justify-between gap-2.5">
-                          <div className="flex items-center gap-2.5 min-w-0">
+                        {/* Header: Reorder Handle + Checkbox + Avatar + Name + Status */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            {/* Drag handle & sequence badge */}
+                            <div className="flex items-center gap-1 cursor-grab active:cursor-grabbing text-slate-400 p-1 -ml-1 select-none shrink-0" title="Geser untuk mengatur urutan">
+                              <GripVertical className="w-4 h-4 text-slate-400" />
+                              <span className="font-mono text-[9.5px] font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded shadow-2xs">
+                                #{index + 1}
+                              </span>
+                            </div>
+
                             <button
                               type="button"
                               onClick={() => toggleSelect(emp.id)}
-                              className="p-1 -ml-1 text-slate-400 hover:text-blue-600 transition shrink-0"
+                              className="p-1 text-slate-400 hover:text-blue-600 transition shrink-0"
                             >
                               {isSelected ? (
                                 <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -878,15 +1151,38 @@ export default function PegawaiPage() {
                             </div>
                           </div>
 
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[9.5px] font-extrabold shrink-0 ${
-                              emp.is_active === 1
-                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
-                                : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-                            }`}
-                          >
-                            {emp.is_active === 1 ? 'Aktif' : 'Nonaktif'}
-                          </span>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="flex items-center gap-0.5">
+                              <button
+                                type="button"
+                                disabled={index === 0 || isReordering}
+                                onClick={() => moveEmployee(index, index - 1)}
+                                className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-blue-600 disabled:opacity-20 cursor-pointer"
+                                title="Pindahkan ke atas"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={index === filteredEmployees.length - 1 || isReordering}
+                                onClick={() => moveEmployee(index, index + 1)}
+                                className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-blue-600 disabled:opacity-20 cursor-pointer"
+                                title="Pindahkan ke bawah"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[9.5px] font-extrabold shrink-0 ${
+                                emp.is_active === 1
+                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                                  : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                              }`}
+                            >
+                              {emp.is_active === 1 ? 'Aktif' : 'Nonaktif'}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Details grid */}

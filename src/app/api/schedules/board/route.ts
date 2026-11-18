@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       empParams.push(`%${search}%`, `%${search}%`);
     }
 
-    empQuery += ` ORDER BY e.nip ASC, e.name ASC`;
+    empQuery += ` ORDER BY COALESCE(e.sort_order, 999999) ASC, e.nip ASC, e.name ASC`;
 
     // Execute all independent queries concurrently in parallel
     const [holiday, employees, defaultShift, attendances, leaves] = await Promise.all([

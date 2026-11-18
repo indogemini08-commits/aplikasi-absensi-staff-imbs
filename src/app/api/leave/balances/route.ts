@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       params.push(user.employeeId);
     }
 
-    query += ` ORDER BY e.nip ASC, e.name ASC`;
+    query += ` ORDER BY COALESCE(e.sort_order, 999999) ASC, e.nip ASC, e.name ASC`;
     const balances = await db.prepare(query).all(...params);
 
     return NextResponse.json({ balances, year });

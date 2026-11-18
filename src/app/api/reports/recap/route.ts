@@ -157,9 +157,17 @@ export async function GET(req: NextRequest) {
       empParams.push(employeeId);
     }
 
-    // Sort order: by numeric portion of NIP (IMBS-001 ... IMBS-022)
-    empQuery += ` ORDER BY e.nip ASC, e.name ASC`;
-    const activeEmployees = await db.prepare(empQuery).all(...empParams) as any[];
+    // Sort order: prioritized by global custom sort_order, then NIP
+    empQuery += ` ORDER BY COALESCE(e.sort_order, 999999) ASC, e.nip ASC, e.name ASC`;
+    let activeEmployees = await db.prepare(empQuery).all(...empParams) as any[];
+
+    // Ensure strict sort by sort_order
+    activeEmployees.sort((a, b) => {
+      const orderA = typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999;
+      const orderB = typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' });
+    });
 
     // Index attendance records by employee_id
     const empRecordsMap = new Map<string, any[]>();

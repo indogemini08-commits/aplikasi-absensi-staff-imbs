@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
       params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    query += ` ORDER BY e.nip ASC, e.name ASC`;
+    query += ` ORDER BY COALESCE(e.sort_order, 999999) ASC, e.nip ASC, e.name ASC`;
 
     // Fetch employees, departments, and shifts concurrently in parallel
     const [rawEmployees, rawDepartments, shifts] = await Promise.all([
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       db.prepare(`SELECT * FROM shift_templates ORDER BY name ASC`).all() as Promise<any[]>,
     ]);
 
-    // Deduplicate employees in case join with schedules has multiple rows, and sort naturally by NIP
+    // Deduplicate employees in case join with schedules has multiple rows, and sort by sort_order
     const uniqueEmployeesMap = new Map<string, any>();
     for (const emp of rawEmployees) {
       if (!uniqueEmployeesMap.has(emp.id)) {
@@ -70,9 +70,12 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const employees = Array.from(uniqueEmployeesMap.values()).sort((a, b) =>
-      (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' })
-    );
+    const employees = Array.from(uniqueEmployeesMap.values()).sort((a, b) => {
+      const orderA = typeof a.sort_order === 'number' && a.sort_order > 0 ? a.sort_order : 999999;
+      const orderB = typeof b.sort_order === 'number' && b.sort_order > 0 ? b.sort_order : 999999;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' });
+    });
 
     const departments = rawDepartments.map((d) => ({
       ...d,
@@ -98,6 +101,85 @@ export async function POST(req: NextRequest) {
     const { action } = body;
     const db = getDb();
     const now = new Date().toISOString();
+
+    // 0. Drag & Drop Reorder Employees (Global Custom Order)
+    if (action === 'reorder') {
+      const { orderedIds } = body;
+      if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+        return NextResponse.json({ error: 'Data urutan pegawai (orderedIds) tidak valid' }, { status: 400 });
+      }
+
+      for (let i = 0; i < orderedIds.length; i++) {
+        const empId = orderedIds[i];
+        await db.prepare(`
+          UPDATE employees
+          SET sort_order = ?, updated_at = ?
+          WHERE id = ?
+        `).run(i + 1, now, empId);
+      }
+
+      // Persist global custom order in app_settings for global single source of truth
+      try {
+        await db.prepare(`
+          INSERT INTO app_settings (key, value, updated_at)
+          VALUES ('employees_custom_order', ?, ?)
+          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+        `).run(JSON.stringify(orderedIds), now);
+      } catch {}
+
+      recordAuditLog({
+        userId: user.userId,
+        userName: user.name || user.username,
+        action: 'REORDER_EMPLOYEES',
+        entityType: 'employee',
+        details: `Mengatur ulang urutan manual ${orderedIds.length} pegawai melalui Drag & Drop Reorder`,
+        ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
+      });
+
+      return jsonResponse({
+        success: true,
+        message: `Urutan ${orderedIds.length} pegawai berhasil disimpan secara permanen.`,
+        orderedIds,
+      });
+    }
+
+    // 0b. Reset Order to Natural NIP Order
+    if (action === 'reset_order') {
+      const allEmps = (await db.prepare(`SELECT id, nip FROM employees`).all()) as any[];
+      allEmps.sort((a, b) =>
+        (a.nip || '').localeCompare(b.nip || '', undefined, { numeric: true, sensitivity: 'base' })
+      );
+
+      for (let i = 0; i < allEmps.length; i++) {
+        await db.prepare(`
+          UPDATE employees
+          SET sort_order = ?, updated_at = ?
+          WHERE id = ?
+        `).run(i + 1, now, allEmps[i].id);
+      }
+
+      try {
+        await db.prepare(`
+          INSERT INTO app_settings (key, value, updated_at)
+          VALUES ('employees_custom_order', ?, ?)
+          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+        `).run(JSON.stringify(allEmps.map((e) => e.id)), now);
+      } catch {}
+
+      recordAuditLog({
+        userId: user.userId,
+        userName: user.name || user.username,
+        action: 'RESET_EMPLOYEE_ORDER',
+        entityType: 'employee',
+        details: 'Mengembalikan urutan pegawai ke standar NIP numerik',
+        ipAddress: req.headers.get('x-forwarded-for') || '127.0.0.1',
+      });
+
+      return jsonResponse({
+        success: true,
+        message: 'Urutan pegawai berhasil dikembalikan ke standar NIP numerik.',
+      });
+    }
 
     // 1. Batch CSV Import
     if (action === 'import_csv') {
@@ -246,9 +328,17 @@ export async function POST(req: NextRequest) {
         now
       );
 
+      let nextSortOrder = 1;
+      try {
+        const maxOrderRow = (await db.prepare(`SELECT MAX(sort_order) as max_val FROM employees`).get()) as any;
+        if (maxOrderRow && typeof maxOrderRow.max_val === 'number') {
+          nextSortOrder = maxOrderRow.max_val + 1;
+        }
+      } catch {}
+
       await db.prepare(`
-        INSERT INTO employees (id, user_id, nip, name, gender, phone, department_id, position, join_date, status, is_active, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'permanent', 1, ?, ?)
+        INSERT INTO employees (id, user_id, nip, name, gender, phone, department_id, position, join_date, status, is_active, sort_order, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'permanent', 1, ?, ?, ?)
       `).run(
         empId,
         userId,
@@ -259,6 +349,7 @@ export async function POST(req: NextRequest) {
         departmentId,
         position.trim(),
         joinDate || now.substring(0, 10),
+        nextSortOrder,
         now,
         now
       );

@@ -45,7 +45,7 @@ export default function AbsensiPage() {
       try {
         const cached = sessionStorage.getItem('imbs_staff_status');
         return cached ? JSON.parse(cached) : null;
-      } catch {}
+      } catch { }
     }
     return null;
   });
@@ -370,168 +370,166 @@ export default function AbsensiPage() {
 
       <main className="flex-1 w-full min-w-0 min-h-0 h-full overflow-y-auto overflow-x-hidden app-scroll-container">
         <div className="max-w-md mx-auto px-4 py-5 pb-28 md:pb-12 space-y-4">
-        {/* Title Header */}
-        <div className="text-center">
-          <h1 className="text-xl font-black text-slate-900 dark:text-white">
-            Absensi Pegawai Digital
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            {statusData?.formattedDate} • {statusData?.currentTime} WIB
-          </p>
-        </div>
-
-        {/* Work Location Selector (if multiple allowed) */}
-        {statusData?.allowedLocations && statusData.allowedLocations.length > 1 && (
-          <div className="glass-card rounded-2xl p-3 border border-slate-200/80 dark:border-slate-800/80">
-            <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1 flex items-center gap-1.5">
-              <Building className="w-3.5 h-3.5 text-blue-600" />
-              Pilih Lokasi Kerja:
-            </label>
-            <select
-              value={selectedLocation?.id || ''}
-              onChange={(e) => handleLocationChange(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            >
-              {statusData.allowedLocations.map((loc: any) => (
-                <option key={loc.id} value={loc.id}>
-                  {loc.name} (Radius: {loc.radius_meters}m)
-                </option>
-              ))}
-            </select>
+          {/* Title Header */}
+          <div className="text-center">
+            <h1 className="text-xl font-black text-slate-900 dark:text-white">
+              Absensi Pegawai Digital
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {statusData?.formattedDate} • {statusData?.currentTime} WIB
+            </p>
           </div>
-        )}
 
-        {/* GPS Error Alert */}
-        {gpsError && (
-          <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-            <div className="flex-1 text-xs">
-              <h4 className="font-bold text-rose-900 dark:text-rose-200 text-sm">
-                Akses Lokasi GPS Terkendala
-              </h4>
-              <p className="text-rose-800 dark:text-rose-300 mt-0.5">{gpsError}</p>
-              <button
-                onClick={() => requestGpsLocation()}
-                className="mt-2 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold transition inline-flex items-center gap-1.5"
+          {/* Work Location Selector (if multiple allowed) */}
+          {statusData?.allowedLocations && statusData.allowedLocations.length > 1 && (
+            <div className="glass-card rounded-2xl p-3 border border-slate-200/80 dark:border-slate-800/80">
+              <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1 flex items-center gap-1.5">
+                <Building className="w-3.5 h-3.5 text-blue-600" />
+                Pilih Lokasi Kerja:
+              </label>
+              <select
+                value={selectedLocation?.id || ''}
+                onChange={(e) => handleLocationChange(e.target.value)}
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-xs font-semibold focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Coba Akses GPS Lagi
-              </button>
+                {statusData.allowedLocations.map((loc: any) => (
+                  <option key={loc.id} value={loc.id}>
+                    {loc.name} (Radius: {loc.radius_meters}m)
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
-        )}
-
-        {/* Real-time Location Radar & Distance Visualizer */}
-        <LocationRadar
-          userCoord={userCoord}
-          accuracy={accuracy}
-          targetLocation={selectedLocation}
-          distanceMeters={distanceMeters}
-          isWithinRadius={isWithinRadius}
-          onRefreshGps={() => requestGpsLocation()}
-          isLoadingGps={isLocating}
-        />
-
-        {/* Main Attendance Action Card */}
-        <div className="glass-card rounded-3xl p-5 shadow-glass dark:shadow-glass-dark border border-slate-200/80 dark:border-slate-800/80 text-center space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-            <Clock className="w-3.5 h-3.5 text-blue-600" />
-            <span>Shift: {schedule?.shiftName || 'Reguler'} ({schedule?.startTime} - {schedule?.endTime} WIB)</span>
-          </div>
-
-          {/* Today's Progress Status */}
-          <div className="flex items-center justify-center gap-6 py-1">
-            <div className="text-center">
-              <span className="text-[10px] text-slate-400 font-semibold uppercase">Absen Masuk</span>
-              <div className="text-sm font-black text-slate-800 dark:text-slate-100 mt-0.5">
-                {att?.clockInTime ? `${att.clockInTime} WIB` : '—'}
-              </div>
-              {att?.clockInStatus && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${att.clockInStatus === 'terlambat' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'}`}>
-                  {att.clockInStatus === 'terlambat' ? `Terlambat (+${att.minutesLate}m)` : 'Tepat Waktu'}
-                </span>
-              )}
-            </div>
-
-            <div className="w-px h-8 bg-slate-200 dark:bg-slate-700" />
-
-            <div className="text-center">
-              <span className="text-[10px] text-slate-400 font-semibold uppercase">Absen Pulang</span>
-              <div className="text-sm font-black text-slate-800 dark:text-slate-100 mt-0.5">
-                {att?.clockOutTime ? `${att.clockOutTime} WIB` : '—'}
-              </div>
-              {att?.clockOutStatus && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                  {att.clockOutStatus === 'pulang_cepat' ? 'Pulang Cepat' : 'Selesai'}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Big Thumb Button */}
-          {isClockedOut ? (
-            <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-blue-900 dark:text-blue-200 text-xs">
-              <CheckCircle className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-1.5" />
-              <div className="font-bold text-sm">Absensi Selesai</div>
-              <p className="mt-0.5 text-slate-500 dark:text-slate-400">
-                Anda sudah menyelesaikan absensi masuk dan pulang hari ini. Selamat beristirahat!
-              </p>
-            </div>
-          ) : !isClockedIn ? (
-            <button
-              onClick={handleClockInAction}
-              disabled={!isWithinRadius || isSubmitting || isLocating}
-              className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-lg transition-all duration-200 active:scale-98 flex items-center justify-center gap-2.5 ${
-                isWithinRadius && !isSubmitting && !isLocating
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30 ring-4 ring-blue-500/20'
-                  : 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed shadow-none'
-              }`}
-            >
-              {isSubmitting ? (
-                <RefreshCw className="w-5 h-5 animate-spin" />
-              ) : (
-                <MapPin className="w-5 h-5" />
-              )}
-              <span>
-                {isSubmitting
-                  ? 'Memverifikasi Lokasi...'
-                  : isLocating
-                  ? 'Mencari Titik GPS...'
-                  : isWithinRadius
-                  ? 'Absen Masuk Sekarang'
-                  : 'Di Luar Radius (Tombol Nonaktif)'}
-              </span>
-            </button>
-          ) : (
-            <button
-              onClick={handleClockOutAction}
-              disabled={!isWithinRadius || isSubmitting || isLocating}
-              className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-lg transition-all duration-200 active:scale-98 flex items-center justify-center gap-2.5 ${
-                isWithinRadius && !isSubmitting && !isLocating
-                  ? 'bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-500 hover:to-blue-600 text-white shadow-indigo-600/30 ring-4 ring-indigo-500/20'
-                  : 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed shadow-none'
-              }`}
-            >
-              {isSubmitting ? (
-                <RefreshCw className="w-5 h-5 animate-spin" />
-              ) : (
-                <Clock className="w-5 h-5" />
-              )}
-              <span>
-                {isSubmitting
-                  ? 'Memproses Absen Pulang...'
-                  : isWithinRadius
-                  ? 'Absen Pulang Sekarang'
-                  : 'Di Luar Radius (Tombol Nonaktif)'}
-              </span>
-            </button>
           )}
 
-          {/* Guidance note */}
-          <p className="text-[11px] text-slate-400 dark:text-slate-500">
-            * Waktu absensi diverifikasi otomatis menggunakan server waktu resmi Asia/Jakarta (WIB).
-          </p>
-        </div>
+          {/* GPS Error Alert */}
+          {gpsError && (
+            <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+              <div className="flex-1 text-xs">
+                <h4 className="font-bold text-rose-900 dark:text-rose-200 text-sm">
+                  Akses Lokasi GPS Terkendala
+                </h4>
+                <p className="text-rose-800 dark:text-rose-300 mt-0.5">{gpsError}</p>
+                <button
+                  onClick={() => requestGpsLocation()}
+                  className="mt-2 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold transition inline-flex items-center gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Coba Akses GPS Lagi
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Real-time Location Radar & Distance Visualizer */}
+          <LocationRadar
+            userCoord={userCoord}
+            accuracy={accuracy}
+            targetLocation={selectedLocation}
+            distanceMeters={distanceMeters}
+            isWithinRadius={isWithinRadius}
+            onRefreshGps={() => requestGpsLocation()}
+            isLoadingGps={isLocating}
+          />
+
+          {/* Main Attendance Action Card */}
+          <div className="glass-card rounded-3xl p-5 shadow-glass dark:shadow-glass-dark border border-slate-200/80 dark:border-slate-800/80 text-center space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+              <Clock className="w-3.5 h-3.5 text-blue-600" />
+              <span>Shift: {schedule?.shiftName || 'Reguler'} ({schedule?.startTime} - {schedule?.endTime} WIB)</span>
+            </div>
+
+            {/* Today's Progress Status */}
+            <div className="flex items-center justify-center gap-6 py-1">
+              <div className="text-center">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase">Absen Masuk</span>
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100 mt-0.5">
+                  {att?.clockInTime ? `${att.clockInTime} WIB` : '—'}
+                </div>
+                {att?.clockInStatus && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${att.clockInStatus === 'terlambat' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'}`}>
+                    {att.clockInStatus === 'terlambat' ? `Terlambat (+${att.minutesLate}m)` : 'Tepat Waktu'}
+                  </span>
+                )}
+              </div>
+
+              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700" />
+
+              <div className="text-center">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase">Absen Pulang</span>
+                <div className="text-sm font-black text-slate-800 dark:text-slate-100 mt-0.5">
+                  {att?.clockOutTime ? `${att.clockOutTime} WIB` : '—'}
+                </div>
+                {att?.clockOutStatus && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                    {att.clockOutStatus === 'pulang_cepat' ? 'Pulang Cepat' : 'Selesai'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Big Thumb Button */}
+            {isClockedOut ? (
+              <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-blue-900 dark:text-blue-200 text-xs">
+                <CheckCircle className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-1.5" />
+                <div className="font-bold text-sm">Absensi Selesai</div>
+                <p className="mt-0.5 text-slate-500 dark:text-slate-400">
+                  Anda sudah menyelesaikan absensi masuk dan pulang hari ini. Selamat beristirahat!
+                </p>
+              </div>
+            ) : !isClockedIn ? (
+              <button
+                onClick={handleClockInAction}
+                disabled={!isWithinRadius || isSubmitting || isLocating}
+                className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-lg transition-all duration-200 active:scale-98 flex items-center justify-center gap-2.5 ${isWithinRadius && !isSubmitting && !isLocating
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30 ring-4 ring-blue-500/20'
+                    : 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed shadow-none'
+                  }`}
+              >
+                {isSubmitting ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <MapPin className="w-5 h-5" />
+                )}
+                <span>
+                  {isSubmitting
+                    ? 'Memverifikasi Lokasi...'
+                    : isLocating
+                      ? 'Mencari Titik GPS...'
+                      : isWithinRadius
+                        ? 'Absen Masuk Sekarang'
+                        : 'Di Luar Radius (Tombol Nonaktif)'}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={handleClockOutAction}
+                disabled={!isWithinRadius || isSubmitting || isLocating}
+                className={`w-full py-4 px-6 rounded-2xl font-black text-base shadow-lg transition-all duration-200 active:scale-98 flex items-center justify-center gap-2.5 ${isWithinRadius && !isSubmitting && !isLocating
+                    ? 'bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-500 hover:to-blue-600 text-white shadow-indigo-600/30 ring-4 ring-indigo-500/20'
+                    : 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed shadow-none'
+                  }`}
+              >
+                {isSubmitting ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Clock className="w-5 h-5" />
+                )}
+                <span>
+                  {isSubmitting
+                    ? 'Memproses Absen Pulang...'
+                    : isWithinRadius
+                      ? 'Absen Pulang Sekarang'
+                      : 'Di Luar Radius (Tombol Nonaktif)'}
+                </span>
+              </button>
+            )}
+
+            {/* Guidance note */}
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
+              * Waktu absensi diverifikasi otomatis menggunakan server waktu resmi Asia/Jakarta (WIB).
+            </p>
+          </div>
         </div>
       </main>
 
